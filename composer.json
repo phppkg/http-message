@@ -1,0 +1,30 @@
+{
+  "name": "inhere/library",
+  "type": "library",
+  "description": "some useful library of the php",
+  "keywords": ["library","tool","php"],
+  "homepage": "https://github.com/inhere/php-librarys",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "http://www.yzone.net/"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "inhere\\http\\" : "src/",
+      "inhere/library": "dev-master"
+    }
+  },
+  "suggest": {
+    "inhere/simple-print-tool": "Very lightweight data printing tools",
+    "inhere/php-validate": "Very lightweight data validate tool",
+    "slim/http": "Very lightweight PSR-7 implements http message component",
+    "inhere/console": "a lightweight php console application library."
+  }
+}
