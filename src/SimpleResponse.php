@@ -3,12 +3,13 @@
 namespace inhere\http;
 
 use inhere\library\helpers\ObjectHelper;
+use inhere\library\StdObject;
 
 /**
  * Class SimpleResponse
  * @package inhere\library\http
  */
-class SimpleResponse
+class SimpleResponse extends StdObject
 {
     const DEFAULT_CHARSET = 'UTF-8';
 
@@ -27,11 +28,6 @@ class SimpleResponse
      * @var array
      */
     private $body = [];
-
-    public function __construct(array $config = [])
-    {
-        ObjectHelper::loadAttrs($this, $config);
-    }
 
     /**
      * @param $name
