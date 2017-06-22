@@ -2,7 +2,6 @@
 
 namespace inhere\http;
 
-use inhere\library\helpers\ObjectHelper;
 use inhere\library\StdObject;
 
 /**
