@@ -8,7 +8,7 @@
 
 namespace inhere\http;
 
-use inhere\validate\StrainerList;
+use inhere\validate\FilterList;
 use inhere\library\DataType;
 
 /**
@@ -39,7 +39,7 @@ class Request extends \Slim\Http\Request
     /**
      * @var array
      */
-    protected $filterList = [
+    protected static $filterList = [
         // return raw
         'raw' => '',
 
@@ -55,20 +55,20 @@ class Request extends \Slim\Http\Request
         'string' => 'string',
 
         // trim($var)
-        'trimmed' => StrainerList::class . '::trim',
+        'trimmed' => FilterList::class . '::trim',
 
         // safe data
         'safe' => 'htmlspecialchars',
 
         // abs((int)$var)
-        'number' => StrainerList::class . '::abs',
+        'number' => FilterList::class . '::abs',
         // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
-        'email' => StrainerList::class . '::email',
+        'email' => FilterList::class . '::email',
         // will use filter_var($var ,FILTER_SANITIZE_URL)
-        'url' => StrainerList::class . '::url',
+        'url' => FilterList::class . '::url',
 
         // will use filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
-        'encoded' => StrainerList::class . '::encoded',
+        'encoded' => FilterList::class . '::encoded',
     ];
 
     /**
@@ -197,7 +197,7 @@ class Request extends \Slim\Http\Request
      */
     public function __call($name, array $arguments)
     {
-        if (0 === strpos($name, 'get') && $arguments) {
+        if ($arguments && 0 === strpos($name, 'get')) {
             $filter = substr($name, 3);
             $default = $arguments[1] ?? null;
 
@@ -219,7 +219,7 @@ class Request extends \Slim\Http\Request
         }
 
         // is a custom filter
-        if (!is_string($filter) || !isset($this->filterList[$filter])) {
+        if (!is_string($filter) || !isset(self::$filterList[$filter])) {
             $result = $value;
 
             // is custom callable filter
@@ -231,7 +231,7 @@ class Request extends \Slim\Http\Request
         }
 
         // is a defined filter
-        $filter = $this->filterList[$filter];
+        $filter = self::$filterList[$filter];
 
         if (!in_array($filter, DataType::types(), true)) {
             $result = call_user_func($filter, $value);

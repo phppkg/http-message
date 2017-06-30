@@ -419,7 +419,7 @@ class Curl extends CurlLite implements CurlExtraInterface
      */
     public function isOk()
     {
-        return !$this->_responseMeta['error'];
+        return $this->_responseMeta['error'] === '';
     }
 
     /**
@@ -427,7 +427,7 @@ class Curl extends CurlLite implements CurlExtraInterface
      */
     public function isFail()
     {
-        return !!$this->_responseMeta['error'];
+        return $this->_responseMeta['error'] !== '';
     }
 
     /**

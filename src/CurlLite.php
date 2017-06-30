@@ -43,6 +43,7 @@ class CurlLite implements CurlLiteInterface
         'HEAD' => false,
         'OPTIONS' => false,
         'TRACE' => false,
+        'SEARCH' => false,
     ];
 
     /**
@@ -232,7 +233,7 @@ class CurlLite implements CurlLiteInterface
 
     /**
      * @param string $url
-     * @param null $data
+     * @param mixed $data
      * @param array $headers
      * @param array $opts
      * @return resource
@@ -309,7 +310,7 @@ class CurlLite implements CurlLiteInterface
         }
 
         // gzip
-        $curlOptions[CURLOPT_ENCODING] = '';
+        $curlOptions[CURLOPT_ENCODING] = 'gzip';
 
         // 首次速度非常慢 解决
         $curlOptions[CURLOPT_IPRESOLVE] = CURL_IPRESOLVE_V4;
@@ -439,7 +440,7 @@ class CurlLite implements CurlLiteInterface
             return $a;
         }
 
-        foreach ($b as $key => $val) {
+        foreach ((array)$b as $key => $val) {
             $a[$key] = $val;
         }
 

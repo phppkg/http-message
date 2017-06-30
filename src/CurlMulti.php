@@ -46,8 +46,7 @@ class CurlMulti extends CurlLite
             curl_multi_add_handle($this->mh, $this->chMap[$key]);
         }
 
-        unset($data);
-
+        // unset($data);
         return $this;
     }
 
@@ -127,7 +126,7 @@ class CurlMulti extends CurlLite
      */
     public function isFail()
     {
-        return !!$this->errors;
+        return $this->errors !== [];
     }
 
     /**
