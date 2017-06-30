@@ -6,7 +6,7 @@ namespace inhere\http;
  * Class SimpleRequest
  * @package inhere\library\http
  */
-class SimpleRequest
+class LiteRequest
 {
     protected $parsedBody = false;
 

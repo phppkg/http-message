@@ -174,9 +174,20 @@ class Request extends \Slim\Http\Request
         return $this->isAjax() && ($this->getHeaderLine('X-PJAX') === 'true');
     }
 
+    /**
+     * @return string
+     */
     public function getPjaxContainer()
     {
         return $this->getHeaderLine('X-PJAX-Container');
+    }
+
+    /**
+     * @return string
+     */
+    public function getReferer($default = '/')
+    {
+        return $this->getHeaderLine('REFERER') ?: $default;
     }
 
     /**

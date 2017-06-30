@@ -6,10 +6,10 @@ use inhere\library\helpers\ObjectHelper;
 use inhere\library\StdObject;
 
 /**
- * Class SimpleResponse
+ * Class LiteResponse
  * @package inhere\library\http
  */
-class SimpleResponse extends StdObject
+class LiteResponse extends StdObject
 {
     const DEFAULT_CHARSET = 'UTF-8';
 
