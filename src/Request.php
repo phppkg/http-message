@@ -183,6 +183,7 @@ class Request extends \Slim\Http\Request
     }
 
     /**
+     * @param string $default
      * @return string
      */
     public function getReferer($default = '/')
