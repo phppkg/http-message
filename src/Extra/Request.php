@@ -6,14 +6,16 @@
  * Time: 14:05
  */
 
-namespace inhere\http;
+namespace Inhere\Http\Extra;
 
+use Inhere\Http\UploadedFile;
+use Inhere\Http\Uri;
 use inhere\validate\FilterList;
 use inhere\library\DataType;
 
 /**
  * Class Request
- * @package inhere\library\http
+ * @package Inhere\Http\Extra
  *
  * @method      string   getRaw($name, $default = null)      Get raw data
  * @method      integer  getInt($name, $default = null)      Get a signed integer.
@@ -27,9 +29,9 @@ use inhere\library\DataType;
  * @method      string   getEmail($name, $default = null)
  * @method      string   getUrl($name, $default = null)      Get URL
  *
- * @property  \Slim\Http\Uri $uri;
+ * @property  Uri $uri;
  */
-class Request extends \Slim\Http\Request
+class Request extends \Inhere\Http\Request
 {
     /**
      * return raw data
@@ -81,16 +83,8 @@ class Request extends \Slim\Http\Request
     }
 
     /**
-     * @return array|null
-     */
-    public function post()
-    {
-        return $this->getParsedBody();
-    }
-
-    /**
      * @param $name
-     * @return \Slim\Http\UploadedFile
+     * @return UploadedFile
      */
     public function getUploadedFile($name)
     {
@@ -103,8 +97,12 @@ class Request extends \Slim\Http\Request
      * @param string $filter
      * @return mixed
      */
-    public function get($name, $default = null, $filter = 'raw')
+    public function get($name = null, $default = null, $filter = 'raw')
     {
+        if ($name === null) {
+            return $this->getQueryParams();
+        }
+
         $value = $this->getParams()[$name] ?? $default;
 
         return $this->filtering($value, $filter);
@@ -156,16 +154,6 @@ class Request extends \Slim\Http\Request
     }
 
     /**
-     * Is this an XHR request?
-     *
-     * @return bool
-     */
-    public function isAjax()
-    {
-        return $this->isXhr();
-    }
-
-    /**
      * Is this an pjax request?
      * pjax = pushState + ajax
      * @return bool
@@ -187,7 +175,7 @@ class Request extends \Slim\Http\Request
      * @param string $default
      * @return string
      */
-    public function getReferer($default = '/')
+    public function getReferrer($default = '/')
     {
         return $this->getHeaderLine('REFERER') ?: $default;
     }

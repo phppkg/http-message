@@ -6,13 +6,13 @@
  * Time: 14:06
  */
 
-namespace inhere\http;
+namespace Inhere\Http\Extra;
 
 /**
  * Class Response
- * @package inhere\library\http
+ * @package Inhere\Http\Extra
  */
-class Response extends \Slim\Http\Response
+class Response extends \Inhere\Http\Response
 {
     /**
      * @param mixed $data
@@ -26,9 +26,8 @@ class Response extends \Slim\Http\Response
     }
 
     /**
-     * @param mixed $data
+     * @param string $fallbackUrl
      * @param int $status
-     * @param int $encodingOptions
      * @return static
      */
     public function withGoBack($fallbackUrl = '/', $status = 301)
