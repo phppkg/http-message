@@ -1,5 +1,5 @@
 {
-  "name": "inhere/http-message",
+  "name": "inhere/http",
   "type": "library",
   "description": "some useful http message library of the php",
   "keywords": ["library","tool","http", "curl"],
