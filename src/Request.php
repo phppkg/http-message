@@ -1,162 +1,617 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: inhere
- * Date: 2017-03-31
- * Time: 14:05
+ * User: Inhere
+ * Date: 2017/3/26 0026
+ * Time: 18:02
  */
 
-namespace inhere\http;
+namespace Inhere\Http;
 
-use inhere\validate\FilterList;
-use inhere\library\DataType;
+use inhere\library\collections\SimpleCollection;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class Request
- * @package inhere\library\http
+ * @property string $method
+ * @property Uri $uri
+ * @property-read string $origin
  *
- * @method      string   getRaw($name, $default = null)      Get raw data
- * @method      integer  getInt($name, $default = null)      Get a signed integer.
- * @method      integer  getNumber($name, $default = null)   Get an unsigned integer.
- * @method      float    getFloat($name, $default = null)    Get a floating-point number.
- * @method      boolean  getBool($name, $default = null)     Get a boolean.
- * @method      boolean  getBoolean($name, $default = null)  Get a boolean.
- * @method      string   getString($name, $default = null)
- * @method      string   getTrimmed($name, $default = null)
- * @method      string   getSafe($name, $default = null)
- * @method      string   getEmail($name, $default = null)
- * @method      string   getUrl($name, $default = null)      Get URL
- *
- * @property  \Slim\Http\Uri $uri;
+ * @method Body getBody()
  */
-class Request extends \Slim\Http\Request
+class Request extends BaseMessage implements ServerRequestInterface
 {
-    /**
-     * return raw data
-     */
-    const FILTER_RAW = 'raw';
-
     /**
      * @var array
      */
-    protected static $filterList = [
-        // return raw
-        'raw' => '',
+    private $uploadedFiles;
 
-        // (int)$var
-        'int' => 'int',
-        // (float)$var or floatval($var)
-        'float' => 'float',
-        // (bool)$var
-        'bool' => 'bool',
-        // (bool)$var
-        'boolean' => 'bool',
-        // (string)$var
-        'string' => 'string',
+    /**
+     * @var string
+     */
+    private $method;
 
-        // trim($var)
-        'trimmed' => FilterList::class . '::trim',
+    /**
+     * The request URI object
+     * @var Uri
+     */
+    private $uri;
 
-        // safe data
-        'safe' => 'htmlspecialchars',
+    /**
+     * The original request method (ignoring override)
+     * @var string
+     */
+    private $originalMethod;
 
-        // abs((int)$var)
-        'number' => FilterList::class . '::abs',
-        // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
-        'email' => FilterList::class . '::email',
-        // will use filter_var($var ,FILTER_SANITIZE_URL)
-        'url' => FilterList::class . '::url',
-
-        // will use filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
-        'encoded' => FilterList::class . '::encoded',
+    /**
+     * Valid request methods
+     * @var string[]
+     */
+    private $validMethods = [
+        'CONNECT' => 1,
+        'DELETE' => 1,
+        'GET' => 1,
+        'HEAD' => 1,
+        'OPTIONS' => 1,
+        'PATCH' => 1,
+        'POST' => 1,
+        'PUT' => 1,
+        'TRACE' => 1,
     ];
 
     /**
-     * getParams() alias method
-     * @return array
+     * List of request body parsers (e.g., url-encoded, JSON, XML, multipart)
+     * @var callable[]
      */
-    public function all()
+    private $bodyParsers = [];
+
+    /** @var array  */
+    private $serverParams = [];
+
+    /** @var  string */
+    private $requestTarget;
+
+    /** @var SimpleCollection */
+    private $attributes;
+
+    /**
+     * @param string $rawData
+     * @return static
+     */
+    public static function makeByParseRawData(string $rawData)
     {
-        return $this->getParams();
+        if (!$rawData) {
+            return new static();
+        }
+
+        // $rawData = trim($rawData);
+        // split head and body
+        $two = explode("\r\n\r\n", $rawData, 2);
+
+        if (!$rawHeader = $two[0] ?? '') {
+            return new static();
+        }
+
+        $body = $two[1] ? new RequestBody($two[1]) : null;
+
+        /** @var array $list */
+        $list = explode("\n", trim($rawHeader));
+
+        // e.g: `GET / HTTP/1.1`
+        $first = array_shift($list);
+        list($method, $uri, $protoStr) = array_map('trim', explode(' ', trim($first)));
+        list($protocol, $protocolVersion) = explode('/', $protoStr);
+
+        // other header info
+        $headers = [];
+        foreach ($list as $item) {
+            if ($item) {
+                list($name, $value) = explode(': ', trim($item));
+                $headers[$name] = trim($value);
+            }
+        }
+
+        $cookies = [];
+        if (isset($headers['Cookie'])) {
+            $cookieData = $headers['Cookie'];
+            $cookies = Cookies::parseFromRawHeader($cookieData);
+        }
+
+        $port = 80;
+        $host = '';
+        if ($val = $headers['Host'] ?? '') {
+            list($host, $port) = strpos($val, ':') ? explode(':', $val) : [$val, 80];
+        }
+
+        $path = $uri;
+        $query = $fragment = '';
+        if (strlen($uri) > 1) {
+            $parts = parse_url($uri);
+            $path = $parts['path'] ?? '';
+            $query = $parts['query'] ?? '';
+            $fragment = $parts['fragment'] ?? '';
+        }
+
+        $uri = new Uri($protocol, $host, (int)$port, $path, $query, $fragment);
+
+        return new static($method, $uri, $protocol, $protocolVersion, $headers, $cookies, $body);
     }
 
     /**
-     * @return array|null
+     * Request constructor.
+     * @param string $method
+     * @param Uri $uri
+     * @param string $protocol
+     * @param string $protocolVersion
+     * @param array $headers
+     * @param array $cookies
+     * @param StreamInterface $body
+     * @param array $uploadedFiles
      */
-    public function post()
+    public function __construct(
+        string $method = 'GET', Uri $uri = null, string $protocol = 'HTTP', string $protocolVersion = '1.1',
+        array $headers = [], array $cookies = [], StreamInterface $body = null, array $uploadedFiles = []
+    )
     {
-        return $this->getParsedBody();
+        parent::__construct($protocol, $protocolVersion, $headers, $cookies);
+
+        $this->method = $method ? strtoupper($method) : 'GET';
+        $this->uri = $uri;
+        $this->body = new RequestBody();
+        $this->uploadedFiles = $uploadedFiles;
+        $this->attributes = new SimpleCollection();
+
+        if (!$this->headers->has('Host') || $this->uri->getHost() !== '') {
+            $this->headers->set('Host', $this->uri->getHost());
+        }
+
+        $this->registerDataParsers();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+    /**
+     * registerDataParsers
+     */
+    protected function registerDataParsers()
+    {
+        $this->registerMediaTypeParser('application/json', function ($input) {
+            $result = json_decode($input, true);
+            if (!is_array($result)) {
+                return null;
+            }
+
+            return $result;
+        });
+
+        $xmlParser = function ($input) {
+            $backup = libxml_disable_entity_loader();
+            $backup_errors = libxml_use_internal_errors(true);
+            $result = simplexml_load_string($input);
+            libxml_disable_entity_loader($backup);
+            libxml_clear_errors();
+            libxml_use_internal_errors($backup_errors);
+            if ($result === false) {
+                return null;
+            }
+
+            return $result;
+        };
+
+        $this->registerMediaTypeParser('text/xml', $xmlParser);
+        $this->registerMediaTypeParser('application/xml', $xmlParser);
+
+        $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
+            parse_str($input, $data);
+
+            return $data;
+        });
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildFirstLine()
+    {
+        // `GET /path HTTP/1.1`
+        return sprintf(
+            '%s %s %s/%s',
+            $this->getMethod(),
+            $this->uri->getPathAndQuery(),
+            $this->getProtocol(),
+            $this->getProtocolVersion()
+        );
+    }
+
+    /**
+     * build response data
+     * @return string
+     */
+    public function toString()
+    {
+        // first line
+        $output = $this->buildFirstLine() . self::EOL;
+
+        // add headers
+        $output .= $this->headers->toHeaderLines(1);
+
+        // append cookies
+        if ($cookie = $this->cookies->toRequestHeader()) {
+            $output .= "Cookie: $cookie" . self::EOL;
+        }
+
+        $output .= self::EOL;
+
+        return $output . $this->getBody();
+    }
+
+
+    /**
+     * @param $mediaType
+     * @param callable $callable
+     */
+    public function registerMediaTypeParser($mediaType, callable $callable)
+    {
+        if ($callable instanceof \Closure) {
+            $callable = $callable->bindTo($this);
+        }
+
+        $this->bodyParsers[(string)$mediaType] = $callable;
+    }
+
+    /*******************************************************************************
+     * Query Params
+     ******************************************************************************/
+
+    private $_queryParams;
+
+    /**
+     * Returns the request parameters given in the [[queryString]].
+     * This method will return the contents of `$_GET` if params where not explicitly set.
+     * @return array the request GET parameter values.
+     * @see setQueryParams()
+     */
+    public function getQueryParams()
+    {
+        if ($this->_queryParams === null) {
+            return $_GET;
+        }
+
+        return $this->_queryParams;
+    }
+
+    /**
+     * Sets the request [[queryString]] parameters.
+     * @param array $values the request query parameters (name-value pairs)
+     * @see getQueryParam()
+     * @see getQueryParams()
+     */
+    public function setQueryParams($values)
+    {
+        $this->_queryParams = $values;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withQueryParams(array $query)
+    {
+        $clone = clone $this;
+        $clone->_queryParams = $query;
+
+        return $clone;
+    }
+
+    /**
+     * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
+     * @param string $name the parameter name
+     * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+     * @return array|mixed
+     */
+    public function get($name = null, $defaultValue = null)
+    {
+        if ($name === null) {
+            return $this->getQueryParams();
+        }
+
+        return $this->getQueryParam($name, $defaultValue);
     }
 
     /**
      * @param $name
-     * @return \Slim\Http\UploadedFile
+     * @param null $defaultValue
+     * @return mixed|null
      */
-    public function getUploadedFile($name)
+    public function getQueryParam($name, $defaultValue = null)
     {
-        return $this->getUploadedFiles()[$name] ?? null;
+        $params = $this->getQueryParams();
+
+        return $params[$name] ?? $defaultValue;
+    }
+
+    private $_rawBody;
+
+    /**
+     * Returns the raw HTTP request body.
+     * @return string the request body
+     */
+    public function getRawBody()
+    {
+        if ($this->_rawBody === null) {
+            $this->_rawBody = file_get_contents('php://input');
+        }
+
+        return $this->_rawBody;
     }
 
     /**
-     * @param string $name
+     * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
+     * @param string $rawBody the request body
+     */
+    public function setRawBody($rawBody)
+    {
+        $this->_rawBody = $rawBody;
+    }
+
+    private $bodyParsed;
+
+    /**
+     * @return array|null
+     */
+    public function getParsedBody()
+    {
+        if ($this->bodyParsed !== false) {
+            return $this->bodyParsed;
+        }
+
+        if (!$this->body) {
+            return null;
+        }
+
+        $mediaType = $this->getMediaType();
+
+        // look for a media type with a structured syntax suffix (RFC 6839)
+        $parts = explode('+', $mediaType);
+        if (count($parts) >= 2) {
+            $mediaType = 'application/' . $parts[count($parts) - 1];
+        }
+
+        if (isset($this->bodyParsers[$mediaType]) === true) {
+            $body = (string)$this->getBody();
+            $parsed = $this->bodyParsers[$mediaType]($body);
+
+            if (null !== $parsed && !is_object($parsed) && !is_array($parsed)) {
+                throw new \RuntimeException(
+                    'Request body media type parser return value must be an array, an object, or null'
+                );
+            }
+            $this->bodyParsed = $parsed;
+
+            return $this->bodyParsed;
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withParsedBody($data)
+    {
+        if (null !== $data && !is_object($data) && !is_array($data)) {
+            throw new \InvalidArgumentException('Parsed body value must be an array, an object, or null');
+        }
+
+        $clone = clone $this;
+        $clone->bodyParsed = $data;
+
+        return $clone;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setParsedBody($data)
+    {
+        $this->bodyParsed = $data;
+    }
+
+    /**
+     * Fetch parameter value from request body.
+     * Note: This method is not part of the PSR-7 standard.
+     * @param string $key
      * @param mixed $default
-     * @param string $filter
      * @return mixed
      */
-    public function get($name, $default = null, $filter = 'raw')
+    public function getParsedBodyParam($key, $default = null)
     {
-        $value = $this->getParams()[$name] ?? $default;
+        $postParams = $this->getParsedBody();
+        $result = $default;
 
-        return $this->filtering($value, $filter);
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        }
+
+        return $result;
     }
 
     /**
-     * Get Multi - 获取多个, 可以设置过滤
-     * @param array $needKeys
-     * $needKeys = [
-     *     'name',
-     *     'password',
-     *     'status' => 'int'
-     * ]
+     * @param null $name
+     * @param null $defaultValue
+     * @return array|mixed|null
+     */
+    public function post($name = null, $defaultValue = null)
+    {
+        if ($name === null) {
+            return $this->getParsedBody();
+        }
+
+        return $this->getParsedBodyParam($name, $defaultValue);
+    }
+
+    /*******************************************************************************
+     * Parameters (e.g., POST and GET data)
+     ******************************************************************************/
+
+    /**
+     * Fetch associative array of body and query string parameters.
+     * Note: This method is not part of the PSR-7 standard.
      * @return array
      */
-    public function getMulti(array $needKeys = [])
+    public function getParams()
     {
-        $needed = [];
+        $params = $this->getQueryParams();
+        $postParams = $this->getParsedBody();
+        if ($postParams) {
+            $params = array_merge($params, (array)$postParams);
+        }
 
-        foreach ($needKeys as $key => $value) {
-            if (is_int($key)) {
-                $needed[$value] = $this->getParam($value);
-            } else {
-                $needed[$key] = $this->filtering($key, $value);
+        return $params;
+    }
+
+    /**
+     * Fetch request parameter value from body or query string (in that order).
+     * Note: This method is not part of the PSR-7 standard.
+     * @param  string $key The parameter key.
+     * @param  string $default The default value.
+     * @return mixed The parameter value.
+     */
+    public function getParam($key, $default = null)
+    {
+        $postParams = $this->getParsedBody();
+        $getParams = $this->getQueryParams();
+        $result = $default;
+
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        } elseif (isset($getParams[$key])) {
+            $result = $getParams[$key];
+        }
+
+        return $result;
+    }
+
+    /*******************************************************************************
+     * Method
+     ******************************************************************************/
+
+    /**
+     * @return string
+     */
+    public function getMethod()
+    {
+        if ($this->method === null) {
+            $this->method = $this->originalMethod;
+            $customMethod = $this->getHeaderLine('X-Http-Method-Override');
+
+            if ($customMethod) {
+                $this->method = $this->filterMethod($customMethod);
+            } elseif ($this->originalMethod === 'POST') {
+                $overrideMethod = $this->filterMethod($this->getParsedBodyParam('_METHOD'));
+                if ($overrideMethod !== null) {
+                    $this->method = $overrideMethod;
+                }
+
+                if ($this->getBody()->eof()) {
+                    $this->getBody()->rewind();
+                }
             }
         }
 
-        return $needed;
+        return $this->method;
     }
 
     /**
-     * e.g: `http://xxx.com`
+     * @param string $method
+     */
+    public function setMethod(string $method)
+    {
+        $this->method = $method;
+    }
+
+    /**
      * @return string
      */
-    public function getBaseUrl()
+    public function getOriginalMethod()
     {
-        return $this->uri->getBaseUrl();
+        return $this->originalMethod;
     }
 
     /**
-     * path + queryString
-     * e.g. `/content/add?type=blog`
-     * @return string
+     * Does this request use a given method?
+     * Note: This method is not part of the PSR-7 standard.
+     * @param  string $method HTTP method
+     * @return bool
      */
-    public function getRequestUri()
+    public function isMethod($method)
     {
-        return $this->getRequestTarget();
+        return $this->getMethod() === strtoupper($method);
     }
 
     /**
-     * Is this an XHR request?
-     *
+     * @inheritdoc
+     */
+    public function withMethod($method)
+    {
+        $method = $this->filterMethod($method);
+
+        $clone = clone $this;
+        $clone->originalMethod = $method;
+        $clone->method = $method;
+
+        return $clone;
+    }
+
+    /**
+     * Validate the HTTP method
+     * @param  null|string $method
+     * @return null|string
+     * @throws \InvalidArgumentException on invalid HTTP method.
+     */
+    protected function filterMethod($method)
+    {
+        if ($method === null) {
+            return $method;
+        }
+
+        if (!is_string($method)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Unsupported HTTP method; must be a string, received %s',
+                (is_object($method) ? get_class($method) : gettype($method))
+            ));
+        }
+
+        $method = strtoupper($method);
+        if (!isset($this->validMethods[$method])) {
+            throw new \InvalidArgumentException($this, $method);
+        }
+
+        return $method;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWebSocket()
+    {
+        $val = $this->getHeaderLine('upgrade');
+
+        return strtolower($val) === 'websocket';
+    }
+
+    /**
      * @return bool
      */
     public function isAjax()
@@ -165,106 +620,381 @@ class Request extends \Slim\Http\Request
     }
 
     /**
-     * Is this an pjax request?
-     * pjax = pushState + ajax
+     * Is this an XHR request?
+     * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isPjax()
+    public function isXhr()
     {
-        return $this->isAjax() && ($this->getHeaderLine('X-PJAX') === 'true');
+        return $this->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+    }
+
+    /**
+     * `Origin: http://foo.example`
+     * @return string
+     */
+    public function getOrigin()
+    {
+        return $this->getHeaderLine('Origin');
+    }
+
+    /*******************************************************************************
+     * Files
+     ******************************************************************************/
+
+    /**
+     * @return array
+     */
+    public function getUploadedFiles()
+    {
+        return $this->uploadedFiles;
+    }
+
+    /**
+     * @param array $uploadedFiles
+     * @return $this
+     */
+    public function setUploadedFiles(array $uploadedFiles)
+    {
+        $this->uploadedFiles = $uploadedFiles;
+
+        return $this;
+    }
+
+    /**
+     * @param array $uploadedFiles
+     * @return static
+     */
+    public function withUploadedFiles(array $uploadedFiles)
+    {
+        $clone = clone $this;
+        $clone->uploadedFiles = $uploadedFiles;
+
+        return $clone;
+    }
+
+    /*******************************************************************************
+     * Attributes
+     ******************************************************************************/
+
+    /**
+     * Retrieve attributes derived from the request.
+     *
+     * The request "attributes" may be used to allow injection of any
+     * parameters derived from the request: e.g., the results of path
+     * match operations; the results of decrypting cookies; the results of
+     * deserializing non-form-encoded message bodies; etc. Attributes
+     * will be application and request specific, and CAN be mutable.
+     *
+     * @return array Attributes derived from the request.
+     */
+    public function getAttributes()
+    {
+        return $this->attributes->all();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAttribute($name, $default = null)
+    {
+        return $this->attributes->get($name, $default);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withAttribute($name, $value)
+    {
+        $clone = clone $this;
+        $clone->attributes->set($name, $value);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setAttribute($name, $value)
+    {
+        $this->attributes->set($name, $value);
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withAttributes(array $attributes)
+    {
+        $clone = clone $this;
+        $clone->attributes = new SimpleCollection($attributes);
+
+        return $clone;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function delAttribute($name)
+    {
+        $this->attributes->remove($name);
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withoutAttribute($name)
+    {
+        $clone = clone $this;
+        $clone->attributes->remove($name);
+
+        return $clone;
+    }
+
+    /**
+     * Get request content type.
+     * Note: This method is not part of the PSR-7 standard.
+     * @return string|null The request content type, if known
+     */
+    public function getContentType()
+    {
+        $result = $this->getHeader('Content-Type');
+
+        return $result ? $result[0] : null;
+    }
+
+    /**
+     * Get request media type, if known.
+     * Note: This method is not part of the PSR-7 standard.
+     * @return string|null The request media type, minus content-type params
+     */
+    public function getMediaType()
+    {
+        $contentType = $this->getContentType();
+
+        if ($contentType) {
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+
+            return strtolower($contentTypeParts[0]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get request media type params, if known.
+     * Note: This method is not part of the PSR-7 standard.
+     * @return array
+     */
+    public function getMediaTypeParams()
+    {
+        $contentType = $this->getContentType();
+        $contentTypeParams = [];
+
+        if ($contentType) {
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypePartsLength = count($contentTypeParts);
+
+            for ($i = 1; $i < $contentTypePartsLength; $i++) {
+                $paramParts = explode('=', $contentTypeParts[$i]);
+                $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
+            }
+        }
+
+        return $contentTypeParams;
+    }
+
+    /**
+     * Get request content character set, if known.
+     * Note: This method is not part of the PSR-7 standard.
+     * @return string|null
+     */
+    public function getContentCharset()
+    {
+        $mediaTypeParams = $this->getMediaTypeParams();
+        if (isset($mediaTypeParams['charset'])) {
+            return $mediaTypeParams['charset'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get request content length, if known.
+     * Note: This method is not part of the PSR-7 standard.
+     * @return int|null
+     */
+    public function getContentLength()
+    {
+        $result = $this->headers->get('Content-Length');
+
+        return $result ? (int)$result[0] : null;
+    }
+
+    /*******************************************************************************
+     * URI
+     ******************************************************************************/
+
+    /**
+     * @inheritdoc
+     */
+    public function getRequestTarget()
+    {
+        if ($this->requestTarget) {
+            return $this->requestTarget;
+        }
+
+        if ($this->uri === null) {
+            return '/';
+        }
+
+        $basePath = $this->uri->getBasePath();
+        $path = $basePath . '/' . ltrim($this->uri->getPath(), '/');
+
+        $query = $this->uri->getQuery();
+
+        if ($query) {
+            $path .= '?' . $query;
+        }
+
+        $this->requestTarget = $path;
+
+        return $this->requestTarget;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withRequestTarget($requestTarget)
+    {
+        if (preg_match('#\s#', $requestTarget)) {
+            throw new \InvalidArgumentException(
+                'Invalid request target provided; must be a string and cannot contain whitespace'
+            );
+        }
+        $clone = clone $this;
+        $clone->requestTarget = $requestTarget;
+
+        return $clone;
+    }
+
+    /**
+     * @return Uri
+     */
+    public function getUri(): Uri
+    {
+        return $this->uri;
+    }
+
+    /**
+     * @param Uri $uri
+     */
+    public function setUri(Uri $uri)
+    {
+        $this->uri = $uri;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withUri(UriInterface $uri, $preserveHost = false)
+    {
+        $clone = clone $this;
+        $clone->uri = $uri;
+
+        if (!$preserveHost) {
+            if ($uri->getHost() !== '') {
+                $clone->headers->set('Host', $uri->getHost());
+            }
+        } else {
+            if ($uri->getHost() !== '' && (!$this->hasHeader('Host') || $this->getHeaderLine('Host') === '')) {
+                $clone->headers->set('Host', $uri->getHost());
+            }
+        }
+
+        return $clone;
     }
 
     /**
      * @return string
      */
-    public function getPjaxContainer()
+    public function getPath()
     {
-        return $this->getHeaderLine('X-PJAX-Container');
+        return $this->getUri()->getPath();
     }
 
+    /*******************************************************************************
+     * Cookies
+     ******************************************************************************/
+
     /**
-     * @param string $default
-     * @return string
+     * @inheritdoc
      */
-    public function getReferer($default = '/')
+    public function getCookieParams()
     {
-        return $this->getHeaderLine('REFERER') ?: $default;
+        return $this->cookies->all();
     }
 
     /**
-     * @param $name
-     * @param array $arguments
+     * @inheritdoc
+     */
+    public function getCookieParam($key, $default = null)
+    {
+        return $this->cookies->get($key, $default);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withCookieParams(array $cookies)
+    {
+        $clone = clone $this;
+        $clone->cookies = new Cookies($cookies);
+
+        return $clone;
+    }
+
+    /*******************************************************************************
+     * Server Params
+     ******************************************************************************/
+
+    /**
+     * Retrieve server parameters.
+     * Retrieves data related to the incoming request environment,
+     * typically derived from PHP's $_SERVER superglobal. The data IS NOT
+     * REQUIRED to originate from $_SERVER.
+     * @return array
+     */
+    public function getServerParams()
+    {
+        return $this->serverParams;
+    }
+
+    /**
+     * Retrieve a server parameter.
+     * Note: This method is not part of the PSR-7 standard.
+     * @param  string $key
+     * @param  mixed $default
      * @return mixed
      */
-    public function __call($name, array $arguments)
+    public function getServerParam($key, $default = null)
     {
-        if ($arguments && 0 === strpos($name, 'get')) {
-            $filter = substr($name, 3);
-            $default = $arguments[1] ?? null;
+        $serverParams = $this->getServerParams();
 
-            return $this->get($arguments[0], $default, lcfirst($filter));
-        }
-
-        throw new \BadMethodCallException("Method $name is not a valid method");
+        return $serverParams[$key] ?? $default;
     }
 
     /**
-     * @param $value
-     * @param $filter
-     * @return mixed|null
+     * @param array $serverParams
      */
-    public function filtering($value, $filter)
+    public function setServerParams(array $serverParams)
     {
-        if ($filter === static::FILTER_RAW) {
-            return $value;
-        }
-
-        // is a custom filter
-        if (!is_string($filter) || !isset(self::$filterList[$filter])) {
-            $result = $value;
-
-            // is custom callable filter
-            if (is_callable($filter)) {
-                $result = call_user_func($filter, $value);
-            }
-
-            return $result;
-        }
-
-        // is a defined filter
-        $filter = self::$filterList[$filter];
-
-        if (!in_array($filter, DataType::types(), true)) {
-            $result = call_user_func($filter, $value);
-        } else {
-            switch (lcfirst(trim($filter))) {
-                case DataType::T_BOOL :
-                case DataType::T_BOOLEAN :
-                    $result = (bool)$value;
-                    break;
-                case DataType::T_DOUBLE :
-                case DataType::T_FLOAT :
-                    $result = (float)$value;
-                    break;
-                case DataType::T_INT :
-                case DataType::T_INTEGER :
-                    $result = (int)$value;
-                    break;
-                case DataType::T_STRING :
-                    $result = (string)$value;
-                    break;
-                case DataType::T_ARRAY :
-                    $result = (array)$value;
-                    break;
-                case DataType::T_OBJECT :
-                    $result = (object)$value;
-                    break;
-                default:
-                    $result = $value;
-                    break;
-            }
-        }
-
-        return $result;
+        $this->serverParams = $serverParams;
     }
 }
