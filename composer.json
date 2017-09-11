@@ -19,13 +19,11 @@
   },
   "autoload": {
     "psr-4": {
-      "inhere\\http\\" : "src/"
+      "Inhere\\Http\\" : "src/"
     }
   },
   "suggest": {
-    "inhere/simple-print-tool": "Very lightweight data printing tools",
     "inhere/php-validate": "Very lightweight data validate tool",
-    "slim/http": "Very lightweight PSR-7 implements http message component",
     "inhere/console": "a lightweight php console application library."
   }
 }
