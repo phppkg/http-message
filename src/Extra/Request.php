@@ -11,7 +11,7 @@ namespace Inhere\Http\Extra;
 use Inhere\Http\UploadedFile;
 use Inhere\Http\Uri;
 use Inhere\Validate\FilterList;
-use inhere\library\DataType;
+use Inhere\Library\DataType;
 
 /**
  * Class Request

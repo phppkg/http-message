@@ -8,7 +8,7 @@
 
 namespace Inhere\Http;
 
-use inhere\library\traits\PropertyAccessByGetterSetterTrait;
+use Inhere\Library\Traits\PropertyAccessByGetterSetterTrait;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 

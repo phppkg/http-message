@@ -8,7 +8,7 @@
 
 namespace Inhere\Http;
 
-use inhere\library\collections\SimpleCollection;
+use Inhere\Library\Collections\SimpleCollection;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
