@@ -10,8 +10,9 @@ namespace Inhere\Http\Extra;
 
 use Inhere\Http\UploadedFile;
 use Inhere\Http\Uri;
+use Inhere\Library\Helpers\PhpHelper;
 use Inhere\Validate\FilterList;
-use Inhere\Library\DataType;
+use Inhere\Library\Types;
 
 /**
  * Class Request
@@ -57,20 +58,20 @@ class Request extends \Inhere\Http\Request
         'string' => 'string',
 
         // trim($var)
-        'trimmed' => FilterList::class . '::trim',
+        'trimmed' => [FilterList::class, 'trim'],
 
         // safe data
         'safe' => 'htmlspecialchars',
 
         // abs((int)$var)
-        'number' => FilterList::class . '::abs',
+        'number' => [FilterList::class, 'abs'],
         // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
-        'email' => FilterList::class . '::email',
+        'email' => [FilterList::class, 'email'],
         // will use filter_var($var ,FILTER_SANITIZE_URL)
-        'url' => FilterList::class . '::url',
+        'url' => [FilterList::class, 'url'],
 
         // will use filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
-        'encoded' => FilterList::class . '::encoded',
+        'encoded' => [FilterList::class, 'encoded'],
     ];
 
     /**
@@ -202,9 +203,9 @@ class Request extends \Inhere\Http\Request
      * @param $filter
      * @return mixed|null
      */
-    public function filtering($value, $filter)
+    public function filtering($value, $filter = self::FILTER_RAW)
     {
-        if ($filter === static::FILTER_RAW) {
+        if ($filter === self::FILTER_RAW) {
             return $value;
         }
 
@@ -214,7 +215,7 @@ class Request extends \Inhere\Http\Request
 
             // is custom callable filter
             if (is_callable($filter)) {
-                $result = call_user_func($filter, $value);
+                $result = PhpHelper::call($filter, $value);
             }
 
             return $result;
@@ -223,29 +224,29 @@ class Request extends \Inhere\Http\Request
         // is a defined filter
         $filter = self::$filterList[$filter];
 
-        if (!in_array($filter, DataType::types(), true)) {
-            $result = call_user_func($filter, $value);
+        if (!in_array($filter, Types::all(), true)) {
+            $result = PhpHelper::call($filter, $value);
         } else {
             switch (lcfirst(trim($filter))) {
-                case DataType::T_BOOL :
-                case DataType::T_BOOLEAN :
+                case Types::T_BOOL :
+                case Types::T_BOOLEAN :
                     $result = (bool)$value;
                     break;
-                case DataType::T_DOUBLE :
-                case DataType::T_FLOAT :
+                case Types::T_DOUBLE :
+                case Types::T_FLOAT :
                     $result = (float)$value;
                     break;
-                case DataType::T_INT :
-                case DataType::T_INTEGER :
+                case Types::T_INT :
+                case Types::T_INTEGER :
                     $result = (int)$value;
                     break;
-                case DataType::T_STRING :
+                case Types::T_STRING :
                     $result = (string)$value;
                     break;
-                case DataType::T_ARRAY :
+                case Types::T_ARRAY :
                     $result = (array)$value;
                     break;
-                case DataType::T_OBJECT :
+                case Types::T_OBJECT :
                     $result = (object)$value;
                     break;
                 default:

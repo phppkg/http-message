@@ -18,7 +18,6 @@ use Psr\Http\Message\StreamInterface;
  * @package Inhere\Http
  * @property int $status
  * @property string $statusMsg
- * @property array $body
  *
  * @link https://github.com/php-fig/http-message/blob/master/src/MessageInterface.php
  * @link https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
@@ -191,6 +190,48 @@ class Response extends BaseMessage implements ResponseInterface
         return $output . $this->getBody();
     }
 
+    /**
+     * response Json.
+     * Note: This method is not part of the PSR-7 standard.
+     * This method prepares the response object to return an HTTP Json response to the client.
+     * @param  mixed $data The data
+     * @param  int $status The HTTP status code.
+     * @param  int $encodingOptions Json encoding options
+     * @throws \RuntimeException
+     * @return static
+     */
+    public function json($data, int $status = null, $encodingOptions = 0)
+    {
+        $this->setBody(new Body(fopen('php://temp', 'rb+')));
+        $this->write($json = json_encode($data, $encodingOptions));
+
+        // Ensure that the json encoding passed successfully
+        if ($json === false) {
+            throw new \RuntimeException(json_last_error_msg(), json_last_error());
+        }
+
+        $this->setHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        if (null === $status) {
+            return $this->setStatus($status);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @param int $status
+     * @return static
+     */
+    public function redirect($url, $status = 302)
+    {
+        $this->setStatus((int)$status);
+        $this->setHeader('Location', $url);
+
+        return $this;
+    }
+
     /*******************************************************************************
      * Status
      ******************************************************************************/
@@ -310,18 +351,108 @@ class Response extends BaseMessage implements ResponseInterface
         return self::$messages;
     }
 
+    /*******************************************************************************
+     * Status check
+     ******************************************************************************/
+
     /**
-     * @param string $content
-     * @return $this
+     * Is this response empty?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
      */
-    public function addContent(string $content)
+    public function isEmpty()
     {
-        if ($this->body === null) {
-            $this->body = [];
-        }
+        return in_array($this->getStatusCode(), [204, 205, 304], true);
+    }
 
-        $this->body[] = $content;
+    /**
+     * Is this response informational?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isInformational()
+    {
+        return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
+    }
 
-        return $this;
+    /**
+     * Is this response OK?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isOk()
+    {
+        return $this->getStatusCode() === 200;
+    }
+
+    /**
+     * Is this response successful?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isSuccessful()
+    {
+        return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
+    }
+
+    /**
+     * Is this response a redirect?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isRedirect()
+    {
+        return in_array($this->getStatusCode(), [301, 302, 303, 307], true);
+    }
+
+    /**
+     * Is this response a redirection?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isRedirection()
+    {
+        return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
+    }
+
+    /**
+     * Is this response forbidden?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     * @api
+     */
+    public function isForbidden()
+    {
+        return $this->getStatusCode() === 403;
+    }
+
+    /**
+     * Is this response not Found?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isNotFound()
+    {
+        return $this->getStatusCode() === 404;
+    }
+
+    /**
+     * Is this response a client error?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isClientError()
+    {
+        return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
+    }
+
+    /**
+     * Is this response a server error?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isServerError()
+    {
+        return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
 }

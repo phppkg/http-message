@@ -315,17 +315,6 @@ class BaseMessage implements MessageInterface
     }
 
     /**
-     * @param string $content
-     * @return $this
-     */
-    public function setBodyContent($content)
-    {
-        $this->body->write($content);
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function withBody(StreamInterface $body)
@@ -335,5 +324,27 @@ class BaseMessage implements MessageInterface
         $clone->body = $body;
 
         return $clone;
+    }
+
+    /**
+     * @param string $content
+     * @return $this
+     */
+    public function addContent($content)
+    {
+        $this->body->write($content);
+
+        return $this;
+    }
+
+    /**
+     * @param string $content
+     * @return $this
+     */
+    public function write($content)
+    {
+        $this->body->write($content);
+
+        return $this;
     }
 }
