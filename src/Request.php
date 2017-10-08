@@ -985,6 +985,7 @@ class Request extends BaseMessage implements ServerRequestInterface
      */
     public function getServerParam($key, $default = null)
     {
+        $key = strtoupper($key);
         $serverParams = $this->getServerParams();
 
         return $serverParams[$key] ?? $default;
