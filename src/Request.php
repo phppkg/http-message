@@ -565,7 +565,7 @@ class Request extends BaseMessage implements ServerRequestInterface
      */
     public function withMethod($method)
     {
-        $method = $this->filterMethod($method);
+        $method = (string)$this->filterMethod($method);
 
         $clone = clone $this;
         $clone->originalMethod = $method;
@@ -702,17 +702,6 @@ class Request extends BaseMessage implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function withAttribute($name, $value)
-    {
-        $clone = clone $this;
-        $clone->attributes->set($name, $value);
-
-        return $clone;
-    }
-
-    /**
      * @param string $name
      * @param mixed $value
      * @return $this
@@ -722,6 +711,28 @@ class Request extends BaseMessage implements ServerRequestInterface
         $this->attributes->set($name, $value);
 
         return $this;
+    }
+
+    /**
+     * @param array $values
+     * @return $this
+     */
+    public function setAttributes(array $values)
+    {
+        $this->attributes->sets($values);
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function withAttribute($name, $value)
+    {
+        $clone = clone $this;
+        $clone->attributes->set($name, $value);
+
+        return $clone;
     }
 
     /**
