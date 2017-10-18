@@ -4,6 +4,7 @@
  * User: Inhere
  * Date: 2017/3/26 0026
  * Time: 18:02
+ * @ref Slim 3
  */
 
 namespace Inhere\Http;
@@ -68,7 +69,7 @@ class Request extends BaseMessage implements ServerRequestInterface
     private $bodyParsers = [];
 
     /** @var array  */
-    private $serverParams = [];
+    private $serverParams;
 
     /** @var  string */
     private $requestTarget;
@@ -83,7 +84,7 @@ class Request extends BaseMessage implements ServerRequestInterface
     public static function makeByParseRawData(string $rawData)
     {
         if (!$rawData) {
-            return new static();
+            return new static('GET', Uri::createFromString('/'));
         }
 
         // $rawData = trim($rawData);
@@ -91,7 +92,7 @@ class Request extends BaseMessage implements ServerRequestInterface
         $two = explode("\r\n\r\n", $rawData, 2);
 
         if (!$rawHeader = $two[0] ?? '') {
-            return new static();
+            return new static('GET', Uri::createFromString('/'));
         }
 
         $body = $two[1] ? new RequestBody($two[1]) : null;
@@ -136,7 +137,7 @@ class Request extends BaseMessage implements ServerRequestInterface
 
         $uri = new Uri($protocol, $host, (int)$port, $path, $query, $fragment);
 
-        return new static($method, $uri, $protocol, $protocolVersion, $headers, $cookies, $body);
+        return new static($method, $uri, $protocol, $protocolVersion, $headers, $cookies, [], $body);
     }
 
     /**
@@ -147,27 +148,47 @@ class Request extends BaseMessage implements ServerRequestInterface
      * @param string $protocolVersion
      * @param array $headers
      * @param array $cookies
+     * @param array $serverParams
      * @param StreamInterface $body
      * @param array $uploadedFiles
      */
     public function __construct(
         string $method = 'GET', Uri $uri = null, string $protocol = 'HTTP', string $protocolVersion = '1.1',
-        array $headers = [], array $cookies = [], StreamInterface $body = null, array $uploadedFiles = []
+        array $headers = [], array $cookies = [], array $serverParams = [], StreamInterface $body = null, array $uploadedFiles = []
     )
     {
         parent::__construct($protocol, $protocolVersion, $headers, $cookies);
 
-        $this->method = $method ? strtoupper($method) : 'GET';
-        $this->uri = $uri;
-        $this->body = new RequestBody();
+        try {
+            $this->originalMethod = $this->filterMethod($method);
+        } catch (\InvalidArgumentException $e) {
+            $this->originalMethod = $method;
+            throw $e;
+        }
+
+        // $this->method = $method ? strtoupper($method) : 'GET';
+        $this->uri = $uri ?: Uri::createFromString('/');
+        $this->body = $body ?: new RequestBody();
+        $this->serverParams = $serverParams;
         $this->uploadedFiles = $uploadedFiles;
         $this->attributes = new SimpleCollection();
+
+        if (isset($serverParams['SERVER_PROTOCOL'])) {
+            $this->protocolVersion = str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
+        }
 
         if (!$this->headers->has('Host') || $this->uri->getHost() !== '') {
             $this->headers->set('Host', $this->uri->getHost());
         }
 
         $this->registerDataParsers();
+    }
+
+    public function __clone()
+    {
+        $this->headers = clone $this->headers;
+        $this->attributes = clone $this->attributes;
+        $this->body = clone $this->body;
     }
 
     /**
