@@ -9,6 +9,7 @@
 
 namespace Inhere\Http;
 
+use Inhere\Exceptions\InvalidMethodException;
 use Inhere\Library\Collections\SimpleCollection;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -616,7 +617,7 @@ class Request extends BaseMessage implements ServerRequestInterface
 
         $method = strtoupper($method);
         if (!isset($this->validMethods[$method])) {
-            throw new \InvalidArgumentException($this, $method);
+            throw new InvalidMethodException($this, $method);
         }
 
         return $method;
