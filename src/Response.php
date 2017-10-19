@@ -113,7 +113,7 @@ class Response extends BaseMessage implements ResponseInterface
     ];
 
     public static function make(
-        int $status = 200, array $headers = [], array $cookies = [], StreamInterface $body = null,
+        int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
         string $protocol = 'HTTP', string $protocolVersion = '1.1'
     )
     {
@@ -123,14 +123,14 @@ class Response extends BaseMessage implements ResponseInterface
     /**
      * Request constructor.
      * @param int $status
-     * @param array $headers
+     * @param array|Headers $headers
      * @param array $cookies
      * @param StreamInterface $body
      * @param string $protocol
      * @param string $protocolVersion
      */
     public function __construct(
-        int $status = 200, array $headers = [], array $cookies = [], StreamInterface $body = null,
+        int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
         string $protocol = 'HTTP', string $protocolVersion = '1.1'
     ) {
         $this->status = $this->filterStatus($status);

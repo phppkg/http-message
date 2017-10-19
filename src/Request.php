@@ -144,18 +144,18 @@ class Request extends BaseMessage implements ServerRequestInterface
     /**
      * Request constructor.
      * @param string $method
-     * @param Uri $uri
+     * @param UriInterface $uri
      * @param string $protocol
      * @param string $protocolVersion
-     * @param array $headers
+     * @param array|Headers $headers
      * @param array $cookies
      * @param array $serverParams
      * @param StreamInterface $body
      * @param array $uploadedFiles
      */
     public function __construct(
-        string $method = 'GET', Uri $uri = null, string $protocol = 'HTTP', string $protocolVersion = '1.1',
-        array $headers = [], array $cookies = [], array $serverParams = [], StreamInterface $body = null, array $uploadedFiles = []
+        string $method = 'GET', UriInterface $uri = null, string $protocol = 'HTTP', string $protocolVersion = '1.1',
+        $headers = null, array $cookies = [], array $serverParams = [], StreamInterface $body = null, array $uploadedFiles = []
     )
     {
         parent::__construct($protocol, $protocolVersion, $headers, $cookies);

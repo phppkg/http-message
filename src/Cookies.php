@@ -143,19 +143,27 @@ class Cookies extends SimpleCollection
     /**
      * Parse HTTP request `Cookie:` header and extract
      * into a PHP associative array.
-     * @param  string $cookieData The raw HTTP request `Cookie:` header
+     * @param  string|array $cookieText The raw HTTP request `Cookie:` header
      * @return array Associative array of cookie names and values
      * @throws \InvalidArgumentException if the cookie data cannot be parsed
      */
-    public static function parseFromRawHeader($cookieData)
+    public static function parseFromRawHeader($cookieText)
     {
-        if (is_string($cookieData) === false) {
+        $cookies = [];
+
+        if (is_array($cookieText)) {
+            $cookieText = array_shift($cookieText);
+        }
+        
+        if (!is_string($cookieText)) {
             throw new \InvalidArgumentException('Cannot parse Cookie data. Header value must be a string.');
         }
 
-        $cookieData = rtrim($cookieData, "\r\n");
-        $pieces = preg_split('@[;]\s*@', $cookieData);
-        $cookies = [];
+        if (!$cookieText) {
+            return $cookies;
+        }
+
+        $pieces = preg_split('#[;]\s*#', rtrim($cookieText, "\r\n"));
 
         foreach ($pieces as $cookie) {
             $cookie = explode('=', $cookie, 2);

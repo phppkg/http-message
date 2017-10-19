@@ -75,14 +75,20 @@ class BaseMessage implements MessageInterface
      * BaseMessage constructor.
      * @param string $protocol
      * @param string $protocolVersion
-     * @param array $headers
+     * @param array|Headers $headers
      * @param array $cookies
      */
-    public function __construct(string $protocol = 'HTTP', string $protocolVersion = '1.1', array $headers = [], array $cookies = [])
+    public function __construct(string $protocol = 'HTTP', string $protocolVersion = '1.1', $headers = null, array $cookies = [])
     {
         $this->protocol = $protocol ?: 'HTTP';
         $this->protocolVersion = $protocolVersion ?: '1.1';
-        $this->headers = new Headers($headers);
+
+        if ($headers) {
+            $this->headers = $headers instanceof Headers ? $headers : new Headers($headers);
+        } else {
+            $this->headers = new Headers();
+        }
+
         $this->cookies = new Cookies($cookies);
     }
 
