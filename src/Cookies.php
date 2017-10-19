@@ -152,7 +152,7 @@ class Cookies extends SimpleCollection
         $cookies = [];
 
         if (is_array($cookieText)) {
-            $cookieText = array_shift($cookieText);
+            $cookieText = array_shift($cookieText) ?: '';
         }
         
         if (!is_string($cookieText)) {

@@ -10,12 +10,13 @@
 namespace Inhere\Http;
 
 use InvalidArgumentException;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class Uri
  * @package Inhere\Http
  */
-class Uri
+class Uri implements UriInterface
 {
     /**
      * Uri scheme (without "://" suffix)
@@ -183,7 +184,7 @@ class Uri
     protected static $validScheme = [
         '' => true,
         'https' => true,
-        'Http' => true,
+        'http' => true,
         'ws' => true,
         'wss' => true,
     ];
@@ -203,7 +204,7 @@ class Uri
 
         $scheme = str_replace('://', '', strtolower((string)$scheme));
         if (!isset(static::$validScheme[$scheme])) {
-            throw new InvalidArgumentException('Uri scheme must be one of: "", "https", "Http"');
+            throw new InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
         }
 
         return $scheme;
@@ -419,7 +420,7 @@ class Uri
         $clone->path = $this->filterPath($path);
 
         // if the path is absolute, then clear basePath
-        if ($path[0] === '/') {
+        if ($path && $path[0] === '/') {
             $clone->basePath = '';
         }
 

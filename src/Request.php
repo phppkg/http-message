@@ -138,7 +138,7 @@ class Request extends BaseMessage implements ServerRequestInterface
 
         $uri = new Uri($protocol, $host, (int)$port, $path, $query, $fragment);
 
-        return new static($method, $uri, $protocol, $protocolVersion, $headers, $cookies, [], $body);
+        return new static($method, $uri, $headers, $cookies, [], $body, [], $protocol, $protocolVersion);
     }
 
     /**
@@ -154,8 +154,8 @@ class Request extends BaseMessage implements ServerRequestInterface
      * @param array $uploadedFiles
      */
     public function __construct(
-        string $method = 'GET', UriInterface $uri = null, string $protocol = 'HTTP', string $protocolVersion = '1.1',
-        $headers = null, array $cookies = [], array $serverParams = [], StreamInterface $body = null, array $uploadedFiles = []
+        string $method = 'GET', UriInterface $uri = null, $headers = null, array $cookies = [], array $serverParams = [],
+        StreamInterface $body = null, array $uploadedFiles = [], string $protocol = 'HTTP', string $protocolVersion = '1.1'
     )
     {
         parent::__construct($protocol, $protocolVersion, $headers, $cookies);

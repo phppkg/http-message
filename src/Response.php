@@ -134,7 +134,6 @@ class Response extends BaseMessage implements ResponseInterface
         string $protocol = 'HTTP', string $protocolVersion = '1.1'
     ) {
         $this->status = $this->filterStatus($status);
-        $this->headers = new Headers($headers);
         $this->body = $body ? : new Body(fopen('php://temp', 'rb+'));
 
         parent::__construct($protocol, $protocolVersion, $headers, $cookies);
