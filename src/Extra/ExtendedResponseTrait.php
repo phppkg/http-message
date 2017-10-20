@@ -12,10 +12,19 @@ use Inhere\Http\Body;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Class Response
+ * trait ExtendedResponseTrait
+ *
+ * ```php
+ * use Inhere\Http\Response;
+ *
+ * class MyResponse extends Response {
+ *   use ExtendedResponseTrait;
+ * }
+ * ```
+ *
  * @package Inhere\Http\Extra
  */
-class Response extends \Inhere\Http\Response
+trait ExtendedResponseTrait
 {
     /*******************************************************************************
      * Response Helpers

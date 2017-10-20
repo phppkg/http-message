@@ -15,7 +15,16 @@ use Inhere\Validate\FilterList;
 use Inhere\Library\Types;
 
 /**
- * Class Request
+ * trait ExtendedRequestTrait
+ *
+ * ```php
+ * use Inhere\Http\Request;
+ *
+ * class MyRequest extends Request {
+ *   use ExtendedRequestTrait;
+ * }
+ * ```
+ *
  * @package Inhere\Http\Extra
  *
  * @method      string   getRaw($name, $default = null)      Get raw data
@@ -31,13 +40,23 @@ use Inhere\Library\Types;
  * @method      string   getUrl($name, $default = null)      Get URL
  *
  * @property  Uri $uri;
+ *
+ * // there methods at the class Request.
+ *
+ * @method string getHeaderLine(string $name)
+ * @method boolean isAjax()
+ * @method string getRequestTarget()
+ * @method array getUploadedFiles()
+ * @method array getQueryParams()
+ * @method array getParams()
+ * @method mixed getParam($key, $default = null)
  */
-class Request extends \Inhere\Http\Request
+trait ExtendedRequestTrait
 {
     /**
      * return raw data
      */
-    const FILTER_RAW = 'raw';
+    private static $rawFilter = 'raw';
 
     /**
      * @var array
@@ -56,6 +75,8 @@ class Request extends \Inhere\Http\Request
         'boolean' => 'bool',
         // (string)$var
         'string' => 'string',
+        // (array)$var
+        'array' => 'array',
 
         // trim($var)
         'trimmed' => [FilterList::class, 'trim'],
@@ -200,12 +221,12 @@ class Request extends \Inhere\Http\Request
 
     /**
      * @param $value
-     * @param $filter
+     * @param string|callable $filter
      * @return mixed|null
      */
-    public function filtering($value, $filter = self::FILTER_RAW)
+    public function filtering($value, $filter = null)
     {
-        if ($filter === self::FILTER_RAW) {
+        if (!$filter || $filter === self::$rawFilter) {
             return $value;
         }
 

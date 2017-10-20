@@ -26,6 +26,59 @@ git clone https://git.oschina.net/inhere/php-http.git // git@osc
 git clone https://github.com/inhere/php-http.git // github
 ```
 
+## usage
+
+### basic
+
+```php
+use Inhere\Http\Request;
+use Inhere\Http\Response;
+
+$request = new Request($method, $uri);
+$response = new Response($code);
+... ...
+```
+
+### use factory
+
+```php
+use Inhere\Http\HttpFactory;
+
+$request = HttpFactory::createRequest($method, $uri);
+$request = HttpFactory::createRequestFromArray($_SERVER);
+
+$response = HttpFactory::createResponse($code);
+
+```
+
+### Extended
+
+```php
+use Inhere\Http\Request;
+use Inhere\Http\Extra\ExtendedRequestTrait;
+
+class MyRequest extends Request {
+   use ExtendedRequestTrait;
+}
+
+// 
+
+$request = new MyRequest(...);
+
+$age = $request->getInt('age');
+$name = $request->getTrimmed('name');
+
+```
+
+```php
+use Inhere\Http\Response;
+use Inhere\Http\Extra\ExtendedResponseTrait;
+
+class MyResponse extends Response {
+   use ExtendedResponseTrait;
+}
+```
+
 ## license
 
 MIT
