@@ -49,6 +49,10 @@ class HttpFactory
      */
     public static function createRequest($method, $uri)
     {
+        if (is_string($uri)) {
+            $uri = Uri::createFromString($uri);
+        }
+
         return new Request($method, $uri);
     }
 
@@ -78,19 +82,23 @@ class HttpFactory
      */
     public static function createServerRequest($method, $uri)
     {
+        if (is_string($uri)) {
+            $uri = Uri::createFromString($uri);
+        }
+
         return new Request($method, $uri);
     }
 
     /**
      * Create a new server request from server variables.
-     * @param array $server Typically $_SERVER or similar structure.
+     * @param array|CollectionInterface $server Typically $_SERVER or similar structure.
      * @return ServerRequestInterface
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray(array $server)
+    public static function createServerRequestFromArray($server)
     {
-        $env = new SimpleCollection($server);
+        $env = self::ensureIsCollection($server);
         $method = $env['REQUEST_METHOD'];
         $uri = static::createUriFromArray($env);
         $headers = static::createHeadersFromArray($env);
