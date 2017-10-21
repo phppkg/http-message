@@ -10,13 +10,11 @@
 
 namespace Inhere\Http;
 
-use Inhere\Library\Collections\SimpleCollection;
-
 /**
  * Class Cookies
  * @package Inhere\Http
  */
-class Cookies extends SimpleCollection
+class Cookies extends Collection
 {
     /**
      * Cookies
@@ -74,7 +72,7 @@ class Cookies extends SimpleCollection
     public function toHeaders()
     {
         $headers = [];
-        foreach ($this->data as $name => $properties) {
+        foreach ($this as $name => $properties) {
             $headers[] = $this->toHeader($name, $properties);
         }
 
@@ -133,7 +131,7 @@ class Cookies extends SimpleCollection
     {
         $cookieValue = '';
 
-        foreach ($this->data as $name => $value) {
+        foreach ($this as $name => $value) {
             $cookieValue .= urlencode($name) . '=' . urlencode($value['value']) . '; ';
         }
 
@@ -154,7 +152,7 @@ class Cookies extends SimpleCollection
         if (is_array($cookieText)) {
             $cookieText = array_shift($cookieText) ?: '';
         }
-        
+
         if (!is_string($cookieText)) {
             throw new \InvalidArgumentException('Cannot parse Cookie data. Header value must be a string.');
         }

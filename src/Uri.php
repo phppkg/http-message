@@ -84,8 +84,8 @@ class Uri implements UriInterface
      * @param string $password Uri password.
      */
     public function __construct(
-        $scheme,
-        $host,
+        $scheme = '',
+        $host = '',
         $port = null,
         $path = '/',
         $query = '',
@@ -94,7 +94,7 @@ class Uri implements UriInterface
         $password = ''
     )
     {
-        $this->scheme = $this->filterScheme($scheme);
+        $this->scheme = $scheme ? $this->filterScheme($scheme) : '';
         $this->host = $host;
         $this->port = $this->filterPort($port);
         $this->path = empty($path) ? '/' : $this->filterPath($path);

@@ -15,6 +15,14 @@ namespace Inhere\Http;
  *
  * @link https://github.com/php-fig/http-message/blob/master/src/StreamInterface.php
  */
-class Body extends Stream
+class Body extends TempStream
 {
+    /**
+     * TempStream constructor.
+     * @param string $mode
+     */
+    public function __construct($mode = 'rb+')
+    {
+        parent::__construct($mode);
+    }
 }

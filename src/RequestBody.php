@@ -13,7 +13,7 @@ namespace Inhere\Http;
  *   Provides a PSR-7 implementation of a reusable raw request body
  * @package Inhere\Http
  */
-class RequestBody extends Body
+class RequestBody extends Stream
 {
     /**
      * Create a new RequestBody.

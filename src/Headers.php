@@ -8,13 +8,11 @@
 
 namespace Inhere\Http;
 
-use Inhere\Library\Collections\SimpleCollection;
-
 /**
  * Class Headers
  * @package Inhere\Http
  */
-class Headers extends SimpleCollection
+class Headers extends Collection
 {
     /**
      * the connection header line data end char
@@ -195,7 +193,7 @@ class Headers extends SimpleCollection
     {
         $output = [];
 
-        foreach ($this->data as $name => $info) {
+        foreach ($this as $name => $info) {
             $name = ucwords($name, '-');
             $value = implode(',', $info['value']);
             $output[] = "$name: $value\r\n";
@@ -211,7 +209,7 @@ class Headers extends SimpleCollection
     {
         $output = [];
 
-        foreach ($this->data as $name => $info) {
+        foreach ($this as $name => $info) {
             $name = ucwords($name, '-');
             $output[$name] = implode(',', $info['value']);
         }

@@ -8,8 +8,6 @@
 
 namespace Inhere\Http;
 
-use Inhere\Library\Collections\CollectionInterface;
-use Inhere\Library\Collections\SimpleCollection;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -86,12 +84,12 @@ class HttpFactory
             $uri = Uri::createFromString($uri);
         }
 
-        return new Request($method, $uri);
+        return new ServerRequest($method, $uri);
     }
 
     /**
      * Create a new server request from server variables.
-     * @param array|CollectionInterface $server Typically $_SERVER or similar structure.
+     * @param array|mixed $server Typically $_SERVER or similar structure.
      * @return ServerRequestInterface
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
@@ -107,7 +105,7 @@ class HttpFactory
         $body = new RequestBody();
         $uploadedFiles = UploadedFile::createFromFILES();
 
-        $request = new Request($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+        $request = new ServerRequest($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
 
         if ($method === 'POST' &&
             in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
@@ -148,7 +146,7 @@ class HttpFactory
         // $stream = fopen('php://temp', $mode);
         $stream = fopen($filename, $mode);
 
-        return new Body($stream);
+        return new Stream($stream);
     }
 
     /**
@@ -159,7 +157,7 @@ class HttpFactory
      */
     public static function createStreamFromResource($resource)
     {
-        return new Body($resource);
+        return new Stream($resource);
     }
 
     /**
@@ -183,8 +181,7 @@ class HttpFactory
      * @throws \InvalidArgumentException If the file resource is not readable.
      */
     public static function createUploadedFile(
-        $file, $size = null, $error = \UPLOAD_ERR_OK,
-        $clientFilename = null, $clientMediaType = null
+        $file, $size = null, $error = \UPLOAD_ERR_OK, $clientFilename = null, $clientMediaType = null
     )
     {
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
@@ -200,7 +197,7 @@ class HttpFactory
      * @return UriInterface
      * @throws \InvalidArgumentException If the given URI cannot be parsed.
      */
-    public function createUri($uri = '')
+    public static function createUri($uri = '')
     {
         return Uri::createFromString($uri);
     }
@@ -210,7 +207,7 @@ class HttpFactory
      ******************************************************************************/
 
     /**
-     * @param CollectionInterface|array $env
+     * @param Collection|array $env
      * @return Headers
      */
     public static function createHeadersFromArray($env)
@@ -234,8 +231,8 @@ class HttpFactory
     /**
      * If HTTP_AUTHORIZATION does not exist tries to get it from
      * getallheaders() when available.
-     * @param CollectionInterface $env The Slim application SimpleCollection
-     * @return CollectionInterface
+     * @param Collection $env The Slim application Collection
+     * @return Collection
      */
     public static function determineAuthorization($env)
     {
@@ -253,7 +250,7 @@ class HttpFactory
     }
 
     /**
-     * @param CollectionInterface|array $env
+     * @param Collection|array $env
      * @return Uri
      */
     public static function createUriFromArray($env)
@@ -330,19 +327,19 @@ class HttpFactory
     }
 
     /**
-     * @param $data
-     * @return CollectionInterface
+     * @param mixed $data
+     * @return Collection
      */
     public static function ensureIsCollection($data)
     {
         if (is_array($data)) {
-            return new SimpleCollection($data);
+            return new Collection($data);
         }
 
-        if ($data instanceof CollectionInterface) {
+        if (is_object($data) && method_exists($data, 'get')) {
             return $data;
         }
 
-        return new SimpleCollection((array)$data);
+        return new Collection((array)$data);
     }
 }

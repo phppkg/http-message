@@ -22,8 +22,15 @@ use Psr\Http\Message\StreamInterface;
  * @link https://github.com/php-fig/http-message/blob/master/src/MessageInterface.php
  * @link https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
  */
-class Response extends BaseMessage implements ResponseInterface
+class Response implements ResponseInterface
 {
+    use CookiesTrait, MessageTrait;
+
+    /**
+     * the connection header line data end char
+     */
+    const EOL = "\r\n";
+
     /**
      * eg: 404
      * @var int
@@ -133,10 +140,10 @@ class Response extends BaseMessage implements ResponseInterface
         int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
         string $protocol = 'HTTP', string $protocolVersion = '1.1'
     ) {
-        $this->status = $this->filterStatus($status);
-        $this->body = $body ? : new Body(fopen('php://temp', 'rb+'));
+        $this->setCookies($cookies);
+        $this->initialize($protocol, $protocolVersion, $headers, $body? : new Body());
 
-        parent::__construct($protocol, $protocolVersion, $headers, $cookies);
+        $this->status = $this->filterStatus($status);
     }
 
     /**
@@ -201,7 +208,7 @@ class Response extends BaseMessage implements ResponseInterface
      */
     public function json($data, int $status = null, $encodingOptions = 0)
     {
-        $this->setBody(new Body(fopen('php://temp', 'rb+')));
+        $this->setBody(new Body());
         $this->write($json = json_encode($data, $encodingOptions));
 
         // Ensure that the json encoding passed successfully

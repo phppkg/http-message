@@ -67,7 +67,7 @@ trait ExtendedResponseTrait
      */
     public function withJson($data, $status = null, $encodingOptions = 0)
     {
-        $response = $this->withBody(new Body(fopen('php://temp', 'rb+')));
+        $response = $this->withBody(new Body());
         $response->body->write($json = json_encode($data, $encodingOptions));
 
         // Ensure that the json encoding passed successfully

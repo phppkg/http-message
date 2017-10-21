@@ -10,9 +10,7 @@ namespace Inhere\Http\Extra;
 
 use Inhere\Http\UploadedFile;
 use Inhere\Http\Uri;
-use Inhere\Library\Helpers\PhpHelper;
 use Inhere\Validate\FilterList;
-use Inhere\Library\Types;
 
 /**
  * trait ExtendedRequestTrait
@@ -53,10 +51,18 @@ use Inhere\Library\Types;
  */
 trait ExtendedRequestTrait
 {
-    /**
-     * return raw data
-     */
+    /** @var string */
     private static $rawFilter = 'raw';
+
+    /** @var array */
+    private static $phpTypes = [
+        'int', 'integer',
+        'float', 'double',
+        'bool', 'boolean',
+        'string',
+
+        'array', 'object', 'resource'
+    ];
 
     /**
      * @var array
@@ -236,7 +242,7 @@ trait ExtendedRequestTrait
 
             // is custom callable filter
             if (is_callable($filter)) {
-                $result = PhpHelper::call($filter, $value);
+                $result = $filter($value);
             }
 
             return $result;
@@ -245,29 +251,29 @@ trait ExtendedRequestTrait
         // is a defined filter
         $filter = self::$filterList[$filter];
 
-        if (!in_array($filter, Types::all(), true)) {
-            $result = PhpHelper::call($filter, $value);
+        if (!in_array($filter, self::$phpTypes, true)) {
+            $result = $filter($value);
         } else {
             switch (lcfirst(trim($filter))) {
-                case Types::T_BOOL :
-                case Types::T_BOOLEAN :
+                case 'bool':
+                case 'boolean':
                     $result = (bool)$value;
                     break;
-                case Types::T_DOUBLE :
-                case Types::T_FLOAT :
+                case 'double':
+                case 'float':
                     $result = (float)$value;
                     break;
-                case Types::T_INT :
-                case Types::T_INTEGER :
+                case 'int' :
+                case 'integer':
                     $result = (int)$value;
                     break;
-                case Types::T_STRING :
+                case 'string':
                     $result = (string)$value;
                     break;
-                case Types::T_ARRAY :
+                case 'array':
                     $result = (array)$value;
                     break;
-                case Types::T_OBJECT :
+                case 'object':
                     $result = (object)$value;
                     break;
                 default:

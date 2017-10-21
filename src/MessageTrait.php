@@ -2,37 +2,19 @@
 /**
  * Created by PhpStorm.
  * User: inhere
- * Date: 2017-03-30
- * Time: 13:12
+ * Date: 2017/10/21
+ * Time: 下午12:44
  */
 
 namespace Inhere\Http;
-
-use Inhere\Library\Traits\PropertyAccessByGetterSetterTrait;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Class BaseRequestResponse
- * @package Sws\parts
- *
- * @property string $protocol
- * @property string $protocolVersion
- *
- * @property Headers $headers
- * @property Cookies $cookies
- * @property StreamInterface $body
- *
+ * Trait MessageTrait
+ * @package Inhere\Http
  */
-class BaseMessage implements MessageInterface
+trait MessageTrait
 {
-    use PropertyAccessByGetterSetterTrait;
-
-    /**
-     * the connection header line data end char
-     */
-    const EOL = "\r\n";
-
     /**
      * protocol/schema
      * @var string
@@ -52,14 +34,9 @@ class BaseMessage implements MessageInterface
     /**
      * Body object
      *
-     * @var \Psr\Http\Message\StreamInterface
+     * @var StreamInterface
      */
     protected $body;
-
-    /**
-     * @var Cookies
-     */
-    private $cookies;
 
     /**
      * A map of valid protocol versions
@@ -76,11 +53,11 @@ class BaseMessage implements MessageInterface
      * @param string $protocol
      * @param string $protocolVersion
      * @param array|Headers $headers
-     * @param array $cookies
+     * @param string|resource|StreamInterface $body
      */
-    public function __construct(string $protocol = 'HTTP', string $protocolVersion = '1.1', $headers = null, array $cookies = [])
+    public function initialize(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = 'php://memory')
     {
-        $this->protocol = $protocol ?: 'HTTP';
+        $this->protocol = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
 
         if ($headers) {
@@ -89,7 +66,7 @@ class BaseMessage implements MessageInterface
             $this->headers = new Headers();
         }
 
-        $this->cookies = new Cookies($cookies);
+        $this->body = $this->createBodyStream($body);
     }
 
     /*******************************************************************************
@@ -259,47 +236,44 @@ class BaseMessage implements MessageInterface
     }
 
     /*******************************************************************************
-     * Cookies
-     ******************************************************************************/
-
-    /**
-     * @param string $name
-     * @param string|array $value
-     * @return $this
-     */
-    public function setCookie(string $name, $value)
-    {
-        $this->cookies->set($name, $value);
-
-        return $this;
-    }
-
-    /**
-     * @return Cookies
-     */
-    public function getCookies(): Cookies
-    {
-        return $this->cookies;
-    }
-
-    /**
-     * @param array $cookies
-     * @return $this
-     */
-    public function setCookies(array $cookies)
-    {
-        if (!$this->cookies) {
-            $this->cookies = new Cookies($cookies);
-        } else {
-            $this->cookies->sets($cookies);
-        }
-
-        return $this;
-    }
-
-    /*******************************************************************************
      * Body
      ******************************************************************************/
+
+    /**
+     * @param string|resource|StreamInterface|bool $body
+     * @param string $mode
+     * @return StreamInterface
+     */
+    protected function createBodyStream($body, $mode = 'r')
+    {
+        if ($body instanceof StreamInterface) {
+            return $body;
+        }
+
+        if (!is_string($body) && !is_resource($body)) {
+            throw new \InvalidArgumentException(
+                'Stream must be a string stream resource identifier, '
+                . 'an actual stream resource, '
+                . 'or a Psr\Http\Message\StreamInterface implementation'
+            );
+        }
+
+        if (is_string($body)) {
+            $error = null;
+
+            set_error_handler(function ($e) use (&$error) {
+                $error = $e;
+            }, E_WARNING);
+            $body = fopen($body, $mode);
+            restore_error_handler();
+
+            if ($error) {
+                throw new \InvalidArgumentException('Invalid stream reference provided');
+            }
+        }
+
+        return new Stream($body);
+    }
 
     /**
      * @return StreamInterface
