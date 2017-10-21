@@ -78,7 +78,7 @@ class Collection extends \ArrayObject
      */
     public function has(string $key)
     {
-        return array_key_exists($key, $this->data);
+        return isset($this[$key]);
     }
 
     /**

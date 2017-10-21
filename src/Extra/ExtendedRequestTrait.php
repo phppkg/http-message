@@ -85,7 +85,7 @@ trait ExtendedRequestTrait
         'array' => 'array',
 
         // trim($var)
-        'trimmed' => [FilterList::class, 'trim'],
+        'trimmed' => 'trim',
 
         // safe data
         'safe' => 'htmlspecialchars',
