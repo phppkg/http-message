@@ -13,18 +13,15 @@ namespace Inhere\Http;
 /**
  * Class Cookies
  * @package Inhere\Http
+ *
+ * Cookies:
+ *
+ * [
+ *  'name' => [ options ...]
+ * ]
  */
 class Cookies extends Collection
 {
-    /**
-     * Cookies
-     * @var array
-     * [
-     *  'name' => [ options ...]
-     * ]
-     */
-    // protected $data = [];
-
     /**
      * Default cookie properties
      * @var array
@@ -108,15 +105,15 @@ class Cookies extends Collection
             }
         }
 
-        if (isset($properties['secure']) && $properties['secure']) {
+        if (!empty($properties['secure'])) {
             $result .= '; secure';
         }
 
-        if (isset($properties['hostOnly']) && $properties['hostOnly']) {
+        if (!empty($properties['hostOnly'])) {
             $result .= '; HostOnly';
         }
 
-        if (isset($properties['httpOnly']) && $properties['httpOnly']) {
+        if (!empty($properties['httpOnly'])) {
             $result .= '; HttpOnly';
         }
 
