@@ -4,8 +4,8 @@ some useful http message library(psr7 implement) of the php
 
 ## project
 
-- **github** https://github.com/inhere/php-console.git
-- **git@osc** https://git.oschina.net/inhere/php-console.git
+- **github** https://github.com/inhere/php-http.git
+- **git@osc** https://git.oschina.net/inhere/php-http.git
 
 ## install
 
@@ -35,6 +35,7 @@ use Inhere\Http\Request;
 use Inhere\Http\Response;
 
 $request = new Request($method, $uri);
+$request = new ServerRequest(... ...);
 $response = new Response($code);
 ... ...
 ```
@@ -45,10 +46,12 @@ $response = new Response($code);
 use Inhere\Http\HttpFactory;
 
 $request = HttpFactory::createRequest($method, $uri);
-$request = HttpFactory::createRequestFromArray($_SERVER);
+
+// server request
+$request = HttpFactory::createServerRequest('GET', 'http://www.abc.com/home');
+$request = HttpFactory::createServerRequestFromArray($_SERVER);
 
 $response = HttpFactory::createResponse($code);
-
 ```
 
 ### Extended
