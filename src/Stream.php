@@ -24,7 +24,7 @@ class Stream implements StreamInterface
      *
      * This is octal as per header stat.h
      */
-    const FSTAT_MODE_S_IFIFO = 0010000;
+    public const FSTAT_MODE_S_IFIFO = 0010000;
 
     /**
      * Resource modes
@@ -131,7 +131,7 @@ class Stream implements StreamInterface
      */
     protected function isAttached()
     {
-        return is_resource($this->stream);
+        return \is_resource($this->stream);
     }
 
     /**
@@ -145,7 +145,7 @@ class Stream implements StreamInterface
      */
     protected function attach($newStream)
     {
-        if (is_resource($newStream) === false) {
+        if (\is_resource($newStream) === false) {
             throw new InvalidArgumentException(__METHOD__ . ' argument must be a valid PHP resource');
         }
 

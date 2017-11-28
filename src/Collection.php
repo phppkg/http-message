@@ -89,25 +89,16 @@ class Collection extends \ArrayObject
         return $this[$name] = $value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function all()
     {
         return $this->getArrayCopy();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function has(string $key)
     {
         return isset($this[$key]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function remove($key)
     {
         if (isset($this[$key])) {

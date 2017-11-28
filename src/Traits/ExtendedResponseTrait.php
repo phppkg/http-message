@@ -6,7 +6,7 @@
  * Time: 14:06
  */
 
-namespace Inhere\Http\Extra;
+namespace Inhere\Http\Traits;
 
 use Inhere\Http\Body;
 use Psr\Http\Message\UriInterface;
@@ -22,7 +22,7 @@ use Psr\Http\Message\UriInterface;
  * }
  * ```
  *
- * @package Inhere\Http\Extra
+ * @package Inhere\Http\Traits
  */
 trait ExtendedResponseTrait
 {
@@ -76,6 +76,7 @@ trait ExtendedResponseTrait
         }
 
         $responseWithJson = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
+
         if (null === $status) {
             return $responseWithJson->withStatus($status);
         }
@@ -94,5 +95,4 @@ trait ExtendedResponseTrait
 
         return $this->withRedirect($backTo, $status);
     }
-
 }

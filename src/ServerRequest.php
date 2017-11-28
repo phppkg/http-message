@@ -9,6 +9,8 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Traits\CookiesTrait;
+use Inhere\Http\Traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -24,7 +26,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * @var array
@@ -46,6 +48,8 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param string $rawData
      * @return static
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public static function makeByParseRawData(string $rawData)
     {
@@ -94,7 +98,7 @@ class ServerRequest implements ServerRequestInterface
 
         $path = $uri;
         $query = $fragment = '';
-        if (strlen($uri) > 1) {
+        if (\strlen($uri) > 1) {
             $parts = parse_url($uri);
             $path = $parts['path'] ?? '';
             $query = $parts['query'] ?? '';
@@ -117,6 +121,8 @@ class ServerRequest implements ServerRequestInterface
      * @param array $serverParams
      * @param StreamInterface $body
      * @param array $uploadedFiles
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         string $method = 'GET', UriInterface $uri = null, $headers = null, array $cookies = [],
@@ -165,7 +171,7 @@ class ServerRequest implements ServerRequestInterface
     {
         $this->registerMediaTypeParser('application/json', function ($input) {
             $result = json_decode($input, true);
-            if (!is_array($result)) {
+            if (!\is_array($result)) {
                 return null;
             }
 
@@ -265,7 +271,26 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
+     * Return an instance with the specified query string arguments.
+     *
+     * These values SHOULD remain immutable over the course of the incoming
+     * request. They MAY be injected during instantiation, such as from PHP's
+     * $_GET superglobal, or MAY be derived from some other value such as the
+     * URI. In cases where the arguments are parsed from the URI, the data
+     * MUST be compatible with what PHP's parse_str() would return for
+     * purposes of how duplicate query parameters are handled, and how nested
+     * sets are handled.
+     *
+     * Setting query string arguments MUST NOT change the URI stored by the
+     * request, nor the values in the server params.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated query string arguments.
+     *
+     * @param array $query Array of query string arguments, typically from
+     *     $_GET.
+     * @return static
      */
     public function withQueryParams(array $query)
     {
@@ -330,6 +355,7 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @return array|null
+     * @throws \RuntimeException
      */
     public function getParsedBody()
     {
@@ -345,15 +371,15 @@ class ServerRequest implements ServerRequestInterface
 
         // look for a media type with a structured syntax suffix (RFC 6839)
         $parts = explode('+', $mediaType);
-        if (count($parts) >= 2) {
-            $mediaType = 'application/' . $parts[count($parts) - 1];
+        if (\count($parts) >= 2) {
+            $mediaType = 'application/' . $parts[\count($parts) - 1];
         }
 
         if (isset($this->bodyParsers[$mediaType]) === true) {
             $body = (string)$this->getBody();
             $parsed = $this->bodyParsers[$mediaType]($body);
 
-            if (null !== $parsed && !is_object($parsed) && !is_array($parsed)) {
+            if (null !== $parsed && !\is_object($parsed) && !\is_array($parsed)) {
                 throw new \RuntimeException(
                     'Request body media type parser return value must be an array, an object, or null'
                 );
@@ -367,11 +393,36 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
+     * Return an instance with the specified body parameters.
+     *
+     * These MAY be injected during instantiation.
+     *
+     * If the request Content-Type is either application/x-www-form-urlencoded
+     * or multipart/form-data, and the request method is POST, use this method
+     * ONLY to inject the contents of $_POST.
+     *
+     * The data IS NOT REQUIRED to come from $_POST, but MUST be the results of
+     * deserializing the request body content. Deserialization/parsing returns
+     * structured data, and, as such, this method ONLY accepts arrays or objects,
+     * or a null value if nothing was available to parse.
+     *
+     * As an example, if content negotiation determines that the request data
+     * is a JSON payload, this method could be used to create a request
+     * instance with the deserialized parameters.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated body parameters.
+     *
+     * @param null|array|object $data The deserialized body data. This will
+     *     typically be in an array or object.
+     * @return static
+     * @throws \InvalidArgumentException if an unsupported argument type is
+     *     provided.
      */
     public function withParsedBody($data)
     {
-        if (null !== $data && !is_object($data) && !is_array($data)) {
+        if (null !== $data && !\is_object($data) && !\is_array($data)) {
             throw new \InvalidArgumentException('Parsed body value must be an array, an object, or null');
         }
 
@@ -395,15 +446,16 @@ class ServerRequest implements ServerRequestInterface
      * @param string $key
      * @param mixed $default
      * @return mixed
+     * @throws \RuntimeException
      */
     public function getParsedBodyParam($key, $default = null)
     {
         $postParams = $this->getParsedBody();
         $result = $default;
 
-        if (is_array($postParams) && isset($postParams[$key])) {
+        if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+        } elseif (\is_object($postParams) && property_exists($postParams, $key)) {
             $result = $postParams->$key;
         }
 
@@ -414,6 +466,7 @@ class ServerRequest implements ServerRequestInterface
      * @param null $name
      * @param null $defaultValue
      * @return array|mixed|null
+     * @throws \RuntimeException
      */
     public function post($name = null, $defaultValue = null)
     {
@@ -432,6 +485,7 @@ class ServerRequest implements ServerRequestInterface
      * Fetch associative array of body and query string parameters.
      * Note: This method is not part of the PSR-7 standard.
      * @return array
+     * @throws \RuntimeException
      */
     public function getParams()
     {
@@ -450,6 +504,7 @@ class ServerRequest implements ServerRequestInterface
      * @param  string $key The parameter key.
      * @param  string $default The default value.
      * @return mixed The parameter value.
+     * @throws \RuntimeException
      */
     public function getParam($key, $default = null)
     {
@@ -457,9 +512,9 @@ class ServerRequest implements ServerRequestInterface
         $getParams = $this->getQueryParams();
         $result = $default;
 
-        if (is_array($postParams) && isset($postParams[$key])) {
+        if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+        } elseif (\is_object($postParams) && property_exists($postParams, $key)) {
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
@@ -561,7 +616,19 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
+     * Retrieve a single derived request attribute.
+     *
+     * Retrieves a single derived request attribute as described in
+     * getAttributes(). If the attribute has not been previously set, returns
+     * the default value as provided.
+     *
+     * This method obviates the need for a hasAttribute() method, as it allows
+     * specifying a default value to return if the attribute is not found.
+     *
+     * @see getAttributes()
+     * @param string $name The attribute name.
+     * @param mixed $default Default value to return if the attribute does not exist.
+     * @return mixed
      */
     public function getAttribute($name, $default = null)
     {
@@ -592,7 +659,19 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
+     * Return an instance with the specified derived request attribute.
+     *
+     * This method allows setting a single derived request attribute as
+     * described in getAttributes().
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated attribute.
+     *
+     * @see getAttributes()
+     * @param string $name The attribute name.
+     * @param mixed $value The value of the attribute.
+     * @return static
      */
     public function withAttribute($name, $value)
     {
@@ -602,9 +681,6 @@ class ServerRequest implements ServerRequestInterface
         return $clone;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function withAttributes(array $attributes)
     {
         $clone = clone $this;
@@ -625,7 +701,18 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @inheritdoc
+     * Return an instance that removes the specified derived request attribute.
+     *
+     * This method allows removing a single derived request attribute as
+     * described in getAttributes().
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that removes
+     * the attribute.
+     *
+     * @see getAttributes()
+     * @param string $name The attribute name.
+     * @return static
      */
     public function withoutAttribute($name)
     {
@@ -677,7 +764,7 @@ class ServerRequest implements ServerRequestInterface
 
         if ($contentType) {
             $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
-            $contentTypePartsLength = count($contentTypeParts);
+            $contentTypePartsLength = \count($contentTypeParts);
 
             for ($i = 1; $i < $contentTypePartsLength; $i++) {
                 $paramParts = explode('=', $contentTypeParts[$i]);

@@ -53,7 +53,7 @@ class Cookies extends Collection
      */
     public function set($name, $value)
     {
-        if (!is_array($value)) {
+        if (!\is_array($value)) {
             $value = ['value' => (string)$value];
         }
 
@@ -95,7 +95,7 @@ class Cookies extends Collection
         }
 
         if (isset($properties['expires'])) {
-            if (is_string($properties['expires'])) {
+            if (\is_string($properties['expires'])) {
                 $timestamp = strtotime($properties['expires']);
             } else {
                 $timestamp = (int)$properties['expires'];
@@ -146,11 +146,11 @@ class Cookies extends Collection
     {
         $cookies = [];
 
-        if (is_array($cookieText)) {
+        if (\is_array($cookieText)) {
             $cookieText = array_shift($cookieText) ?: '';
         }
 
-        if (!is_string($cookieText)) {
+        if (!\is_string($cookieText)) {
             throw new \InvalidArgumentException('Cannot parse Cookie data. Header value must be a string.');
         }
 
@@ -163,7 +163,7 @@ class Cookies extends Collection
         foreach ($pieces as $cookie) {
             $cookie = explode('=', $cookie, 2);
 
-            if (count($cookie) === 2) {
+            if (\count($cookie) === 2) {
                 $key = urldecode($cookie[0]);
                 $value = urldecode($cookie[1]);
 

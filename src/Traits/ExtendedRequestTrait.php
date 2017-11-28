@@ -6,24 +6,23 @@
  * Time: 14:05
  */
 
-namespace Inhere\Http\Extra;
+namespace Inhere\Http\Traits;
 
 use Inhere\Http\UploadedFile;
 use Inhere\Http\Uri;
-use Inhere\Validate\FilterList;
 
 /**
  * trait ExtendedRequestTrait
  *
  * ```php
- * use Inhere\Http\Request;
+ * use Inhere\Http\ServerRequest;
  *
- * class MyRequest extends Request {
+ * class MyRequest extends ServerRequest {
  *   use ExtendedRequestTrait;
  * }
  * ```
  *
- * @package Inhere\Http\Extra
+ * @package Inhere\Http\Traits
  *
  * @method      string   getRaw($name, $default = null)      Get raw data
  * @method      integer  getInt($name, $default = null)      Get a signed integer.
@@ -91,14 +90,15 @@ trait ExtendedRequestTrait
         'safe' => 'htmlspecialchars',
 
         // abs((int)$var)
-        'number' => [FilterList::class, 'abs'],
+        'number' => 'int|abs',
         // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
-        'email' => [FilterList::class, 'email'],
+        'email' => ['filter_var', FILTER_SANITIZE_EMAIL],
+
         // will use filter_var($var ,FILTER_SANITIZE_URL)
-        'url' => [FilterList::class, 'url'],
+        'url' => ['filter_var', FILTER_SANITIZE_URL],
 
         // will use filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
-        'encoded' => [FilterList::class, 'encoded'],
+        'encoded' => ['filter_var', FILTER_SANITIZE_ENCODED],
     ];
 
     /**
@@ -152,7 +152,7 @@ trait ExtendedRequestTrait
         $needed = [];
 
         foreach ($needKeys as $key => $value) {
-            if (is_int($key)) {
+            if (\is_int($key)) {
                 $needed[$value] = $this->getParam($value);
             } else {
                 $needed[$key] = $this->filtering($key, $value);
@@ -212,6 +212,7 @@ trait ExtendedRequestTrait
      * @param $name
      * @param array $arguments
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call($name, array $arguments)
     {
@@ -237,11 +238,11 @@ trait ExtendedRequestTrait
         }
 
         // is a custom filter
-        if (!is_string($filter) || !isset(self::$filterList[$filter])) {
+        if (!\is_string($filter) || !isset(self::$filterList[$filter])) {
             $result = $value;
 
             // is custom callable filter
-            if (is_callable($filter)) {
+            if (\is_callable($filter)) {
                 $result = $filter($value);
             }
 
@@ -251,7 +252,7 @@ trait ExtendedRequestTrait
         // is a defined filter
         $filter = self::$filterList[$filter];
 
-        if (!in_array($filter, self::$phpTypes, true)) {
+        if (!\in_array($filter, self::$phpTypes, true)) {
             $result = $filter($value);
         } else {
             switch (lcfirst(trim($filter))) {

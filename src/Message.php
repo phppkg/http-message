@@ -8,6 +8,7 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Traits\MessageTrait;
 use Psr\Http\Message\MessageInterface;
 
 /**
@@ -24,13 +25,15 @@ class Message implements MessageInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * BaseMessage constructor.
      * @param string $protocol
      * @param string $protocolVersion
      * @param array|Headers $headers
+     * @param string $body
+     * @throws \InvalidArgumentException
      */
     public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = '')
     {

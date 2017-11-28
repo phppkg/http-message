@@ -9,6 +9,8 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Traits\CookiesTrait;
+use Inhere\Http\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -29,7 +31,7 @@ class Response implements ResponseInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * eg: 404
@@ -135,6 +137,7 @@ class Response implements ResponseInterface
      * @param StreamInterface $body
      * @param string $protocol
      * @param string $protocolVersion
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
@@ -203,6 +206,7 @@ class Response implements ResponseInterface
      * @param  mixed $data The data
      * @param  int $status The HTTP status code.
      * @param  int $encodingOptions Json encoding options
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @return static
      */
@@ -229,6 +233,7 @@ class Response implements ResponseInterface
      * @param string $url
      * @param int $status
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function redirect($url, $status = 302)
     {
@@ -263,7 +268,7 @@ class Response implements ResponseInterface
     {
         $code = $this->filterStatus($code);
 
-        if (!is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
+        if (!\is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
             throw new \InvalidArgumentException('ReasonPhrase must be a string');
         }
 
@@ -287,12 +292,13 @@ class Response implements ResponseInterface
      * @param $code
      * @param string $reasonPhrase
      * @return Response
+     * @throws \InvalidArgumentException
      */
     public function setStatus($code, $reasonPhrase = '')
     {
         $code = $this->filterStatus($code);
 
-        if (!is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
+        if (!\is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
             throw new \InvalidArgumentException('ReasonPhrase must be a string');
         }
 
@@ -318,7 +324,7 @@ class Response implements ResponseInterface
      */
     protected function filterStatus($status)
     {
-        if (!is_int($status) || $status < 100 || $status > 599) {
+        if (!\is_int($status) || $status < 100 || $status > 599) {
             throw new \InvalidArgumentException('Invalid HTTP status code');
         }
 
@@ -368,7 +374,7 @@ class Response implements ResponseInterface
      */
     public function isEmpty()
     {
-        return in_array($this->getStatusCode(), [204, 205, 304], true);
+        return \in_array($this->getStatusCode(), [204, 205, 304], true);
     }
 
     /**
@@ -408,7 +414,7 @@ class Response implements ResponseInterface
      */
     public function isRedirect()
     {
-        return in_array($this->getStatusCode(), [301, 302, 303, 307], true);
+        return \in_array($this->getStatusCode(), [301, 302, 303, 307], true);
     }
 
     /**

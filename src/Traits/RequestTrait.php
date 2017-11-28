@@ -6,13 +6,14 @@
  * Time: 下午12:44
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Traits;
 
+use Inhere\Http\Uri;
 use Psr\Http\Message\UriInterface;
 
 /**
  * Trait RequestTrait
- * @package Inhere\Http
+ * @package Inhere\Http\Traits
  */
 trait RequestTrait
 {
@@ -69,6 +70,8 @@ trait RequestTrait
 
     /**
      * @return string
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     protected function buildFirstLine()
     {
@@ -85,13 +88,14 @@ trait RequestTrait
     /**
      * @param string|UriInterface|null $uri
      * @return UriInterface
+     * @throws \InvalidArgumentException
      */
     private function createUri($uri)
     {
         if ($uri instanceof UriInterface) {
             return $uri;
         }
-        if (is_string($uri)) {
+        if (\is_string($uri)) {
             return Uri::createFromString($uri);
         }
 
@@ -110,6 +114,8 @@ trait RequestTrait
 
     /**
      * @return string
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function getMethod()
     {
@@ -155,15 +161,14 @@ trait RequestTrait
      * Note: This method is not part of the PSR-7 standard.
      * @param  string $method HTTP method
      * @return bool
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function isMethod($method)
     {
         return $this->getMethod() === strtoupper($method);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function withMethod($method)
     {
         $method = (string)$this->filterMethod($method);
@@ -187,10 +192,10 @@ trait RequestTrait
             return $method;
         }
 
-        if (!is_string($method)) {
+        if (!\is_string($method)) {
             throw new \InvalidArgumentException(sprintf(
                 'Unsupported HTTP method; must be a string, received %s',
-                (is_object($method) ? get_class($method) : gettype($method))
+                (\is_object($method) ? \get_class($method) : \gettype($method))
             ));
         }
 
@@ -206,9 +211,6 @@ trait RequestTrait
      * URI
      ******************************************************************************/
 
-    /**
-     * @inheritdoc
-     */
     public function getRequestTarget()
     {
         if ($this->requestTarget) {
@@ -233,9 +235,6 @@ trait RequestTrait
         return $this->requestTarget;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function withRequestTarget($requestTarget)
     {
         if (preg_match('#\s#', $requestTarget)) {
@@ -265,9 +264,6 @@ trait RequestTrait
         $this->uri = $uri;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
         $clone = clone $this;

@@ -17,9 +17,9 @@ class Headers extends Collection
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
-    const HEADER_END = "\r\n\r\n";
+    public const HEADER_END = "\r\n\r\n";
 
     /**
      * Special HTTP headers that do not have the "HTTP_" prefix
@@ -101,7 +101,9 @@ class Headers extends Collection
     }
 
     /**
-     * @inheritdoc
+     * @param string $key
+     * @param mixed $value
+     * @return mixed|null
      */
     public function add($key, $value)
     {
@@ -113,7 +115,7 @@ class Headers extends Collection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function has(string $key)
     {
@@ -121,7 +123,7 @@ class Headers extends Collection
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function remove($key)
     {

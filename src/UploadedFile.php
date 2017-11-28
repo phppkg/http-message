@@ -93,14 +93,14 @@ class UploadedFile implements UploadedFileInterface
         $parsed = [];
         foreach ($uploadedFiles as $field => $uploadedFile) {
             if (!isset($uploadedFile['error'])) {
-                if (is_array($uploadedFile)) {
+                if (\is_array($uploadedFile)) {
                     $parsed[$field] = static::parseUploadedFiles($uploadedFile);
                 }
                 continue;
             }
 
             $parsed[$field] = [];
-            if (!is_array($uploadedFile['error'])) {
+            if (!\is_array($uploadedFile['error'])) {
                 $parsed[$field] = new static(
                     $uploadedFile['tmp_name'],
                     $uploadedFile['name'] ?? null,
@@ -156,6 +156,7 @@ class UploadedFile implements UploadedFileInterface
      * If the moveTo() method has been called previously, this method MUST raise
      * an exception.
      * @return StreamInterface Stream representation of the uploaded file.
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException in cases when no stream is available or can be
      *     created.
      */
@@ -203,7 +204,7 @@ class UploadedFile implements UploadedFileInterface
         }
 
         $targetIsStream = strpos($targetPath, '://') > 0;
-        if (!$targetIsStream && !is_writable(dirname($targetPath))) {
+        if (!$targetIsStream && !is_writable(\dirname($targetPath))) {
             throw new InvalidArgumentException('Upload target path is not writable');
         }
 

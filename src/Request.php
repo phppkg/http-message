@@ -9,6 +9,7 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Traits\RequestTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -32,6 +33,8 @@ class Request implements RequestInterface
      * @param string $protocolVersion
      * @param array|Headers $headers
      * @param StreamInterface $body
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         string $method = 'GET', UriInterface $uri = null, $headers = null,
@@ -162,7 +165,7 @@ class Request implements RequestInterface
 
         if ($contentType) {
             $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
-            $contentTypePartsLength = count($contentTypeParts);
+            $contentTypePartsLength = \count($contentTypeParts);
 
             for ($i = 1; $i < $contentTypePartsLength; $i++) {
                 $paramParts = explode('=', $contentTypeParts[$i]);

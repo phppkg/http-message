@@ -6,12 +6,17 @@
  * Time: 下午12:44
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Traits;
+
+use Inhere\Http\Headers;
+use Inhere\Http\Stream;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Trait MessageTrait
- * @package Inhere\Http
+ * @package Inhere\Http\Traits
  */
 trait MessageTrait
 {
@@ -54,6 +59,7 @@ trait MessageTrait
      * @param string $protocolVersion
      * @param array|Headers $headers
      * @param string|resource|StreamInterface $body
+     * @throws \InvalidArgumentException
      */
     public function initialize(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = 'php://memory')
     {
@@ -116,6 +122,7 @@ trait MessageTrait
     /**
      * @param $version
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function withProtocolVersion($version)
     {
@@ -175,9 +182,6 @@ trait MessageTrait
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withHeader($name, $value)
     {
         $clone = clone $this;
@@ -186,9 +190,6 @@ trait MessageTrait
         return $clone;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withoutHeader($name)
     {
         $clone = clone $this;
@@ -197,9 +198,6 @@ trait MessageTrait
         return $clone;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function withAddedHeader($name, $value)
     {
         $clone = clone $this;
@@ -243,6 +241,7 @@ trait MessageTrait
      * @param string|resource|StreamInterface|bool $body
      * @param string $mode
      * @return StreamInterface
+     * @throws \InvalidArgumentException
      */
     protected function createBodyStream($body, $mode = 'r')
     {
@@ -250,7 +249,7 @@ trait MessageTrait
             return $body;
         }
 
-        if (!is_string($body) && !is_resource($body)) {
+        if (!\is_string($body) && !\is_resource($body)) {
             throw new \InvalidArgumentException(
                 'Stream must be a string stream resource identifier, '
                 . 'an actual stream resource, '
@@ -258,7 +257,7 @@ trait MessageTrait
             );
         }
 
-        if (is_string($body)) {
+        if (\is_string($body)) {
             $error = null;
 
             set_error_handler(function ($e) use (&$error) {
@@ -295,7 +294,8 @@ trait MessageTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param StreamInterface $body
+     * @return $this|MessageInterface|ResponseInterface
      */
     public function withBody(StreamInterface $body)
     {
@@ -309,6 +309,7 @@ trait MessageTrait
     /**
      * @param string $content
      * @return $this
+     * @throws \RuntimeException
      */
     public function addContent($content)
     {
@@ -320,6 +321,7 @@ trait MessageTrait
     /**
      * @param string $content
      * @return $this
+     * @throws \RuntimeException
      */
     public function write($content)
     {

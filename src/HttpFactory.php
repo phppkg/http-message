@@ -44,10 +44,11 @@ class HttpFactory
      * @param string $method
      * @param UriInterface|string $uri
      * @return RequestInterface
+     * @throws \InvalidArgumentException
      */
     public static function createRequest($method, $uri)
     {
-        if (is_string($uri)) {
+        if (\is_string($uri)) {
             $uri = Uri::createFromString($uri);
         }
 
@@ -62,6 +63,7 @@ class HttpFactory
      * Create a new response.
      * @param integer $code HTTP status code
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
      */
     public static function createResponse($code = 200)
     {
@@ -77,10 +79,11 @@ class HttpFactory
      * @param string $method
      * @param UriInterface|string $uri
      * @return ServerRequestInterface
+     * @throws \InvalidArgumentException
      */
     public static function createServerRequest($method, $uri)
     {
-        if (is_string($uri)) {
+        if (\is_string($uri)) {
             $uri = Uri::createFromString($uri);
         }
 
@@ -91,6 +94,7 @@ class HttpFactory
      * Create a new server request from server variables.
      * @param array|mixed $server Typically $_SERVER or similar structure.
      * @return ServerRequestInterface
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
@@ -108,7 +112,7 @@ class HttpFactory
         $request = new ServerRequest($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
 
         if ($method === 'POST' &&
-            in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
+            \in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
         ) {
             // parsed body must be $_POST
             $request = $request->withParsedBody($_POST);
@@ -126,6 +130,8 @@ class HttpFactory
      * The stream SHOULD be created with a temporary resource.
      * @param string $content
      * @return StreamInterface
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public static function createStream($content = '')
     {
@@ -140,6 +146,7 @@ class HttpFactory
      * @param string $filename
      * @param string $mode
      * @return StreamInterface
+     * @throws \InvalidArgumentException
      */
     public static function createStreamFromFile($filename, $mode = 'r')
     {
@@ -154,6 +161,7 @@ class HttpFactory
      * The stream MUST be readable and may be writable.
      * @param resource $resource e.g `$resource = fopen('php://temp', 'r+');`
      * @return StreamInterface
+     * @throws \InvalidArgumentException
      */
     public static function createStreamFromResource($resource)
     {
@@ -238,7 +246,7 @@ class HttpFactory
     {
         $authorization = $env->get('HTTP_AUTHORIZATION');
 
-        if (null === $authorization && is_callable('getallheaders')) {
+        if (null === $authorization && \is_callable('getallheaders')) {
             $headers = getallheaders();
             $headers = array_change_key_case($headers, CASE_LOWER);
             if (isset($headers['authorization'])) {
@@ -252,6 +260,7 @@ class HttpFactory
     /**
      * @param Collection|array $env
      * @return Uri
+     * @throws \InvalidArgumentException
      */
     public static function createUriFromArray($env)
     {
@@ -290,7 +299,7 @@ class HttpFactory
 
         // Path
         $requestScriptName = parse_url($env->get('SCRIPT_NAME'), PHP_URL_PATH);
-        $requestScriptDir = dirname($requestScriptName);
+        $requestScriptDir = \dirname($requestScriptName);
 
         // parse_url() requires a full URL. As we don't extract the domain name or scheme,
         // we use a stand-in.
@@ -305,7 +314,7 @@ class HttpFactory
         }
 
         if ($basePath) {
-            $virtualPath = ltrim(substr($requestUri, strlen($basePath)), '/');
+            $virtualPath = ltrim(substr($requestUri, \strlen($basePath)), '/');
         }
 
         // Query string
@@ -332,11 +341,11 @@ class HttpFactory
      */
     public static function ensureIsCollection($data)
     {
-        if (is_array($data)) {
+        if (\is_array($data)) {
             return new Collection($data);
         }
 
-        if (is_object($data) && method_exists($data, 'get')) {
+        if (\is_object($data) && method_exists($data, 'get')) {
             return $data;
         }
 

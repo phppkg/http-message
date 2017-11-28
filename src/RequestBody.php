@@ -18,6 +18,8 @@ class RequestBody extends Stream
     /**
      * Create a new RequestBody.
      * @param null|string $content
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function __construct($content = null)
     {

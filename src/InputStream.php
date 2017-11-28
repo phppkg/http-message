@@ -17,6 +17,7 @@ class InputStream extends Stream
     /**
      * InputStream constructor.
      * @param string $mode
+     * @throws \InvalidArgumentException
      */
     public function __construct($mode = 'rb+')
     {

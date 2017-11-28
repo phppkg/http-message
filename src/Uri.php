@@ -82,6 +82,7 @@ class Uri implements UriInterface
      * @param string $fragment Uri fragment.
      * @param string $user Uri user.
      * @param string $password Uri password.
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         $scheme = '',
@@ -109,10 +110,11 @@ class Uri implements UriInterface
      * @param  string $uri Complete Uri string
      *     (i.e., https://user:pass@host:443/path?query).
      * @return self
+     * @throws \InvalidArgumentException
      */
     public static function createFromString($uri)
     {
-        if (!is_string($uri) && !method_exists($uri, '__toString')) {
+        if (!\is_string($uri) && !method_exists($uri, '__toString')) {
             throw new InvalidArgumentException('Uri must be a string');
         }
 
@@ -198,7 +200,7 @@ class Uri implements UriInterface
      */
     protected function filterScheme($scheme)
     {
-        if (!is_string($scheme) && !method_exists($scheme, '__toString')) {
+        if (!\is_string($scheme) && !method_exists($scheme, '__toString')) {
             throw new InvalidArgumentException('Uri scheme must be a string');
         }
 
@@ -357,7 +359,7 @@ class Uri implements UriInterface
      */
     protected function filterPort($port)
     {
-        if (null === $port || (is_int($port) && ($port >= 1 && $port <= 65535))) {
+        if (null === $port || (\is_int($port) && ($port >= 1 && $port <= 65535))) {
             return $port;
         }
 
@@ -412,7 +414,7 @@ class Uri implements UriInterface
      */
     public function withPath($path)
     {
-        if (!is_string($path)) {
+        if (!\is_string($path)) {
             throw new InvalidArgumentException('Uri path must be a string');
         }
 
@@ -440,10 +442,11 @@ class Uri implements UriInterface
      * Set base path.
      * @param  string $basePath
      * @return self
+     * @throws \InvalidArgumentException
      */
     public function withBasePath($basePath)
     {
-        if (!is_string($basePath)) {
+        if (!\is_string($basePath)) {
             throw new InvalidArgumentException('Uri path must be a string');
         }
         if (!empty($basePath)) {
@@ -512,7 +515,7 @@ class Uri implements UriInterface
      */
     public function withQuery($query)
     {
-        if (!is_string($query) && !method_exists($query, '__toString')) {
+        if (!\is_string($query) && !method_exists($query, '__toString')) {
             throw new InvalidArgumentException('Uri query must be a string');
         }
         $query = ltrim((string)$query, '?');
@@ -568,10 +571,11 @@ class Uri implements UriInterface
      * An empty fragment value is equivalent to removing the fragment.
      * @param string $fragment The fragment to use with the new instance.
      * @return self A new instance with the specified fragment.
+     * @throws \InvalidArgumentException
      */
     public function withFragment($fragment)
     {
-        if (!is_string($fragment) && !method_exists($fragment, '__toString')) {
+        if (!\is_string($fragment) && !method_exists($fragment, '__toString')) {
             throw new InvalidArgumentException('Uri fragment must be a string');
         }
         $fragment = ltrim((string)$fragment, '#');

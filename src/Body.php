@@ -20,6 +20,7 @@ class Body extends TempStream
     /**
      * TempStream constructor.
      * @param string $mode
+     * @throws \InvalidArgumentException
      */
     public function __construct($mode = 'rb+')
     {

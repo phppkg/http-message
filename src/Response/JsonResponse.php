@@ -36,7 +36,7 @@ class JsonResponse extends Response
      *
      * @const int
      */
-    const DEFAULT_JSON_FLAGS = 79;
+    public const DEFAULT_JSON_FLAGS = 79;
 
     /**
      * @var mixed
@@ -65,6 +65,7 @@ class JsonResponse extends Response
      * @param int $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
      * @param int $encodingOptions JSON encoding options to use.
+     * @throws \RuntimeException
      * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
     public function __construct(
@@ -94,11 +95,13 @@ class JsonResponse extends Response
      * @param $data
      *
      * @return JsonResponse
+     * @throws \InvalidArgumentException
      */
     public function withPayload($data)
     {
         $new = clone $this;
         $new->setPayload($data);
+
         return $this->updateBodyFor($new);
     }
 
@@ -114,6 +117,7 @@ class JsonResponse extends Response
      * @param int $encodingOptions
      *
      * @return JsonResponse
+     * @throws \InvalidArgumentException
      */
     public function withEncodingOptions($encodingOptions)
     {
@@ -126,6 +130,8 @@ class JsonResponse extends Response
      * @param string $json
      *
      * @return Stream
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     private function createBodyFromJson($json)
     {
@@ -146,7 +152,7 @@ class JsonResponse extends Response
      */
     private function jsonEncode($data, $encodingOptions)
     {
-        if (is_resource($data)) {
+        if (\is_resource($data)) {
             throw new InvalidArgumentException('Cannot JSON encode resources');
         }
 
@@ -170,7 +176,7 @@ class JsonResponse extends Response
      */
     private function setPayload($data)
     {
-        if (is_object($data)) {
+        if (\is_object($data)) {
             $data = clone $data;
         }
 
@@ -182,6 +188,8 @@ class JsonResponse extends Response
      *
      * @param self $toUpdate Instance to update.
      * @return JsonResponse Returns a new instance with an updated body.
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     private function updateBodyFor(self $toUpdate)
     {

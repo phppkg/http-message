@@ -6,11 +6,13 @@
  * Time: 下午1:18
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Traits;
+
+use Inhere\Http\Cookies;
 
 /**
  * Trait CookiesTrait
- * @package Inhere\Http
+ * @package Inhere\Http\Traits
  */
 trait CookiesTrait
 {
@@ -24,24 +26,18 @@ trait CookiesTrait
      ******************************************************************************/
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function getCookieParams()
     {
         return $this->cookies->all();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getCookieParam($key, $default = null)
     {
         return $this->cookies->get($key, $default);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function withCookieParams(array $cookies)
     {
         $clone = clone $this;
@@ -76,7 +72,7 @@ trait CookiesTrait
      */
     public function setCookies($cookies)
     {
-        if (is_array($cookies)) {
+        if (\is_array($cookies)) {
             return $this->setCookiesFromArray($cookies);
         }
 
