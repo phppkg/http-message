@@ -30,4 +30,60 @@ class ExtendedRequest extends ServerRequest
 
         return $this->filtering($value, $filter);
     }
+
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @param string $filter
+     * @return mixed
+     */
+    public function get($name = null, $default = null, $filter = null)
+    {
+        if ($name === null) {
+            return $this->getQueryParams();
+        }
+
+        return $this->filtering(parent::get($name, $default), $filter);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @param string $filter
+     * @return mixed
+     */
+    public function post($name = null, $default = null, $filter = null)
+    {
+        if ($name === null) {
+            return $this->getParsedBody();
+        }
+
+        return $this->filtering(parent::post($name, $default), $filter);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @param string $filter
+     * @return mixed
+     */
+    public function json($name = null, $default = null, $filter = null)
+    {
+        if ($name === null) {
+            return $this->getParsedBody();
+        }
+
+        return $this->filtering(parent::post($name, $default), $filter);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @param string $filter
+     * @return mixed
+     */
+    public function put($name = null, $default = null, $filter = null)
+    {
+        return $this->post($name, $default, $filter);
+    }
 }

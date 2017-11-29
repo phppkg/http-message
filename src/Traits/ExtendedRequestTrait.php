@@ -66,12 +66,13 @@ trait ExtendedRequestTrait
     /**
      * @var array
      */
-    protected static $filterList = [
+    protected static $filters= [
         // return raw
         'raw' => '',
 
         // (int)$var
         'int' => 'int',
+        'integer' => 'int',
         // (float)$var or floatval($var)
         'float' => 'float',
         // (bool)$var
@@ -88,9 +89,11 @@ trait ExtendedRequestTrait
 
         // safe data
         'safe' => 'htmlspecialchars',
+        'escape' => 'htmlspecialchars',
 
         // abs((int)$var)
         'number' => 'int|abs',
+
         // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
         'email' => ['filter_var', FILTER_SANITIZE_EMAIL],
 
@@ -117,23 +120,6 @@ trait ExtendedRequestTrait
     public function getUploadedFile($name)
     {
         return $this->getUploadedFiles()[$name] ?? null;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $default
-     * @param string $filter
-     * @return mixed
-     */
-    public function get($name = null, $default = null, $filter = 'raw')
-    {
-        if ($name === null) {
-            return $this->getQueryParams();
-        }
-
-        $value = $this->getParams()[$name] ?? $default;
-
-        return $this->filtering($value, $filter);
     }
 
     /**
@@ -238,7 +224,7 @@ trait ExtendedRequestTrait
         }
 
         // is a custom filter
-        if (!\is_string($filter) || !isset(self::$filterList[$filter])) {
+        if (!\is_string($filter)) {
             $result = $value;
 
             // is custom callable filter
@@ -249,12 +235,8 @@ trait ExtendedRequestTrait
             return $result;
         }
 
-        // is a defined filter
-        $filter = self::$filterList[$filter];
-
-        if (!\in_array($filter, self::$phpTypes, true)) {
-            $result = $filter($value);
-        } else {
+        // is a php data type filter name
+        if (\in_array($filter, self::$phpTypes, true)) {
             switch (lcfirst(trim($filter))) {
                 case 'bool':
                 case 'boolean':
@@ -281,8 +263,47 @@ trait ExtendedRequestTrait
                     $result = $value;
                     break;
             }
+
+            return $result;
         }
 
-        return $result;
+        if (!isset(self::$filters[$filter])) {
+            return $this->callFilterChain($value, $filter);
+        }
+
+        // is a defined filter
+        $internalFilter = self::$filters[$filter];
+
+        // url, email ...
+        if (\is_array($internalFilter)) {
+            $filter = $internalFilter[0];
+
+            return $filter($value, $internalFilter[1]);
+        }
+
+        return $this->callFilterChain($value, $internalFilter);
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $filter
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    protected function callFilterChain($value, $filter)
+    {
+        if (strpos($filter, '|') === false) {
+            return $filter($value);
+        }
+
+        foreach (explode('|', $filter) as $func) {
+            if (!\is_callable($func)) {
+                throw new \InvalidArgumentException("The filter '$func' is not a callable");
+            }
+
+            $value = $filter($value);
+        }
+
+        return $value;
     }
 }

@@ -24,7 +24,7 @@ class Stream implements StreamInterface
      *
      * This is octal as per header stat.h
      */
-    public const FSTAT_MODE_S_IFIFO = 0010000;
+    const FSTAT_MODE_S_IFIFO = 0010000;
 
     /**
      * Resource modes

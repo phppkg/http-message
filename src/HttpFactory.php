@@ -44,6 +44,7 @@ class HttpFactory
      * @param string $method
      * @param UriInterface|string $uri
      * @return RequestInterface
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
     public static function createRequest($method, $uri)
@@ -79,6 +80,7 @@ class HttpFactory
      * @param string $method
      * @param UriInterface|string $uri
      * @return ServerRequestInterface
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
     public static function createServerRequest($method, $uri)
@@ -101,8 +103,8 @@ class HttpFactory
     public static function createServerRequestFromArray($server)
     {
         $env = self::ensureIsCollection($server);
-        $method = $env['REQUEST_METHOD'];
         $uri = static::createUriFromArray($env);
+        $method = $env['REQUEST_METHOD'];
         $headers = static::createHeadersFromArray($env);
         $cookies = Cookies::parseFromRawHeader($headers->get('Cookie', []));
         $serverParams = $env->all();

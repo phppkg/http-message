@@ -26,7 +26,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * the connection header line data end char
      */
-    public const EOL = "\r\n";
+    const EOL = "\r\n";
 
     /**
      * @var array
@@ -384,6 +384,7 @@ class ServerRequest implements ServerRequestInterface
                     'Request body media type parser return value must be an array, an object, or null'
                 );
             }
+
             $this->bodyParsed = $parsed;
 
             return $this->bodyParsed;
@@ -491,6 +492,7 @@ class ServerRequest implements ServerRequestInterface
     {
         $params = $this->getQueryParams();
         $postParams = $this->getParsedBody();
+
         if ($postParams) {
             $params = array_merge($params, (array)$postParams);
         }

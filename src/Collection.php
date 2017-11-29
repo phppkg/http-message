@@ -14,7 +14,6 @@ namespace Inhere\Http;
  */
 class Collection extends \ArrayObject
 {
-
     /**
      * @param array|null $items
      * @return static

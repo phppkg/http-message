@@ -17,9 +17,9 @@ class Headers extends Collection
     /**
      * the connection header line data end char
      */
-    public const EOL = "\r\n";
+    const EOL = "\r\n";
 
-    public const HEADER_END = "\r\n\r\n";
+    const HEADER_END = "\r\n\r\n";
 
     /**
      * Special HTTP headers that do not have the "HTTP_" prefix
