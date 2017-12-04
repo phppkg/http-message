@@ -22,7 +22,7 @@ trait RequestTrait
     /**
      * @var string
      */
-    private $method = '';
+    private $method;
 
     /**
      * The original request method (ignoring override)
