@@ -49,12 +49,6 @@ class Uri implements UriInterface
     protected $port;
 
     /**
-     * Uri base path
-     * @var string
-     */
-    protected $basePath = '';
-
-    /**
      * Uri path
      * @var string
      */
@@ -420,43 +414,6 @@ class Uri implements UriInterface
 
         $clone = clone $this;
         $clone->path = $this->filterPath($path);
-
-        // if the path is absolute, then clear basePath
-        if ($path && $path[0] === '/') {
-            $clone->basePath = '';
-        }
-
-        return $clone;
-    }
-
-    /**
-     * Retrieve the base path segment of the URI.
-     * @return string The base path segment of the URI.
-     */
-    public function getBasePath()
-    {
-        return $this->basePath;
-    }
-
-    /**
-     * Set base path.
-     * @param  string $basePath
-     * @return self
-     * @throws \InvalidArgumentException
-     */
-    public function withBasePath($basePath)
-    {
-        if (!\is_string($basePath)) {
-            throw new InvalidArgumentException('Uri path must be a string');
-        }
-        if (!empty($basePath)) {
-            $basePath = '/' . trim($basePath, '/'); // <-- Trim on both sides
-        }
-        $clone = clone $this;
-
-        if ($basePath !== '/') {
-            $clone->basePath = $this->filterPath($basePath);
-        }
 
         return $clone;
     }

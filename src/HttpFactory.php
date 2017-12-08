@@ -304,39 +304,24 @@ class HttpFactory
         }
 
         // Path
-        $requestScriptName = parse_url($env->get('SCRIPT_NAME'), PHP_URL_PATH);
-        $requestScriptDir = \dirname($requestScriptName);
+        // $requestScriptName = parse_url($env->get('SCRIPT_NAME'), PHP_URL_PATH);
+        // $requestScriptDir = \dirname($requestScriptName);
 
         // parse_url() requires a full URL. As we don't extract the domain name or scheme,
         // we use a stand-in.
-        $requestUri = parse_url('http://example.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
-
-        $basePath = '';
-        $virtualPath = $requestUri;
-        if (stripos($requestUri, $requestScriptName) === 0) {
-            $basePath = $requestScriptName;
-        } elseif ($requestScriptDir !== '/' && stripos($requestUri, $requestScriptDir) === 0) {
-            $basePath = $requestScriptDir;
-        }
-
-        if ($basePath) {
-            $virtualPath = ltrim(substr($requestUri, \strlen($basePath)), '/');
-        }
+        $uriPath = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
 
         // Query string
         $queryString = $env->get('QUERY_STRING', '');
         if ($queryString === '') {
-            $queryString = parse_url('http://example.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
+            $queryString = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
         }
 
         // Fragment
         $fragment = '';
 
         // Build Uri
-        $uri = new Uri($scheme, $host, $port, $virtualPath, $queryString, $fragment, $username, $password);
-        if ($basePath) {
-            $uri = $uri->withBasePath($basePath);
-        }
+        $uri = new Uri($scheme, $host, $port, $uriPath, $queryString, $fragment, $username, $password);
 
         return $uri;
     }

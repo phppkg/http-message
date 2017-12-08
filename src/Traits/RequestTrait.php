@@ -221,9 +221,7 @@ trait RequestTrait
             return '/';
         }
 
-        $basePath = $this->uri->getBasePath();
-        $path = $basePath . '/' . ltrim($this->uri->getPath(), '/');
-
+        $path = $this->uri->getPath();
         $query = $this->uri->getQuery();
 
         if ($query) {
