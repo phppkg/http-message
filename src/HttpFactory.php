@@ -95,12 +95,13 @@ class HttpFactory
     /**
      * Create a new server request from server variables.
      * @param array|mixed $server Typically $_SERVER or similar structure.
+     * @param string|null $class The class
      * @return ServerRequestInterface
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray($server)
+    public static function createServerRequestFromArray($server, $class = null)
     {
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
@@ -111,7 +112,10 @@ class HttpFactory
         $body = new RequestBody();
         $uploadedFiles = UploadedFile::createFromFILES();
 
-        $request = new ServerRequest($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+        $class = $class ?: ServerRequest::class;
+
+        /** @var ServerRequest $request */
+        $request = new $class($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
 
         if ($method === 'POST' &&
             \in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)

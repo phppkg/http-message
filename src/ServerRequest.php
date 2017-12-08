@@ -327,6 +327,7 @@ class ServerRequest implements ServerRequestInterface
         return $params[$name] ?? $defaultValue;
     }
 
+    /** @var string */
     private $_rawBody;
 
     /**
@@ -351,6 +352,7 @@ class ServerRequest implements ServerRequestInterface
         $this->_rawBody = $rawBody;
     }
 
+    /** @var array|null */
     private $bodyParsed;
 
     /**
@@ -359,12 +361,14 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getParsedBody()
     {
-        if ($this->bodyParsed !== false) {
+        if ($this->bodyParsed !== null) {
             return $this->bodyParsed;
         }
 
+        $this->bodyParsed = [];
+
         if (!$this->body) {
-            return null;
+            return $this->bodyParsed;
         }
 
         $mediaType = $this->getMediaType();
@@ -385,12 +389,10 @@ class ServerRequest implements ServerRequestInterface
                 );
             }
 
-            $this->bodyParsed = $parsed;
-
-            return $this->bodyParsed;
+            $this->bodyParsed = $parsed ?: [];
         }
 
-        return null;
+        return $this->bodyParsed;
     }
 
     /**
