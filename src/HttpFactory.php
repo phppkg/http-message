@@ -97,17 +97,17 @@ class HttpFactory
     /**
      * Create a new server request from server variables.
      * @param array|mixed $server Typically $_SERVER or similar structure.
-     * @param string|null $class The class
+     * @param string|null $class The custom request class
      * @return ServerRequestInterface
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray($server, $class = null)
+    public static function createServerRequestFromArray($server, string $class = null)
     {
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
-        $method = $env['REQUEST_METHOD'];
+        $method = $env->get('REQUEST_METHOD', 'GET');
         $headers = static::createHeadersFromArray($env);
         $cookies = Cookies::parseFromRawHeader($headers->get('Cookie', []));
         $serverParams = $env->all();

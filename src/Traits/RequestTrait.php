@@ -249,7 +249,7 @@ trait RequestTrait
      * @param string $requestTarget
      * @return $this
      */
-    public function withRequestTarget(string $requestTarget)
+    public function withRequestTarget($requestTarget)
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new \InvalidArgumentException(
