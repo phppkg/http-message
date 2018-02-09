@@ -8,6 +8,8 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Component\Collection;
+use Inhere\Http\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -47,7 +49,7 @@ class HttpFactory
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function createRequest($method, $uri)
+    public static function createRequest(string $method, $uri)
     {
         if (\is_string($uri)) {
             $uri = Uri::createFromString($uri);
@@ -66,14 +68,14 @@ class HttpFactory
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      */
-    public static function createResponse($code = 200)
+    public static function createResponse(int $code = 200)
     {
         return new Response($code);
     }
 
-    /**
+    /*****************************************************
      * ServerRequestFactoryInterface
-     */
+     ****************************************************/
 
     /**
      * Create a new server request.
@@ -127,9 +129,9 @@ class HttpFactory
         return $request;
     }
 
-    /**
+    /*****************************************************
      * StreamFactoryInterface
-     */
+     ****************************************************/
 
     /**
      * Create a new stream from a string.
@@ -201,9 +203,9 @@ class HttpFactory
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
     }
 
-    /**
+    /*****************************************************
      * UriFactoryInterface
-     */
+     ****************************************************/
 
     /**
      * Create a new URI.

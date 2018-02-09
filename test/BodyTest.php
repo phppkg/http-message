@@ -6,7 +6,7 @@
  * Time: 上午12:04
  */
 
-namespace Inhere\Http\Tests;
+namespace Inhere\Http\Test;
 
 use Inhere\Http\Body;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ use Psr\Http\Message\StreamInterface;
 
 /**
  * Class BodyTest
- * @package Inhere\Http\Tests
+ * @package Inhere\Http\Test
  */
 class BodyTest extends TestCase
 {

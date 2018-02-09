@@ -56,6 +56,10 @@ trait RequestTrait
         'TRACE' => 1,
     ];
 
+    /**
+     * @param string|UriInterface|null $uri
+     * @param string|null $method
+     */
     protected function initializeRequest($uri = null, $method = null)
     {
         try {
@@ -73,7 +77,7 @@ trait RequestTrait
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    protected function buildFirstLine()
+    protected function buildFirstLine(): string
     {
         // `GET /path HTTP/1.1`
         return sprintf(
@@ -208,10 +212,18 @@ trait RequestTrait
     }
 
     /*******************************************************************************
+     * Headers
+     ******************************************************************************/
+
+
+    /*******************************************************************************
      * URI
      ******************************************************************************/
 
-    public function getRequestTarget()
+    /**
+     * @return string
+     */
+    public function getRequestTarget(): string
     {
         if ($this->requestTarget) {
             return $this->requestTarget;
@@ -233,13 +245,18 @@ trait RequestTrait
         return $this->requestTarget;
     }
 
-    public function withRequestTarget($requestTarget)
+    /**
+     * @param string $requestTarget
+     * @return $this
+     */
+    public function withRequestTarget(string $requestTarget)
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new \InvalidArgumentException(
                 'Invalid request target provided; must be a string and cannot contain whitespace'
             );
         }
+
         $clone = clone $this;
         $clone->requestTarget = $requestTarget;
 
@@ -283,7 +300,7 @@ trait RequestTrait
     /**
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->getUri()->getPath();
     }

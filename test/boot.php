@@ -10,8 +10,8 @@ spl_autoload_register(function($class)
 {
     $file = null;
 
-    if (0 === strpos($class,'Inhere\Http\Tests\\')) {
-        $path = str_replace('\\', '/', substr($class, strlen('Inhere\Http\Tests\\')));
+    if (0 === strpos($class,'Inhere\Http\Test\\')) {
+        $path = str_replace('\\', '/', substr($class, strlen('Inhere\Http\Test\\')));
         $file =__DIR__ . "/{$path}.php";
 
     } elseif (0 === strpos($class,'Inhere\Http\\')) {

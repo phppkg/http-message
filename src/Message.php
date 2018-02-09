@@ -25,7 +25,7 @@ class Message implements MessageInterface
     /**
      * the connection header line data end char
      */
-    public const EOL = "\r\n";
+    const EOL = "\r\n";
 
     /**
      * BaseMessage constructor.
@@ -39,5 +39,4 @@ class Message implements MessageInterface
     {
         $this->initialize($protocol, $protocolVersion, $headers, $body);
     }
-
 }

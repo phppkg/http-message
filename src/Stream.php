@@ -129,7 +129,7 @@ class Stream implements StreamInterface
      *
      * @return bool
      */
-    protected function isAttached()
+    protected function isAttached(): bool
     {
         return \is_resource($this->stream);
     }

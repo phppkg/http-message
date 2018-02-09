@@ -311,7 +311,7 @@ trait MessageTrait
      * @return $this
      * @throws \RuntimeException
      */
-    public function addContent($content)
+    public function addContent(string $content)
     {
         $this->body->write($content);
 
@@ -323,7 +323,7 @@ trait MessageTrait
      * @return $this
      * @throws \RuntimeException
      */
-    public function write($content)
+    public function write(string $content)
     {
         $this->body->write($content);
 

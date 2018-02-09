@@ -28,12 +28,17 @@ trait CookiesTrait
     /**
      * @return array
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         return $this->cookies->all();
     }
 
-    public function getCookieParam($key, $default = null)
+    /**
+     * @param string $key
+     * @param null $default
+     * @return mixed
+     */
+    public function getCookieParam(string $key, $default = null)
     {
         return $this->cookies->get($key, $default);
     }

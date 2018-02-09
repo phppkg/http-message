@@ -10,6 +10,8 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Component\Collection;
+
 /**
  * Class Cookies
  * @package Inhere\Http
@@ -66,7 +68,7 @@ class Cookies extends Collection
      * Convert to `Set-Cookie` headers
      * @return string[]
      */
-    public function toHeaders()
+    public function toHeaders(): array
     {
         $headers = [];
         foreach ($this as $name => $properties) {
@@ -82,7 +84,7 @@ class Cookies extends Collection
      * @param  array $properties Cookie properties
      * @return string
      */
-    protected function toHeader($name, array $properties)
+    protected function toHeader(string $name, array $properties): string
     {
         $result = urlencode($name) . '=' . urlencode($properties['value']);
 
@@ -124,7 +126,7 @@ class Cookies extends Collection
      * @return string
      * header: `"Cookie: $cookieValue" . Header::EOL`
      */
-    public function toRequestHeader()
+    public function toRequestHeader(): string
     {
         $cookieValue = '';
 
@@ -142,7 +144,7 @@ class Cookies extends Collection
      * @return array Associative array of cookie names and values
      * @throws \InvalidArgumentException if the cookie data cannot be parsed
      */
-    public static function parseFromRawHeader($cookieText)
+    public static function parseFromRawHeader($cookieText): array
     {
         $cookies = [];
 

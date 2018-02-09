@@ -6,22 +6,24 @@
  * Time: 14:31
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Request;
+
+use Inhere\Http\Stream;
 
 /**
  * Class RequestBody
  *   Provides a PSR-7 implementation of a reusable raw request body
- * @package Inhere\Http
+ * @package Inhere\Http\Request
  */
 class RequestBody extends Stream
 {
     /**
      * Create a new RequestBody.
-     * @param null|string $content
+     * @param string $content
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function __construct($content = null)
+    public function __construct(string $content = null)
     {
         $stream = fopen('php://temp', 'wb+');
         stream_copy_to_stream(fopen('php://input', 'rb'), $stream);

@@ -10,7 +10,7 @@ namespace Inhere\Http\Response;
 
 use Inhere\Http\Response;
 use Inhere\Http\Stream;
-use Inhere\Http\TempStream;
+use Inhere\Http\Component\TempStream;
 use InvalidArgumentException;
 
 /**
@@ -36,7 +36,7 @@ class JsonResponse extends Response
      *
      * @const int
      */
-    public const DEFAULT_JSON_FLAGS = 79;
+    const DEFAULT_JSON_FLAGS = 79;
 
     /**
      * @var mixed
@@ -69,7 +69,7 @@ class JsonResponse extends Response
      * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
     public function __construct(
-        $data, $status = 200, array $headers = [],
+        $data, int $status = 200, array $headers = [],
         $encodingOptions = self::DEFAULT_JSON_FLAGS
     )
     {

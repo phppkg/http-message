@@ -8,6 +8,8 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Component\Collection;
+
 /**
  * Class Headers
  * @package Inhere\Http
@@ -43,7 +45,7 @@ class Headers extends Collection
      *
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         $out = [];
         foreach (parent::all() as $key => $props) {
@@ -117,7 +119,7 @@ class Headers extends Collection
     /**
      * {@inheritDoc}
      */
-    public function has(string $key)
+    public function has(string $key): bool
     {
         return parent::has($this->normalizeKey($key));
     }
@@ -150,7 +152,7 @@ class Headers extends Collection
      * eg: `Accept-Language:zh-CN,zh;q=0.8`
      * @return array
      */
-    public function getAcceptLanguages()
+    public function getAcceptLanguages(): array
     {
         $ls = [];
 
@@ -171,7 +173,7 @@ class Headers extends Collection
      * eg: `Accept-Encoding:gzip, deflate, sdch, br`
      * @return array
      */
-    public function getAcceptEncodes()
+    public function getAcceptEncodes(): array
     {
         $ens = [];
 
@@ -191,7 +193,7 @@ class Headers extends Collection
      * @param bool $toString
      * @return array
      */
-    public function toHeaderLines($toString = false)
+    public function toHeaderLines(bool $toString = false)
     {
         $output = [];
 
@@ -207,7 +209,7 @@ class Headers extends Collection
     /**
      * @return array
      */
-    public function getLines()
+    public function getLines(): array
     {
         $output = [];
 

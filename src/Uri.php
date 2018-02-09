@@ -590,7 +590,7 @@ class Uri implements UriInterface
      * This method is not part of PSR-7.
      * @return string
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();

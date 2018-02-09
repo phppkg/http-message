@@ -6,7 +6,9 @@
  * Time: 下午12:29
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Component;
+
+use Inhere\Http\Stream;
 
 /**
  * Class TempStream
@@ -19,7 +21,7 @@ class TempStream extends Stream
      * @param string $mode
      * @throws \InvalidArgumentException
      */
-    public function __construct($mode = 'wb+')
+    public function __construct(string $mode = 'wb+')
     {
         $stream = fopen('php://temp', $mode);
 

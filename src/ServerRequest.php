@@ -9,7 +9,10 @@
 
 namespace Inhere\Http;
 
+use Inhere\Http\Component\Collection;
+use Inhere\Http\Request\RequestBody;
 use Inhere\Http\Traits\CookiesTrait;
+use Inhere\Http\Traits\RequestHeadersTrait;
 use Inhere\Http\Traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -21,7 +24,7 @@ use Psr\Http\Message\UriInterface;
  */
 class ServerRequest implements ServerRequestInterface
 {
-    use CookiesTrait, RequestTrait;
+    use CookiesTrait, RequestTrait, RequestHeadersTrait;
 
     /**
      * the connection header line data end char
@@ -206,13 +209,13 @@ class ServerRequest implements ServerRequestInterface
      * build response data
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         // first line
         $output = $this->buildFirstLine() . self::EOL;
 
         // add headers
-        $output .= $this->headers->toHeaderLines(1);
+        $output .= $this->headers->toHeaderLines(true);
 
         // append cookies
         if ($cookie = $this->cookies->toRequestHeader()) {
@@ -512,9 +515,9 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getParam($key, $default = null)
     {
-        $postParams = $this->getParsedBody();
-        $getParams = $this->getQueryParams();
         $result = $default;
+        $getParams = $this->getQueryParams();
+        $postParams = $this->getParsedBody();
 
         if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
@@ -525,43 +528,6 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $result;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isWebSocket()
-    {
-        $val = $this->getHeaderLine('upgrade');
-
-        return strtolower($val) === 'websocket';
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAjax()
-    {
-        return $this->isXhr();
-    }
-
-    /**
-     * Is this an XHR request?
-     * Note: This method is not part of the PSR-7 standard.
-     * @return bool
-     */
-    public function isXhr()
-    {
-        return $this->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
-    }
-
-    /**
-     * `Origin: http://foo.example`
-     * @return string
-     */
-    public function getOrigin()
-    {
-        return $this->getHeaderLine('Origin');
     }
 
     /*******************************************************************************
@@ -644,7 +610,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed $value
      * @return $this
      */
-    public function setAttribute($name, $value)
+    public function setAttribute(string $name, $value)
     {
         $this->attributes->set($name, $value);
 
@@ -685,6 +651,10 @@ class ServerRequest implements ServerRequestInterface
         return $clone;
     }
 
+    /**
+     * @param array $attributes
+     * @return ServerRequest
+     */
     public function withAttributes(array $attributes)
     {
         $clone = clone $this;
@@ -697,7 +667,7 @@ class ServerRequest implements ServerRequestInterface
      * @param string $name
      * @return $this
      */
-    public function delAttribute($name)
+    public function delAttribute(string $name)
     {
         $this->attributes->remove($name);
 
@@ -726,86 +696,6 @@ class ServerRequest implements ServerRequestInterface
         return $clone;
     }
 
-    /**
-     * Get request content type.
-     * Note: This method is not part of the PSR-7 standard.
-     * @return string|null The request content type, if known
-     */
-    public function getContentType()
-    {
-        $result = $this->getHeader('Content-Type');
-
-        return $result ? $result[0] : null;
-    }
-
-    /**
-     * Get request media type, if known.
-     * Note: This method is not part of the PSR-7 standard.
-     * @return string|null The request media type, minus content-type params
-     */
-    public function getMediaType()
-    {
-        $contentType = $this->getContentType();
-
-        if ($contentType) {
-            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
-
-            return strtolower($contentTypeParts[0]);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get request media type params, if known.
-     * Note: This method is not part of the PSR-7 standard.
-     * @return array
-     */
-    public function getMediaTypeParams()
-    {
-        $contentType = $this->getContentType();
-        $contentTypeParams = [];
-
-        if ($contentType) {
-            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
-            $contentTypePartsLength = \count($contentTypeParts);
-
-            for ($i = 1; $i < $contentTypePartsLength; $i++) {
-                $paramParts = explode('=', $contentTypeParts[$i]);
-                $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
-            }
-        }
-
-        return $contentTypeParams;
-    }
-
-    /**
-     * Get request content character set, if known.
-     * Note: This method is not part of the PSR-7 standard.
-     * @return string|null
-     */
-    public function getContentCharset()
-    {
-        $mediaTypeParams = $this->getMediaTypeParams();
-        if (isset($mediaTypeParams['charset'])) {
-            return $mediaTypeParams['charset'];
-        }
-
-        return null;
-    }
-
-    /**
-     * Get request content length, if known.
-     * Note: This method is not part of the PSR-7 standard.
-     * @return int|null
-     */
-    public function getContentLength()
-    {
-        $result = $this->headers->get('Content-Length');
-
-        return $result ? (int)$result[0] : null;
-    }
-
     /*******************************************************************************
      * Server Params
      ******************************************************************************/
@@ -829,7 +719,7 @@ class ServerRequest implements ServerRequestInterface
      * @param  mixed $default
      * @return mixed
      */
-    public function getServerParam($key, $default = null)
+    public function getServerParam(string $key, $default = null)
     {
         $key = strtoupper($key);
         $serverParams = $this->getServerParams();

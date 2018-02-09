@@ -6,11 +6,13 @@
  * Time: 下午12:29
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Component;
+
+use Inhere\Http\Stream;
 
 /**
  * Class InputStream
- * @package Inhere\Http
+ * @package Inhere\Http\Component
  */
 class InputStream extends Stream
 {
@@ -19,7 +21,7 @@ class InputStream extends Stream
      * @param string $mode
      * @throws \InvalidArgumentException
      */
-    public function __construct($mode = 'rb+')
+    public function __construct(string $mode = 'rb+')
     {
         $stream = fopen('php://input', $mode);
 

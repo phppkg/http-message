@@ -31,7 +31,7 @@ class Response implements ResponseInterface
     /**
      * the connection header line data end char
      */
-    public const EOL = "\r\n";
+    const EOL = "\r\n";
 
     /**
      * eg: 404
@@ -187,7 +187,7 @@ class Response implements ResponseInterface
         $output = $this->buildFirstLine() . self::EOL;
 
         // add headers
-        $output .= $this->headers->toHeaderLines(1);
+        $output .= $this->headers->toHeaderLines(true);
 
         // set cookies
         foreach ($this->cookies->toHeaders() as $value) {
@@ -235,7 +235,7 @@ class Response implements ResponseInterface
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function redirect($url, $status = 302)
+    public function redirect(string $url, $status = 302)
     {
         $this->setStatus((int)$status);
         $this->setHeader('Location', $url);
@@ -289,18 +289,14 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @param $code
+     * @param int $code
      * @param string $reasonPhrase
      * @return Response
      * @throws \InvalidArgumentException
      */
-    public function setStatus($code, $reasonPhrase = '')
+    public function setStatus(int $code, string $reasonPhrase = '')
     {
         $code = $this->filterStatus($code);
-
-        if (!\is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
-            throw new \InvalidArgumentException('ReasonPhrase must be a string');
-        }
 
         $this->status = $code;
         if ($reasonPhrase === '' && isset(static::$messages[$code])) {
@@ -322,9 +318,9 @@ class Response implements ResponseInterface
      * @return int
      * @throws \InvalidArgumentException If an invalid HTTP status code is provided.
      */
-    protected function filterStatus($status)
+    protected function filterStatus(int $status)
     {
-        if (!\is_int($status) || $status < 100 || $status > 599) {
+        if ($status < 100 || $status > 599) {
             throw new \InvalidArgumentException('Invalid HTTP status code');
         }
 
@@ -334,7 +330,7 @@ class Response implements ResponseInterface
     /**
      * @return int
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status ?: 200;
     }
@@ -342,7 +338,7 @@ class Response implements ResponseInterface
     /**
      * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status ?: 200;
     }
@@ -372,7 +368,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return \in_array($this->getStatusCode(), [204, 205, 304], true);
     }
@@ -382,7 +378,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isInformational()
+    public function isInformational(): bool
     {
         return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
     }
@@ -392,7 +388,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->getStatusCode() === 200;
     }
@@ -402,7 +398,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
     }
@@ -412,7 +408,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isRedirect()
+    public function isRedirect(): bool
     {
         return \in_array($this->getStatusCode(), [301, 302, 303, 307], true);
     }
@@ -422,7 +418,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isRedirection()
+    public function isRedirection(): bool
     {
         return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
     }
@@ -433,7 +429,7 @@ class Response implements ResponseInterface
      * @return bool
      * @api
      */
-    public function isForbidden()
+    public function isForbidden(): bool
     {
         return $this->getStatusCode() === 403;
     }
@@ -443,7 +439,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isNotFound()
+    public function isNotFound(): bool
     {
         return $this->getStatusCode() === 404;
     }
@@ -453,7 +449,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isClientError()
+    public function isClientError(): bool
     {
         return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
     }
@@ -463,7 +459,7 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * @return bool
      */
-    public function isServerError()
+    public function isServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }

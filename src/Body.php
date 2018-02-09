@@ -7,6 +7,8 @@
  */
 namespace Inhere\Http;
 
+use Inhere\Http\Component\TempStream;
+
 /**
  * Body
  *
@@ -22,7 +24,7 @@ class Body extends TempStream
      * @param string $mode
      * @throws \InvalidArgumentException
      */
-    public function __construct($mode = 'rb+')
+    public function __construct(string $mode = 'rb+')
     {
         parent::__construct($mode);
     }

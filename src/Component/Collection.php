@@ -6,11 +6,11 @@
  * Time: 下午2:04
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Component;
 
 /**
  * Class Collection
- * @package Inhere\Http
+ * @package Inhere\Http\Component
  */
 class Collection extends \ArrayObject
 {
@@ -88,12 +88,19 @@ class Collection extends \ArrayObject
         return $this[$name] = $value;
     }
 
-    public function all()
+    /**
+     * @return array
+     */
+    public function all(): array
     {
         return $this->getArrayCopy();
     }
 
-    public function has(string $key)
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key): bool
     {
         return isset($this[$key]);
     }

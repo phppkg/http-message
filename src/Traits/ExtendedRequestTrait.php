@@ -108,16 +108,16 @@ trait ExtendedRequestTrait
      * getParams() alias method
      * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->getParams();
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return UploadedFile
      */
-    public function getUploadedFile($name)
+    public function getUploadedFile(string $name)
     {
         return $this->getUploadedFiles()[$name] ?? null;
     }
@@ -152,7 +152,7 @@ trait ExtendedRequestTrait
      * e.g: `http://xxx.com`
      * @return string
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         return $this->uri->getBaseUrl();
     }
@@ -162,7 +162,7 @@ trait ExtendedRequestTrait
      * e.g. `/content/add?type=blog`
      * @return string
      */
-    public function getRequestUri()
+    public function getRequestUri(): string
     {
         return $this->getRequestTarget();
     }
@@ -172,7 +172,7 @@ trait ExtendedRequestTrait
      * pjax = pushState + ajax
      * @return bool
      */
-    public function isPjax()
+    public function isPjax(): bool
     {
         return $this->isAjax() && ($this->getHeaderLine('X-PJAX') === 'true');
     }
@@ -180,7 +180,7 @@ trait ExtendedRequestTrait
     /**
      * @return string
      */
-    public function getPjaxContainer()
+    public function getPjaxContainer(): string
     {
         return $this->getHeaderLine('X-PJAX-Container');
     }
@@ -189,7 +189,7 @@ trait ExtendedRequestTrait
      * @param string $default
      * @return string
      */
-    public function getReferrer($default = '/')
+    public function getReferrer(string $default = '/'): string
     {
         return $this->getHeaderLine('REFERER') ?: $default;
     }
@@ -213,7 +213,7 @@ trait ExtendedRequestTrait
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @param string|callable $filter
      * @return mixed|null
      */

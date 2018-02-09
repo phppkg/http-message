@@ -6,13 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Request;
 
+use Inhere\Http\ServerRequest;
 use Inhere\Http\Traits\ExtendedRequestTrait;
 
 /**
  * Class ExtendedRequest
- * @package Inhere\Http
+ * @package Inhere\Http\Request
  */
 class ExtendedRequest extends ServerRequest
 {

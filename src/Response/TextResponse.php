@@ -9,7 +9,7 @@
 namespace Inhere\Http\Response;
 
 use Inhere\Http\Response;
-use Inhere\Http\TempStream;
+use Inhere\Http\Component\TempStream;
 use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
 

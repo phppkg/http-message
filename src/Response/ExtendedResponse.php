@@ -6,13 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace Inhere\Http;
+namespace Inhere\Http\Response;
 
+use Inhere\Http\Response;
 use Inhere\Http\Traits\ExtendedResponseTrait;
 
 /**
  * Class ExtendedResponse
- * @package Inhere\Http\Extended
+ * @package Inhere\Http\Response
  */
 class ExtendedResponse extends Response
 {
