@@ -74,10 +74,10 @@ class Headers extends Collection
     /**
      * Get HTTP header value
      *
-     * @param  string  $key     The case-insensitive header name
-     * @param  mixed   $default The default value if key does not exist
+     * @param  string $key The case-insensitive header name
+     * @param  mixed $default The default value if key does not exist
      *
-     * @return string[]
+     * @return string[]|null
      */
     public function get(string $key, $default = null)
     {
@@ -96,7 +96,7 @@ class Headers extends Collection
     public function getLine($name, $default = null)
     {
         if ($val = $this->get($name)) {
-            return implode(',', $val);
+            return \implode(',', $val);
         }
 
         return $default;
@@ -133,7 +133,7 @@ class Headers extends Collection
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return bool|string
      */
     public function normalizeKey($key)
@@ -193,7 +193,7 @@ class Headers extends Collection
      * @param bool $toString
      * @return array
      */
-    public function toHeaderLines(bool $toString = false)
+    public function toHeaderLines(bool $toString = false): array
     {
         $output = [];
 

@@ -8,10 +8,8 @@
 
 namespace Inhere\Http;
 
-use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
 
 /**
  * Represents Uploaded Files.
@@ -50,7 +48,7 @@ class UploadedFile implements UploadedFileInterface
      * A valid PHP UPLOAD_ERR_xxx code for the file upload.
      * @var int
      */
-    protected $error = UPLOAD_ERR_OK;
+    protected $error = \UPLOAD_ERR_OK;
 
     /**
      * Indicates if the upload is from a SAPI environment.
@@ -88,7 +86,7 @@ class UploadedFile implements UploadedFileInterface
      * @param array $uploadedFiles The non-normalized tree of uploaded file data.
      * @return array A normalized tree of UploadedFile instances.
      */
-    public static function parseUploadedFiles(array $uploadedFiles)
+    public static function parseUploadedFiles(array $uploadedFiles): array
     {
         $parsed = [];
         foreach ($uploadedFiles as $field => $uploadedFile) {
@@ -136,8 +134,14 @@ class UploadedFile implements UploadedFileInterface
      * @param int $error The UPLOAD_ERR_XXX code representing the status of the upload.
      * @param bool $sapi Indicates if the upload is in a SAPI environment.
      */
-    public function __construct($file, $name = null, $type = null, $size = null, $error = UPLOAD_ERR_OK, $sapi = false)
-    {
+    public function __construct(
+        string $file,
+        string $name = null,
+        string $type = null,
+        int $size = null,
+        int $error = \UPLOAD_ERR_OK,
+        $sapi = false
+    ) {
         $this->file = $file;
         $this->name = $name;
         $this->type = $type;
@@ -160,13 +164,14 @@ class UploadedFile implements UploadedFileInterface
      * @throws \RuntimeException in cases when no stream is available or can be
      *     created.
      */
-    public function getStream()
+    public function getStream(): StreamInterface
     {
         if ($this->moved) {
             throw new \RuntimeException(sprintf('Uploaded file %1s has already been moved', $this->name));
         }
+
         if ($this->stream === null) {
-            $this->stream = new Stream(fopen($this->file, 'rb'));
+            $this->stream = new Stream(\fopen($this->file, 'rb'));
         }
 
         return $this->stream;
@@ -193,39 +198,39 @@ class UploadedFile implements UploadedFileInterface
      * @see http://php.net/is_uploaded_file
      * @see http://php.net/move_uploaded_file
      * @param string $targetPath Path to which to move the uploaded file.
-     * @throws InvalidArgumentException if the $path specified is invalid.
-     * @throws RuntimeException on any error during the move operation, or on
+     * @throws \InvalidArgumentException if the $path specified is invalid.
+     * @throws \RuntimeException on any error during the move operation, or on
      *     the second or subsequent call to the method.
      */
     public function moveTo($targetPath)
     {
         if ($this->moved) {
-            throw new RuntimeException('Uploaded file already moved');
+            throw new \RuntimeException('Uploaded file already moved');
         }
 
         $targetIsStream = strpos($targetPath, '://') > 0;
         if (!$targetIsStream && !is_writable(\dirname($targetPath))) {
-            throw new InvalidArgumentException('Upload target path is not writable');
+            throw new \InvalidArgumentException('Upload target path is not writable');
         }
 
         if ($targetIsStream) {
             if (!copy($this->file, $targetPath)) {
-                throw new RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
+                throw new \RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
             }
             if (!unlink($this->file)) {
-                throw new RuntimeException(sprintf('Error removing uploaded file %1s', $this->name));
+                throw new \RuntimeException(sprintf('Error removing uploaded file %1s', $this->name));
             }
         } elseif ($this->sapi) {
             if (!is_uploaded_file($this->file)) {
-                throw new RuntimeException(sprintf('%1s is not a valid uploaded file', $this->file));
+                throw new \RuntimeException(sprintf('%1s is not a valid uploaded file', $this->file));
             }
 
             if (!move_uploaded_file($this->file, $targetPath)) {
-                throw new RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
+                throw new \RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
             }
         } else {
             if (!rename($this->file, $targetPath)) {
-                throw new RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
+                throw new \RuntimeException(sprintf('Error moving uploaded file %1s to %2s', $this->name, $targetPath));
             }
         }
 
@@ -242,7 +247,7 @@ class UploadedFile implements UploadedFileInterface
      * @see http://php.net/manual/en/features.file-upload.errors.php
      * @return int One of PHP's UPLOAD_ERR_XXX constants.
      */
-    public function getError()
+    public function getError(): int
     {
         return $this->error;
     }

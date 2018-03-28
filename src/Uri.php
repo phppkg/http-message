@@ -9,7 +9,6 @@
 
 namespace Inhere\Http;
 
-use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -52,7 +51,7 @@ class Uri implements UriInterface
      * Uri path
      * @var string
      */
-    protected $path = '';
+    protected $path = '/';
 
     /**
      * Uri query string (without "?" prefix)
@@ -87,8 +86,7 @@ class Uri implements UriInterface
         $fragment = '',
         $user = '',
         $password = ''
-    )
-    {
+    ) {
         $this->scheme = $scheme ? $this->filterScheme($scheme) : '';
         $this->host = $host;
         $this->port = $this->filterPort($port);
@@ -106,13 +104,13 @@ class Uri implements UriInterface
      * @return self
      * @throws \InvalidArgumentException
      */
-    public static function createFromString($uri)
+    public static function createFromString(string $uri): self
     {
-        if (!\is_string($uri) && !method_exists($uri, '__toString')) {
-            throw new InvalidArgumentException('Uri must be a string');
+        if (!\is_string($uri) && !\method_exists($uri, '__toString')) {
+            throw new \InvalidArgumentException('Uri must be a string');
         }
 
-        $parts = parse_url($uri);
+        $parts = \parse_url($uri);
         $scheme = $parts['scheme'] ?? '';
         $user = $parts['user'] ?? '';
         $pass = $parts['pass'] ?? '';
@@ -128,7 +126,7 @@ class Uri implements UriInterface
     /**
      * @return string
      */
-    public function getPathAndQuery()
+    public function getPathAndQuery(): string
     {
         $query = $this->getQuery();
 
@@ -149,7 +147,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.1
      * @return string The URI scheme.
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
@@ -165,7 +163,7 @@ class Uri implements UriInterface
      * @return self A new instance with the specified scheme.
      * @throws \InvalidArgumentException for invalid or unsupported schemes.
      */
-    public function withScheme($scheme)
+    public function withScheme($scheme): self
     {
         $scheme = $this->filterScheme($scheme);
         $clone = clone $this;
@@ -189,18 +187,18 @@ class Uri implements UriInterface
      * Filter Uri scheme.
      * @param  string $scheme Raw Uri scheme.
      * @return string
-     * @throws InvalidArgumentException If the Uri scheme is not a string.
-     * @throws InvalidArgumentException If Uri scheme is not "", "https", or "http".
+     * @throws \InvalidArgumentException If the Uri scheme is not a string.
+     * @throws \InvalidArgumentException If Uri scheme is not "", "https", or "http".
      */
-    protected function filterScheme($scheme)
+    protected function filterScheme($scheme): string
     {
-        if (!\is_string($scheme) && !method_exists($scheme, '__toString')) {
-            throw new InvalidArgumentException('Uri scheme must be a string');
+        if (!\is_string($scheme) && !\method_exists($scheme, '__toString')) {
+            throw new \InvalidArgumentException('Uri scheme must be a string');
         }
 
-        $scheme = str_replace('://', '', strtolower((string)$scheme));
+        $scheme = \str_replace('://', '', \strtolower((string)$scheme));
         if (!isset(static::$validScheme[$scheme])) {
-            throw new InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
+            throw new \InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
         }
 
         return $scheme;
@@ -223,7 +221,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.2
      * @return string The URI authority, in "[user-info@]host[:port]" format.
      */
-    public function getAuthority()
+    public function getAuthority(): string
     {
         $userInfo = $this->getUserInfo();
         $host = $this->getHost();
@@ -243,7 +241,7 @@ class Uri implements UriInterface
      * NOT be added.
      * @return string The URI user information, in "username[:password]" format.
      */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         return $this->user . ($this->password ? ':' . $this->password : '');
     }
@@ -259,7 +257,7 @@ class Uri implements UriInterface
      * @param null|string $password The password associated with $user.
      * @return self A new instance with the specified user information.
      */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo($user, $password = null): self
     {
         $clone = clone $this;
         $clone->user = $user;
@@ -276,7 +274,7 @@ class Uri implements UriInterface
      * @see http://tools.ietf.org/html/rfc3986#section-3.2.2
      * @return string The URI host.
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -290,7 +288,7 @@ class Uri implements UriInterface
      * @return self A new instance with the specified host.
      * @throws \InvalidArgumentException for invalid hostnames.
      */
-    public function withHost($host)
+    public function withHost($host): self
     {
         $clone = clone $this;
         $clone->host = $host;
@@ -327,7 +325,7 @@ class Uri implements UriInterface
      * @return self A new instance with the specified port.
      * @throws \InvalidArgumentException for invalid ports.
      */
-    public function withPort($port)
+    public function withPort($port): self
     {
         $port = $this->filterPort($port);
         $clone = clone $this;
@@ -340,7 +338,7 @@ class Uri implements UriInterface
      * Does this Uri use a standard port?
      * @return bool
      */
-    protected function hasStandardPort()
+    protected function hasStandardPort(): bool
     {
         return ($this->scheme === 'Http' && $this->port === 80) || ($this->scheme === 'https' && $this->port === 443);
     }
@@ -349,7 +347,7 @@ class Uri implements UriInterface
      * Filter Uri port.
      * @param  null|int $port The Uri port number.
      * @return null|int
-     * @throws InvalidArgumentException If the port is invalid.
+     * @throws \InvalidArgumentException If the port is invalid.
      */
     protected function filterPort($port)
     {
@@ -357,7 +355,7 @@ class Uri implements UriInterface
             return $port;
         }
 
-        throw new InvalidArgumentException('Uri port must be null or an integer between 1 and 65535 (inclusive)');
+        throw new \InvalidArgumentException('Uri port must be null or an integer between 1 and 65535 (inclusive)');
     }
 
     /********************************************************************************
@@ -384,7 +382,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.3
      * @return string The URI path.
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -406,10 +404,10 @@ class Uri implements UriInterface
      * @return self A new instance with the specified path.
      * @throws \InvalidArgumentException for invalid paths.
      */
-    public function withPath($path)
+    public function withPath($path): self
     {
         if (!\is_string($path)) {
-            throw new InvalidArgumentException('Uri path must be a string');
+            throw new \InvalidArgumentException('Uri path must be a string');
         }
 
         $clone = clone $this;
@@ -428,7 +426,7 @@ class Uri implements UriInterface
      * @return string       The RFC 3986 percent-encoded uri path.
      * @link   http://www.faqs.org/rfcs/rfc3986.html
      */
-    protected function filterPath($path)
+    protected function filterPath($path): string
     {
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~:@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
@@ -458,7 +456,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.4
      * @return string The URI query string.
      */
-    public function getQuery()
+    public function getQuery(): string
     {
         return $this->query;
     }
@@ -470,10 +468,10 @@ class Uri implements UriInterface
      * @return self A new instance with the specified query string.
      * @throws \InvalidArgumentException for invalid query strings.
      */
-    public function withQuery($query)
+    public function withQuery($query): self
     {
         if (!\is_string($query) && !method_exists($query, '__toString')) {
-            throw new InvalidArgumentException('Uri query must be a string');
+            throw new \InvalidArgumentException('Uri query must be a string');
         }
         $query = ltrim((string)$query, '?');
         $clone = clone $this;
@@ -487,12 +485,12 @@ class Uri implements UriInterface
      * @param string $query The raw uri query string.
      * @return string The percent-encoded query string.
      */
-    protected function filterQuery($query)
+    protected function filterQuery($query): string
     {
-        return preg_replace_callback(
+        return \preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',
             function ($match) {
-                return rawurlencode($match[0]);
+                return \rawurlencode($match[0]);
             },
             $query
         );
@@ -514,7 +512,7 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.5
      * @return string The URI fragment.
      */
-    public function getFragment()
+    public function getFragment(): string
     {
         return $this->fragment;
     }
@@ -530,11 +528,12 @@ class Uri implements UriInterface
      * @return self A new instance with the specified fragment.
      * @throws \InvalidArgumentException
      */
-    public function withFragment($fragment)
+    public function withFragment($fragment): self
     {
-        if (!\is_string($fragment) && !method_exists($fragment, '__toString')) {
-            throw new InvalidArgumentException('Uri fragment must be a string');
+        if (!\is_string($fragment) && !\method_exists($fragment, '__toString')) {
+            throw new \InvalidArgumentException('Uri fragment must be a string');
         }
+
         $fragment = ltrim((string)$fragment, '#');
         $clone = clone $this;
         $clone->fragment = $this->filterQuery($fragment);
@@ -570,12 +569,12 @@ class Uri implements UriInterface
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();
-        $basePath = $this->getBasePath();
+        // $basePath = $this->getBasePath();
         $path = $this->getPath();
         $query = $this->getQuery();
         $fragment = $this->getFragment();
 
-        $path = $basePath . '/' . ltrim($path, '/');
+        $path = '/' . ltrim($path, '/');
 
         return ($scheme ? $scheme . ':' : '')
             . ($authority ? '//' . $authority : '')
@@ -594,14 +593,14 @@ class Uri implements UriInterface
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();
-        $basePath = $this->getBasePath();
-
-        if ($authority && $basePath[0] !== '/') {
-            $basePath = $basePath . '/' . $basePath;
-        }
+        // $basePath = $this->getBasePath();
+        //
+        // if ($authority && $basePath[0] !== '/') {
+        //     $basePath = $basePath . '/' . $basePath;
+        // }
 
         return ($scheme ? $scheme . ':' : '')
-            . ($authority ? '//' . $authority : '')
-            . rtrim($basePath, '/');
+            . ($authority ? '//' . $authority : '');
+        // . rtrim($basePath, '/');
     }
 }

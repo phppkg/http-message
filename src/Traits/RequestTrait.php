@@ -59,6 +59,7 @@ trait RequestTrait
     /**
      * @param string|UriInterface|null $uri
      * @param string|null $method
+     * @throws \InvalidArgumentException
      */
     protected function initializeRequest($uri = null, $method = null)
     {
@@ -94,7 +95,7 @@ trait RequestTrait
      * @return UriInterface
      * @throws \InvalidArgumentException
      */
-    private function createUri($uri)
+    private function createUri($uri): UriInterface
     {
         if ($uri instanceof UriInterface) {
             return $uri;
@@ -121,7 +122,7 @@ trait RequestTrait
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         if ($this->method === null) {
             $this->method = $this->originalMethod;
@@ -155,7 +156,7 @@ trait RequestTrait
     /**
      * @return string
      */
-    public function getOriginalMethod()
+    public function getOriginalMethod(): string
     {
         return $this->originalMethod;
     }
@@ -168,12 +169,12 @@ trait RequestTrait
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function isMethod($method)
+    public function isMethod($method): bool
     {
         return $this->getMethod() === strtoupper($method);
     }
 
-    public function withMethod($method)
+    public function withMethod($method): RequestTrait
     {
         $method = (string)$this->filterMethod($method);
 
@@ -186,7 +187,7 @@ trait RequestTrait
 
     /**
      * Validate the HTTP method
-     * @param  null|string $method
+     * @param  null|string|mixed $method
      * @return null|string
      * @throws \InvalidArgumentException on invalid HTTP method.
      */
@@ -203,7 +204,7 @@ trait RequestTrait
             ));
         }
 
-        $method = strtoupper($method);
+        $method = \strtoupper($method);
         if (!isset($this->validMethods[$method])) {
             throw new \InvalidArgumentException($this, $method);
         }
@@ -248,8 +249,9 @@ trait RequestTrait
     /**
      * @param string $requestTarget
      * @return $this
+     * @throws \InvalidArgumentException
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): self
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new \InvalidArgumentException(
@@ -279,7 +281,12 @@ trait RequestTrait
         $this->uri = $uri;
     }
 
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    /**
+     * @param UriInterface $uri
+     * @param bool $preserveHost
+     * @return self
+     */
+    public function withUri(UriInterface $uri, $preserveHost = false): self
     {
         $clone = clone $this;
         $clone->uri = $uri;

@@ -44,7 +44,7 @@ class Cookies extends Collection
      */
     public function setDefaults(array $settings)
     {
-        $this->defaults = array_replace($this->defaults, $settings);
+        $this->defaults = \array_replace($this->defaults, $settings);
     }
 
     /**
@@ -53,13 +53,13 @@ class Cookies extends Collection
      * @param string|array $value Cookie value, or cookie properties
      * @return $this
      */
-    public function set($name, $value)
+    public function set($name, $value): self
     {
         if (!\is_array($value)) {
             $value = ['value' => (string)$value];
         }
 
-        parent::set($name, array_replace($this->defaults, $value));
+        parent::set($name, \array_replace($this->defaults, $value));
 
         return $this;
     }
@@ -86,7 +86,7 @@ class Cookies extends Collection
      */
     protected function toHeader(string $name, array $properties): string
     {
-        $result = urlencode($name) . '=' . urlencode($properties['value']);
+        $result = \urlencode($name) . '=' . \urlencode($properties['value']);
 
         if (isset($properties['domain'])) {
             $result .= '; domain=' . $properties['domain'];
@@ -98,12 +98,12 @@ class Cookies extends Collection
 
         if (isset($properties['expires'])) {
             if (\is_string($properties['expires'])) {
-                $timestamp = strtotime($properties['expires']);
+                $timestamp = \strtotime($properties['expires']);
             } else {
                 $timestamp = (int)$properties['expires'];
             }
             if ($timestamp !== 0) {
-                $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
+                $result .= '; expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
             }
         }
 
@@ -131,7 +131,7 @@ class Cookies extends Collection
         $cookieValue = '';
 
         foreach ($this as $name => $value) {
-            $cookieValue .= urlencode($name) . '=' . urlencode($value['value']) . '; ';
+            $cookieValue .= \urlencode($name) . '=' . \urlencode($value['value']) . '; ';
         }
 
         return trim($cookieValue, '; ');
@@ -149,7 +149,7 @@ class Cookies extends Collection
         $cookies = [];
 
         if (\is_array($cookieText)) {
-            $cookieText = array_shift($cookieText) ?: '';
+            $cookieText = \array_shift($cookieText) ?: '';
         }
 
         if (!\is_string($cookieText)) {
@@ -160,14 +160,14 @@ class Cookies extends Collection
             return $cookies;
         }
 
-        $pieces = preg_split('#[;]\s*#', rtrim($cookieText, "\r\n"));
+        $pieces = \preg_split('#[;]\s*#', \rtrim($cookieText, "\r\n"));
 
         foreach ($pieces as $cookie) {
-            $cookie = explode('=', $cookie, 2);
+            $cookie = \explode('=', $cookie, 2);
 
             if (\count($cookie) === 2) {
-                $key = urldecode($cookie[0]);
-                $value = urldecode($cookie[1]);
+                $key = \urldecode($cookie[0]);
+                $value = \urldecode($cookie[1]);
 
                 if (!isset($cookies[$key])) {
                     $cookies[$key] = $value;

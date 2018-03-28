@@ -43,7 +43,11 @@ trait CookiesTrait
         return $this->cookies->get($key, $default);
     }
 
-    public function withCookieParams(array $cookies)
+    /**
+     * @param array $cookies
+     * @return self
+     */
+    public function withCookieParams(array $cookies): self
     {
         $clone = clone $this;
         $clone->cookies = new Cookies($cookies);
@@ -56,7 +60,7 @@ trait CookiesTrait
      * @param string|array $value
      * @return $this
      */
-    public function setCookie(string $name, $value)
+    public function setCookie(string $name, $value): self
     {
         $this->cookies->set($name, $value);
 
@@ -75,7 +79,7 @@ trait CookiesTrait
      * @param Cookies|array $cookies
      * @return $this
      */
-    public function setCookies($cookies)
+    public function setCookies($cookies): self
     {
         if (\is_array($cookies)) {
             return $this->setCookiesFromArray($cookies);
@@ -90,7 +94,7 @@ trait CookiesTrait
      * @param array $cookies
      * @return $this
      */
-    public function setCookiesFromArray(array $cookies)
+    public function setCookiesFromArray(array $cookies): self
     {
         if (!$this->cookies) {
             $this->cookies = new Cookies($cookies);

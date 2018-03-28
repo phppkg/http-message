@@ -42,7 +42,7 @@ class ServerRequest implements ServerRequestInterface
      */
     private $bodyParsers = [];
 
-    /** @var array  */
+    /** @var array */
     private $serverParams;
 
     /** @var Collection */
@@ -128,11 +128,16 @@ class ServerRequest implements ServerRequestInterface
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        string $method = 'GET', UriInterface $uri = null, $headers = null, array $cookies = [],
-        array $serverParams = [], StreamInterface $body = null, array $uploadedFiles = [],
-        string $protocol = 'HTTP', string $protocolVersion = '1.1'
-    )
-    {
+        string $method = 'GET',
+        UriInterface $uri = null,
+        $headers = null,
+        array $cookies = [],
+        array $serverParams = [],
+        StreamInterface $body = null,
+        array $uploadedFiles = [],
+        string $protocol = 'HTTP',
+        string $protocolVersion = '1.1'
+    ) {
         $this->setCookies($cookies);
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);
@@ -164,7 +169,11 @@ class ServerRequest implements ServerRequestInterface
      */
     public function __toString()
     {
-        return $this->toString();
+        try {
+            return $this->toString();
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /**
@@ -173,7 +182,7 @@ class ServerRequest implements ServerRequestInterface
     protected function registerDataParsers()
     {
         $this->registerMediaTypeParser('application/json', function ($input) {
-            $result = json_decode($input, true);
+            $result = \json_decode($input, true);
             if (!\is_array($result)) {
                 return null;
             }
@@ -182,12 +191,13 @@ class ServerRequest implements ServerRequestInterface
         });
 
         $xmlParser = function ($input) {
-            $backup = libxml_disable_entity_loader();
-            $backup_errors = libxml_use_internal_errors(true);
-            $result = simplexml_load_string($input);
-            libxml_disable_entity_loader($backup);
-            libxml_clear_errors();
-            libxml_use_internal_errors($backup_errors);
+            $backup = \libxml_disable_entity_loader();
+            $backup_errors = \libxml_use_internal_errors(true);
+            $result = \simplexml_load_string($input);
+            \libxml_disable_entity_loader($backup);
+            \libxml_clear_errors();
+            \libxml_use_internal_errors($backup_errors);
+
             if ($result === false) {
                 return null;
             }
@@ -199,7 +209,7 @@ class ServerRequest implements ServerRequestInterface
         $this->registerMediaTypeParser('application/xml', $xmlParser);
 
         $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
-            parse_str($input, $data);
+            \parse_str($input, $data);
 
             return $data;
         });
@@ -208,6 +218,8 @@ class ServerRequest implements ServerRequestInterface
     /**
      * build response data
      * @return string
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function toString(): string
     {
@@ -253,7 +265,7 @@ class ServerRequest implements ServerRequestInterface
      * @return array the request GET parameter values.
      * @see setQueryParams()
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
         if ($this->_queryParams === null) {
             return $_GET;
@@ -337,7 +349,7 @@ class ServerRequest implements ServerRequestInterface
      * Returns the raw HTTP request body.
      * @return string the request body
      */
-    public function getRawBody()
+    public function getRawBody(): string
     {
         if ($this->_rawBody === null) {
             $this->_rawBody = file_get_contents('php://input');
@@ -377,7 +389,7 @@ class ServerRequest implements ServerRequestInterface
         $mediaType = $this->getMediaType();
 
         // look for a media type with a structured syntax suffix (RFC 6839)
-        $parts = explode('+', $mediaType);
+        $parts = \explode('+', $mediaType);
         if (\count($parts) >= 2) {
             $mediaType = 'application/' . $parts[\count($parts) - 1];
         }
@@ -493,7 +505,7 @@ class ServerRequest implements ServerRequestInterface
      * @return array
      * @throws \RuntimeException
      */
-    public function getParams()
+    public function getParams(): array
     {
         $params = $this->getQueryParams();
         $postParams = $this->getParsedBody();
@@ -521,7 +533,7 @@ class ServerRequest implements ServerRequestInterface
 
         if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (\is_object($postParams) && property_exists($postParams, $key)) {
+        } elseif (\is_object($postParams) && \property_exists($postParams, $key)) {
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
@@ -537,7 +549,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @return array
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         return $this->uploadedFiles;
     }
@@ -546,7 +558,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $uploadedFiles
      * @return $this
      */
-    public function setUploadedFiles(array $uploadedFiles)
+    public function setUploadedFiles(array $uploadedFiles): self
     {
         $this->uploadedFiles = $uploadedFiles;
 
@@ -580,7 +592,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes->all();
     }
@@ -610,7 +622,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed $value
      * @return $this
      */
-    public function setAttribute(string $name, $value)
+    public function setAttribute(string $name, $value): self
     {
         $this->attributes->set($name, $value);
 
@@ -621,7 +633,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $values
      * @return $this
      */
-    public function setAttributes(array $values)
+    public function setAttributes(array $values): self
     {
         $this->attributes->replace($values);
 
@@ -655,7 +667,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $attributes
      * @return ServerRequest
      */
-    public function withAttributes(array $attributes)
+    public function withAttributes(array $attributes): ServerRequest
     {
         $clone = clone $this;
         $clone->attributes = new Collection($attributes);
@@ -667,7 +679,7 @@ class ServerRequest implements ServerRequestInterface
      * @param string $name
      * @return $this
      */
-    public function delAttribute(string $name)
+    public function delAttribute(string $name): self
     {
         $this->attributes->remove($name);
 
@@ -707,7 +719,7 @@ class ServerRequest implements ServerRequestInterface
      * REQUIRED to originate from $_SERVER.
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
@@ -721,7 +733,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getServerParam(string $key, $default = null)
     {
-        $key = strtoupper($key);
+        $key = \strtoupper($key);
         $serverParams = $this->getServerParams();
 
         return $serverParams[$key] ?? $default;

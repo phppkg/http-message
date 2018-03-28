@@ -11,7 +11,6 @@ namespace Inhere\Http\Response;
 use Inhere\Http\Response;
 use Inhere\Http\Component\TempStream;
 use Psr\Http\Message\StreamInterface;
-use InvalidArgumentException;
 
 /**
  * Class TextResponse - Plain text response.
@@ -37,7 +36,7 @@ class TextResponse extends Response
      * @param int $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
      * @throws \RuntimeException
-     * @throws InvalidArgumentException if $text is neither a string or stream.
+     * @throws \InvalidArgumentException if $text is neither a string or stream.
      */
     public function __construct($text, $status = 200, array $headers = [])
     {
@@ -54,16 +53,16 @@ class TextResponse extends Response
      * @param string|StreamInterface $text
      * @return StreamInterface
      * @throws \RuntimeException
-     * @throws InvalidArgumentException if $html is neither a string or stream.
+     * @throws \InvalidArgumentException if $html is neither a string or stream.
      */
-    private function createBody($text)
+    private function createBody($text): StreamInterface
     {
         if ($text instanceof StreamInterface) {
             return $text;
         }
 
-        if (! \is_string($text)) {
-            throw new InvalidArgumentException(sprintf(
+        if (!\is_string($text)) {
+            throw new \InvalidArgumentException(sprintf(
                 'Invalid content (%s) provided to %s',
                 (\is_object($text) ? \get_class($text) : \gettype($text)),
                 __CLASS__

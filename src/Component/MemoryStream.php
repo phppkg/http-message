@@ -1,9 +1,9 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: inhere
- * Date: 2017/10/21
- * Time: 下午12:29
+ * User: Inhere
+ * Date: 2018/3/28 0028
+ * Time: 22:25
  */
 
 namespace Inhere\Http\Component;
@@ -11,19 +11,19 @@ namespace Inhere\Http\Component;
 use Inhere\Http\Stream;
 
 /**
- * Class InputStream
+ * Class MemoryStream
  * @package Inhere\Http\Component
  */
-class InputStream extends Stream
+class MemoryStream extends Stream
 {
     /**
-     * InputStream constructor.
+     * class constructor.
      * @param string $mode
      * @throws \InvalidArgumentException
      */
-    public function __construct(string $mode = 'rb+')
+    public function __construct(string $mode = 'b')
     {
-        $stream = \fopen('php://input', $mode);
+        $stream = \fopen('php://memory', $mode);
 
         parent::__construct($stream);
     }

@@ -41,10 +41,13 @@ class Request implements RequestInterface
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        string $method = 'GET', UriInterface $uri = null, $headers = null,
-        StreamInterface $body = null, string $protocol = 'HTTP', string $protocolVersion = '1.1'
-    )
-    {
+        string $method = 'GET',
+        UriInterface $uri = null,
+        $headers = null,
+        StreamInterface $body = null,
+        string $protocol = 'HTTP',
+        string $protocolVersion = '1.1'
+    ) {
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);
 
@@ -65,12 +68,18 @@ class Request implements RequestInterface
      */
     public function __toString()
     {
-        return $this->toString();
+        try {
+            return $this->toString();
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /**
      * build response data
      * @return string
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function toString(): string
     {

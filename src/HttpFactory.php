@@ -49,7 +49,7 @@ class HttpFactory
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function createRequest(string $method, $uri)
+    public static function createRequest(string $method, $uri): RequestInterface
     {
         if (\is_string($uri)) {
             $uri = Uri::createFromString($uri);
@@ -68,7 +68,7 @@ class HttpFactory
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      */
-    public static function createResponse(int $code = 200)
+    public static function createResponse(int $code = 200): ResponseInterface
     {
         return new Response($code);
     }
@@ -85,7 +85,7 @@ class HttpFactory
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function createServerRequest($method, $uri)
+    public static function createServerRequest($method, $uri): ServerRequestInterface
     {
         if (\is_string($uri)) {
             $uri = Uri::createFromString($uri);
@@ -103,15 +103,16 @@ class HttpFactory
      * @throws \InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray($server, string $class = null)
+    public static function createServerRequestFromArray($server, string $class = null): ServerRequestInterface
     {
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
+
+        $body = new RequestBody();
         $method = $env->get('REQUEST_METHOD', 'GET');
         $headers = static::createHeadersFromArray($env);
         $cookies = Cookies::parseFromRawHeader($headers->get('Cookie', []));
         $serverParams = $env->all();
-        $body = new RequestBody();
         $uploadedFiles = UploadedFile::createFromFILES();
 
         $class = $class ?: ServerRequest::class;
@@ -119,7 +120,8 @@ class HttpFactory
         /** @var ServerRequest $request */
         $request = new $class($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
 
-        if ($method === 'POST' &&
+        if (
+            $method === 'POST' &&
             \in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
         ) {
             // parsed body must be $_POST
@@ -141,7 +143,7 @@ class HttpFactory
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function createStream($content = '')
+    public static function createStream(string $content = ''): StreamInterface
     {
         return new RequestBody($content);
     }
@@ -156,10 +158,10 @@ class HttpFactory
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    public static function createStreamFromFile($filename, $mode = 'r')
+    public static function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
         // $stream = fopen('php://temp', $mode);
-        $stream = fopen($filename, $mode);
+        $stream = \fopen($filename, $mode);
 
         return new Stream($stream);
     }
@@ -171,7 +173,7 @@ class HttpFactory
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    public static function createStreamFromResource($resource)
+    public static function createStreamFromResource($resource): StreamInterface
     {
         return new Stream($resource);
     }
@@ -197,9 +199,12 @@ class HttpFactory
      * @throws \InvalidArgumentException If the file resource is not readable.
      */
     public static function createUploadedFile(
-        $file, $size = null, $error = \UPLOAD_ERR_OK, $clientFilename = null, $clientMediaType = null
-    )
-    {
+        $file,
+        int $size = null,
+        int $error = \UPLOAD_ERR_OK,
+        string $clientFilename = null,
+        string $clientMediaType = null
+    ): UploadedFileInterface {
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
     }
 
@@ -213,56 +218,9 @@ class HttpFactory
      * @return UriInterface
      * @throws \InvalidArgumentException If the given URI cannot be parsed.
      */
-    public static function createUri($uri = '')
+    public static function createUri(string $uri = ''): UriInterface
     {
         return Uri::createFromString($uri);
-    }
-
-    /*******************************************************************************
-     * extended factory methods
-     ******************************************************************************/
-
-    /**
-     * @param Collection|array $env
-     * @return Headers
-     */
-    public static function createHeadersFromArray($env)
-    {
-        $data = [];
-        $env = self::ensureIsCollection($env);
-        $env = self::determineAuthorization($env);
-
-        foreach ($env as $key => $value) {
-            $key = strtoupper($key);
-            if (isset(static::$special[$key]) || strpos($key, 'HTTP_') === 0) {
-                if ($key !== 'HTTP_CONTENT_LENGTH') {
-                    $data[$key] = $value;
-                }
-            }
-        }
-
-        return new Headers($data);
-    }
-
-    /**
-     * If HTTP_AUTHORIZATION does not exist tries to get it from
-     * getallheaders() when available.
-     * @param Collection $env The Slim application Collection
-     * @return Collection
-     */
-    public static function determineAuthorization($env)
-    {
-        $authorization = $env->get('HTTP_AUTHORIZATION');
-
-        if (null === $authorization && \is_callable('getallheaders')) {
-            $headers = getallheaders();
-            $headers = array_change_key_case($headers, CASE_LOWER);
-            if (isset($headers['authorization'])) {
-                $env->set('HTTP_AUTHORIZATION', $headers['authorization']);
-            }
-        }
-
-        return $env;
     }
 
     /**
@@ -270,7 +228,7 @@ class HttpFactory
      * @return Uri
      * @throws \InvalidArgumentException
      */
-    public static function createUriFromArray($env)
+    public static function createUriFromArray($env): Uri
     {
         $env = self::ensureIsCollection($env);
 
@@ -291,17 +249,17 @@ class HttpFactory
 
         // Authority: Port
         $port = (int)$env->get('SERVER_PORT', 80);
-        if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
+        if (\preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
             $host = $matches[1];
 
             if ($matches[2]) {
-                $port = (int)substr($matches[2], 1);
+                $port = (int)\substr($matches[2], 1);
             }
         } else {
-            $pos = strpos($host, ':');
+            $pos = \strpos($host, ':');
             if ($pos !== false) {
-                $port = (int)substr($host, $pos + 1);
-                $host = strstr($host, ':', true);
+                $port = (int)\substr($host, $pos + 1);
+                $host = \strstr($host, ':', true);
             }
         }
 
@@ -311,12 +269,12 @@ class HttpFactory
 
         // parse_url() requires a full URL. As we don't extract the domain name or scheme,
         // we use a stand-in.
-        $uriPath = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
+        $uriPath = \parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
 
         // Query string
         $queryString = $env->get('QUERY_STRING', '');
         if ($queryString === '') {
-            $queryString = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
+            $queryString = \parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
         }
 
         // Fragment
@@ -328,17 +286,66 @@ class HttpFactory
         return $uri;
     }
 
+    /*******************************************************************************
+     * extended factory methods
+     ******************************************************************************/
+
+    /**
+     * @param Collection|array $env
+     * @return Headers
+     */
+    public static function createHeadersFromArray($env): Headers
+    {
+        $data = [];
+        $env = self::ensureIsCollection($env);
+        $env = self::determineAuthorization($env);
+
+        foreach ($env as $key => $value) {
+            $key = \strtoupper($key);
+
+            if (isset(static::$special[$key]) || strpos($key, 'HTTP_') === 0) {
+                if ($key !== 'HTTP_CONTENT_LENGTH') {
+                    $data[$key] = $value;
+                }
+            }
+        }
+
+        return new Headers($data);
+    }
+
+    /**
+     * If HTTP_AUTHORIZATION does not exist tries to get it from
+     * getallheaders() when available.
+     * @param Collection $env The Slim application Collection
+     * @return Collection
+     */
+    public static function determineAuthorization($env): Collection
+    {
+        $authorization = $env->get('HTTP_AUTHORIZATION');
+
+        if (null === $authorization && \is_callable('getallheaders')) {
+            $headers = \getallheaders();
+            $headers = \array_change_key_case($headers, CASE_LOWER);
+
+            if (isset($headers['authorization'])) {
+                $env->set('HTTP_AUTHORIZATION', $headers['authorization']);
+            }
+        }
+
+        return $env;
+    }
+
     /**
      * @param mixed $data
      * @return Collection
      */
-    public static function ensureIsCollection($data)
+    public static function ensureIsCollection($data): Collection
     {
         if (\is_array($data)) {
             return new Collection($data);
         }
 
-        if (\is_object($data) && method_exists($data, 'get')) {
+        if (\is_object($data) && \method_exists($data, 'get')) {
             return $data;
         }
 

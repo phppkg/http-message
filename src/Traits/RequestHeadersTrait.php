@@ -23,7 +23,7 @@ trait RequestHeadersTrait
     {
         $val = $this->getHeaderLine('upgrade');
 
-        return strtolower($val) === 'websocket';
+        return \strtolower($val) === 'websocket';
     }
 
     /**
@@ -94,12 +94,12 @@ trait RequestHeadersTrait
         $contentTypeParams = [];
 
         if ($contentType) {
-            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypeParts = \preg_split('/\s*[;,]\s*/', $contentType);
             $contentTypePartsLength = \count($contentTypeParts);
 
             for ($i = 1; $i < $contentTypePartsLength; $i++) {
-                $paramParts = explode('=', $contentTypeParts[$i]);
-                $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
+                $paramParts = \explode('=', $contentTypeParts[$i]);
+                $contentTypeParams[\strtolower($paramParts[0])] = $paramParts[1];
             }
         }
 

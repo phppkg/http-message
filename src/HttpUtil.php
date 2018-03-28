@@ -66,6 +66,7 @@ class HttpUtil
 
             if (null !== $contentLength) {
                 $amountToRead = $contentLength;
+
                 while ($amountToRead > 0 && !$body->eof()) {
                     $data = $body->read(min($chunkSize, $amountToRead));
                     echo $data;
@@ -78,6 +79,7 @@ class HttpUtil
             } else {
                 while (!$body->eof()) {
                     echo $body->read($chunkSize);
+
                     if (connection_status() !== CONNECTION_NORMAL) {
                         break;
                     }

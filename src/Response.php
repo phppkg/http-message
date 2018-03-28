@@ -121,12 +121,25 @@ class Response implements ResponseInterface
         599 => 'Network Connect Timeout Error',
     ];
 
+    /**
+     * @param int $status
+     * @param null $headers
+     * @param array $cookies
+     * @param StreamInterface|null $body
+     * @param string $protocol
+     * @param string $protocolVersion
+     * @return Response
+     * @throws \InvalidArgumentException
+     */
     public static function make(
-        int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
-        string $protocol = 'HTTP', string $protocolVersion = '1.1'
-    )
-    {
-        return new self($status, $headers, $cookies, $body, $protocol, $protocolVersion);
+        int $status = 200,
+        $headers = null,
+        array $cookies = [],
+        StreamInterface $body = null,
+        string $protocol = 'HTTP',
+        string $protocolVersion = '1.1'
+    ): Response {
+        return new static($status, $headers, $cookies, $body, $protocol, $protocolVersion);
     }
 
     /**
@@ -140,11 +153,15 @@ class Response implements ResponseInterface
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        int $status = 200, $headers = null, array $cookies = [], StreamInterface $body = null,
-        string $protocol = 'HTTP', string $protocolVersion = '1.1'
+        int $status = 200,
+        $headers = null,
+        array $cookies = [],
+        StreamInterface $body = null,
+        string $protocol = 'HTTP',
+        string $protocolVersion = '1.1'
     ) {
         $this->setCookies($cookies);
-        $this->initialize($protocol, $protocolVersion, $headers, $body? : new Body());
+        $this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 
         $this->status = $this->filterStatus($status);
     }
@@ -165,7 +182,7 @@ class Response implements ResponseInterface
     /**
      * @return string
      */
-    protected function buildFirstLine()
+    protected function buildFirstLine(): string
     {
         // `GET /path HTTP/1.1`
         return sprintf(
@@ -181,7 +198,7 @@ class Response implements ResponseInterface
      * build response data
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         // first line
         $output = $this->buildFirstLine() . self::EOL;
@@ -208,39 +225,39 @@ class Response implements ResponseInterface
      * @param  int $encodingOptions Json encoding options
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @return static
+     * @return self|mixed
      */
-    public function json($data, int $status = null, $encodingOptions = 0)
+    public function json($data, int $status = null, int $encodingOptions = 0): self
     {
         $this->setBody(new Body());
-        $this->write($json = json_encode($data, $encodingOptions));
+        $this->write($json = \json_encode($data, $encodingOptions));
 
         // Ensure that the json encoding passed successfully
         if ($json === false) {
-            throw new \RuntimeException(json_last_error_msg(), json_last_error());
+            throw new \RuntimeException(\json_last_error_msg(), \json_last_error());
         }
 
-        $this->setHeader('Content-Type', 'application/json;charset=UTF-8');
+        /** @var self $response */
+        $response = $this->withHeader('Content-Type', 'application/json;charset=UTF-8');
 
         if (null === $status) {
-            return $this->setStatus($status);
+            return $response->withStatus($status);
         }
 
-        return $this;
+        return $response;
     }
 
     /**
      * @param string $url
      * @param int $status
-     * @return static
+     * @return $this|mixed
      * @throws \InvalidArgumentException
      */
-    public function redirect(string $url, $status = 302)
+    public function redirect(string $url, $status = 302): self
     {
-        $this->setStatus((int)$status);
-        $this->setHeader('Location', $url);
-
-        return $this;
+        return $this
+            ->withStatus((int)$status)
+            ->withHeader('Location', $url);
     }
 
     /*******************************************************************************
@@ -294,7 +311,7 @@ class Response implements ResponseInterface
      * @return Response
      * @throws \InvalidArgumentException
      */
-    public function setStatus(int $code, string $reasonPhrase = '')
+    public function setStatus(int $code, string $reasonPhrase = ''): Response
     {
         $code = $this->filterStatus($code);
 
@@ -318,7 +335,7 @@ class Response implements ResponseInterface
      * @return int
      * @throws \InvalidArgumentException If an invalid HTTP status code is provided.
      */
-    protected function filterStatus(int $status)
+    protected function filterStatus(int $status): int
     {
         if ($status < 100 || $status > 599) {
             throw new \InvalidArgumentException('Invalid HTTP status code');
@@ -346,7 +363,7 @@ class Response implements ResponseInterface
     /**
      * @return string
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }

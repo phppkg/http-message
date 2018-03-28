@@ -52,6 +52,7 @@ class ExtendedRequest extends ServerRequest
      * @param mixed $default
      * @param string $filter
      * @return mixed
+     * @throws \RuntimeException
      */
     public function post($name = null, $default = null, $filter = null)
     {
@@ -67,6 +68,7 @@ class ExtendedRequest extends ServerRequest
      * @param mixed $default
      * @param string $filter
      * @return mixed
+     * @throws \RuntimeException
      */
     public function json($name = null, $default = null, $filter = null)
     {

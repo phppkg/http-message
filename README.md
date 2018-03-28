@@ -22,7 +22,7 @@ run: `composer update`
 - Direct fetch
 
 ```
-git clone https://git.oschina.net/inhere/php-http.git // git@osc
+git clone https://gitee.com/inhere/php-http.git // git@osc
 git clone https://github.com/inhere/php-http.git // github
 ```
 

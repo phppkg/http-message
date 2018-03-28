@@ -61,8 +61,12 @@ trait MessageTrait
      * @param string|resource|StreamInterface $body
      * @throws \InvalidArgumentException
      */
-    public function initialize(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = 'php://memory')
-    {
+    public function initialize(
+        string $protocol = 'http',
+        string $protocolVersion = '1.1',
+        $headers = null,
+        $body = 'php://memory'
+    ) {
         $this->protocol = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
 
@@ -147,7 +151,7 @@ trait MessageTrait
      * @param string $name
      * @return bool
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return $this->headers->has($name);
     }
@@ -156,7 +160,7 @@ trait MessageTrait
      * @param string $name
      * @return \string[]
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         return $this->headers->get($name, []);
     }
@@ -171,18 +175,24 @@ trait MessageTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param $value
      * @return $this
      */
-    public function setHeader($name, $value)
+    public function setHeader(string $name, $value): self
     {
         $this->headers->set($name, $value);
 
         return $this;
     }
 
-    public function withHeader($name, $value)
+    /**
+     * PSR 7 method
+     * @param string $name
+     * @param $value
+     * @return self
+     */
+    public function withHeader($name, $value): self
     {
         $clone = clone $this;
         $clone->headers->set($name, $value);
@@ -190,7 +200,12 @@ trait MessageTrait
         return $clone;
     }
 
-    public function withoutHeader($name)
+    /**
+     * PSR 7 method
+     * @param string $name
+     * @return self
+     */
+    public function withoutHeader($name): self
     {
         $clone = clone $this;
         $clone->headers->remove($name);
@@ -198,7 +213,13 @@ trait MessageTrait
         return $clone;
     }
 
-    public function withAddedHeader($name, $value)
+    /**
+     * PSR 7 method
+     * @param string $name
+     * @param $value
+     * @return self
+     */
+    public function withAddedHeader($name, $value): self
     {
         $clone = clone $this;
         $clone->headers->add($name, $value);
@@ -209,7 +230,7 @@ trait MessageTrait
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers->all();
     }
@@ -217,7 +238,7 @@ trait MessageTrait
     /**
      * @return Headers
      */
-    public function getHeadersObject()
+    public function getHeadersObject(): Headers
     {
         return $this->headers;
     }
@@ -226,7 +247,7 @@ trait MessageTrait
      * @param array $headers
      * @return $this
      */
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): self
     {
         $this->headers->sets($headers);
 
@@ -243,7 +264,7 @@ trait MessageTrait
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    protected function createBodyStream($body, $mode = 'r')
+    protected function createBodyStream($body, string $mode = 'r'): StreamInterface
     {
         if ($body instanceof StreamInterface) {
             return $body;
@@ -260,11 +281,11 @@ trait MessageTrait
         if (\is_string($body)) {
             $error = null;
 
-            set_error_handler(function ($e) use (&$error) {
+            \set_error_handler(function ($e) use (&$error) {
                 $error = $e;
             }, E_WARNING);
-            $body = fopen($body, $mode);
-            restore_error_handler();
+            $body = \fopen($body, $mode);
+            \restore_error_handler();
 
             if ($error) {
                 throw new \InvalidArgumentException('Invalid stream reference provided');
@@ -277,7 +298,7 @@ trait MessageTrait
     /**
      * @return StreamInterface
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         return $this->body;
     }
@@ -286,7 +307,7 @@ trait MessageTrait
      * @param StreamInterface $body
      * @return $this
      */
-    public function setBody(StreamInterface $body)
+    public function setBody(StreamInterface $body): self
     {
         $this->body = $body;
 
@@ -311,7 +332,7 @@ trait MessageTrait
      * @return $this
      * @throws \RuntimeException
      */
-    public function addContent(string $content)
+    public function addContent(string $content): self
     {
         $this->body->write($content);
 
@@ -323,7 +344,7 @@ trait MessageTrait
      * @return $this
      * @throws \RuntimeException
      */
-    public function write(string $content)
+    public function write(string $content): self
     {
         $this->body->write($content);
 

@@ -55,25 +55,30 @@ trait ExtendedRequestTrait
 
     /** @var array */
     private static $phpTypes = [
-        'int', 'integer',
-        'float', 'double',
-        'bool', 'boolean',
+        'int',
+        'integer',
+        'float',
+        'double',
+        'bool',
+        'boolean',
         'string',
 
-        'array', 'object', 'resource'
+        'array',
+        'object',
+        'resource'
     ];
 
     /**
      * @var array
      */
-    protected static $filters= [
+    protected static $filters = [
         // return raw
         'raw' => '',
 
         // (int)$var
         'int' => 'int',
         'integer' => 'int',
-        // (float)$var or floatval($var)
+        // (float)$var
         'float' => 'float',
         // (bool)$var
         'bool' => 'bool',
@@ -117,7 +122,7 @@ trait ExtendedRequestTrait
      * @param string $name
      * @return UploadedFile
      */
-    public function getUploadedFile(string $name)
+    public function getUploadedFile(string $name): UploadedFile
     {
         return $this->getUploadedFiles()[$name] ?? null;
     }
@@ -132,8 +137,9 @@ trait ExtendedRequestTrait
      * ]
      * @param bool $onlyValue
      * @return array
+     * @throws \InvalidArgumentException
      */
-    public function getMulti(array $needKeys = [], $onlyValue = false)
+    public function getMulti(array $needKeys = [], $onlyValue = false): array
     {
         $needed = [];
 
@@ -145,7 +151,7 @@ trait ExtendedRequestTrait
             }
         }
 
-        return $onlyValue ? array_values($needed) : $needed;
+        return $onlyValue ? \array_values($needed) : $needed;
     }
 
     /**
@@ -195,27 +201,28 @@ trait ExtendedRequestTrait
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param array $arguments
      * @return mixed
      * @throws \BadMethodCallException
      */
     public function __call($name, array $arguments)
     {
-        if ($arguments && 0 === strpos($name, 'get')) {
-            $filter = substr($name, 3);
+        if ($arguments && 0 === \strpos($name, 'get')) {
+            $filter = \substr($name, 3);
             $default = $arguments[1] ?? null;
 
-            return $this->get($arguments[0], $default, lcfirst($filter));
+            return $this->get($arguments[0], $default, \lcfirst($filter));
         }
 
-        throw new \BadMethodCallException("Method $name is not a valid method");
+        throw new \BadMethodCallException("Method '$name' is not exists in the class");
     }
 
     /**
      * @param mixed $value
      * @param string|callable $filter
      * @return mixed|null
+     * @throws \InvalidArgumentException
      */
     public function filtering($value, $filter = null)
     {
@@ -237,7 +244,7 @@ trait ExtendedRequestTrait
 
         // is a php data type filter name
         if (\in_array($filter, self::$phpTypes, true)) {
-            switch (lcfirst(trim($filter))) {
+            switch (\lcfirst(\trim($filter))) {
                 case 'bool':
                 case 'boolean':
                     $result = (bool)$value;
@@ -292,11 +299,11 @@ trait ExtendedRequestTrait
      */
     protected function callFilterChain($value, $filter)
     {
-        if (strpos($filter, '|') === false) {
+        if (\strpos($filter, '|') === false) {
             return $filter($value);
         }
 
-        foreach (explode('|', $filter) as $func) {
+        foreach (\explode('|', $filter) as $func) {
             if (!\is_callable($func)) {
                 throw new \InvalidArgumentException("The filter '$func' is not a callable");
             }

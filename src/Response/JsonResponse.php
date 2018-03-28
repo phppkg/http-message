@@ -11,7 +11,6 @@ namespace Inhere\Http\Response;
 use Inhere\Http\Response;
 use Inhere\Http\Stream;
 use Inhere\Http\Component\TempStream;
-use InvalidArgumentException;
 
 /**
  * JSON response.
@@ -66,13 +65,14 @@ class JsonResponse extends Response
      * @param array $headers Array of headers to use at initialization.
      * @param int $encodingOptions JSON encoding options to use.
      * @throws \RuntimeException
-     * @throws InvalidArgumentException if unable to encode the $data to JSON.
+     * @throws \InvalidArgumentException if unable to encode the $data to JSON.
      */
     public function __construct(
-        $data, int $status = 200, array $headers = [],
+        $data,
+        int $status = 200,
+        array $headers = [],
         $encodingOptions = self::DEFAULT_JSON_FLAGS
-    )
-    {
+    ) {
         $this->setPayload($data);
         $this->encodingOptions = $encodingOptions;
         $json = $this->jsonEncode($data, $this->encodingOptions);
@@ -95,9 +95,10 @@ class JsonResponse extends Response
      * @param $data
      *
      * @return JsonResponse
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function withPayload($data)
+    public function withPayload($data): self
     {
         $new = clone $this;
         $new->setPayload($data);
@@ -108,7 +109,7 @@ class JsonResponse extends Response
     /**
      * @return int
      */
-    public function getEncodingOptions()
+    public function getEncodingOptions(): int
     {
         return $this->encodingOptions;
     }
@@ -117,9 +118,10 @@ class JsonResponse extends Response
      * @param int $encodingOptions
      *
      * @return JsonResponse
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function withEncodingOptions($encodingOptions)
+    public function withEncodingOptions($encodingOptions): self
     {
         $new = clone $this;
         $new->encodingOptions = $encodingOptions;
@@ -133,9 +135,9 @@ class JsonResponse extends Response
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    private function createBodyFromJson($json)
+    private function createBodyFromJson($json): Stream
     {
-        $body = new TempStream( 'wb+');
+        $body = new TempStream('wb+');
         $body->write($json);
         $body->rewind();
 
@@ -148,23 +150,23 @@ class JsonResponse extends Response
      * @param mixed $data
      * @param int $encodingOptions
      * @return string
-     * @throws InvalidArgumentException if unable to encode the $data to JSON.
+     * @throws \InvalidArgumentException if unable to encode the $data to JSON.
      */
-    private function jsonEncode($data, $encodingOptions)
+    private function jsonEncode($data, int $encodingOptions): string
     {
         if (\is_resource($data)) {
-            throw new InvalidArgumentException('Cannot JSON encode resources');
+            throw new \InvalidArgumentException('Cannot JSON encode resources');
         }
 
         // Clear json_last_error()
-        json_encode(null);
-        $json = json_encode($data, $encodingOptions);
+        \json_encode(null);
+        $json = \json_encode($data, $encodingOptions);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(sprintf(
                 'Unable to encode data to JSON in %s: %s',
                 __CLASS__,
-                json_last_error_msg()
+                \json_last_error_msg()
             ));
         }
 
@@ -191,7 +193,7 @@ class JsonResponse extends Response
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    private function updateBodyFor(self $toUpdate)
+    private function updateBodyFor(self $toUpdate): JsonResponse
     {
         $json = $this->jsonEncode($toUpdate->payload, $toUpdate->encodingOptions);
         $body = $this->createBodyFromJson($json);

@@ -25,9 +25,9 @@ class RequestBody extends Stream
      */
     public function __construct(string $content = null)
     {
-        $stream = fopen('php://temp', 'wb+');
-        stream_copy_to_stream(fopen('php://input', 'rb'), $stream);
-        rewind($stream);
+        $stream = \fopen('php://temp', 'wb+');
+        \stream_copy_to_stream(fopen('php://input', 'rb'), $stream);
+        \rewind($stream);
 
         parent::__construct($stream);
 

@@ -9,6 +9,7 @@
 namespace Inhere\Http\Traits;
 
 use Inhere\Http\Body;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -37,10 +38,12 @@ trait ExtendedResponseTrait
      * response to the client.
      * @param  string|UriInterface $url The redirect destination.
      * @param  int|null $status The redirect HTTP status code.
-     * @return static
+     * @return ResponseInterface
+     * @throws \InvalidArgumentException
      */
-    public function withRedirect($url, $status = null)
+    public function withRedirect(string $url, int $status = null): ResponseInterface
     {
+        /** @var ResponseInterface $responseWithRedirect */
         $responseWithRedirect = $this->withHeader('Location', (string)$url);
 
         if (null === $status && $this->getStatusCode() === 200) {
@@ -62,19 +65,22 @@ trait ExtendedResponseTrait
      * @param  mixed $data The data
      * @param  int $status The HTTP status code.
      * @param  int $encodingOptions Json encoding options
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @return static
+     * @return ResponseInterface
      */
-    public function withJson($data, $status = null, $encodingOptions = 0)
+    public function withJson($data, int $status = null, int $encodingOptions = 0): ResponseInterface
     {
+        /** @var ResponseInterface $response */
         $response = $this->withBody(new Body());
-        $response->body->write($json = json_encode($data, $encodingOptions));
+        $response->getBody()->write($json = \json_encode($data, $encodingOptions));
 
         // Ensure that the json encoding passed successfully
         if ($json === false) {
             throw new \RuntimeException(json_last_error_msg(), json_last_error());
         }
 
+        /** @var ResponseInterface $responseWithJson */
         $responseWithJson = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
 
         if (null === $status) {
@@ -87,11 +93,12 @@ trait ExtendedResponseTrait
     /**
      * @param string $fallbackUrl
      * @param int $status
-     * @return static
+     * @return ResponseInterface
+     * @throws \InvalidArgumentException
      */
-    public function withGoBack($fallbackUrl = '/', $status = 301)
+    public function withGoBack(string $fallbackUrl = '/', int $status = 301): ResponseInterface
     {
-        $backTo = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $fallbackUrl;
+        $backTo = $this->getServerParam('HTTP_REFERER') ?: $fallbackUrl;
 
         return $this->withRedirect($backTo, $status);
     }
