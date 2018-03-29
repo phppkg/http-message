@@ -70,7 +70,7 @@ class Collection extends \ArrayObject
     public function add($name, $value)
     {
         if (isset($this[$name])) {
-            return null;
+            return $this;
         }
 
         $this[$name] = $value;
@@ -85,7 +85,9 @@ class Collection extends \ArrayObject
      */
     public function set($name, $value)
     {
-        return $this[$name] = $value;
+        $this[$name] = $value;
+
+        return $this;
     }
 
     /**

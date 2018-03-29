@@ -174,7 +174,12 @@ trait RequestTrait
         return $this->getMethod() === strtoupper($method);
     }
 
-    public function withMethod($method): RequestTrait
+    /**
+     * @param $method
+     * @return RequestTrait
+     * @throws \InvalidArgumentException
+     */
+    public function withMethod($method): self
     {
         $method = (string)$this->filterMethod($method);
 

@@ -365,6 +365,10 @@ class Response implements ResponseInterface
      */
     public function getReasonPhrase(): string
     {
+        if ($this->reasonPhrase === null && ($code = $this->status)) {
+            $this->reasonPhrase = self::$messages[$code] ?? '';
+        }
+
         return $this->reasonPhrase;
     }
 

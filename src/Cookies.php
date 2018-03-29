@@ -65,6 +65,20 @@ class Cookies extends Collection
     }
 
     /**
+     * @param string $name
+     * @param mixed $value
+     * @return self
+     */
+    public function add($name, $value): self
+    {
+        if (!\is_array($value)) {
+            $value = ['value' => (string)$value];
+        }
+
+        return parent::add($name, \array_replace($this->defaults, $value));
+    }
+
+    /**
      * Convert to `Set-Cookie` headers
      * @return string[]
      */
@@ -72,7 +86,7 @@ class Cookies extends Collection
     {
         $headers = [];
         foreach ($this as $name => $properties) {
-            $headers[] = $this->toHeader($name, $properties);
+            $headers[] = $this->toHeaderLine($name, $properties);
         }
 
         return $headers;
@@ -84,7 +98,7 @@ class Cookies extends Collection
      * @param  array $properties Cookie properties
      * @return string
      */
-    protected function toHeader(string $name, array $properties): string
+    protected function toHeaderLine(string $name, array $properties): string
     {
         $result = \urlencode($name) . '=' . \urlencode($properties['value']);
 

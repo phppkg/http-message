@@ -667,7 +667,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $attributes
      * @return ServerRequest
      */
-    public function withAttributes(array $attributes): ServerRequest
+    public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
         $clone->attributes = new Collection($attributes);

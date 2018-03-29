@@ -113,7 +113,10 @@ class Headers extends Collection
             return $this;
         }
 
-        return parent::add($this->normalizeKey($key), $value);
+        return parent::add($this->normalizeKey($key), [
+            'value' => (array)$value,
+            'originalKey' => $key
+        ]);
     }
 
     /**
@@ -136,12 +139,12 @@ class Headers extends Collection
      * @param string $key
      * @return bool|string
      */
-    public function normalizeKey($key)
+    public function normalizeKey(string $key)
     {
-        $key = str_replace('_', '-', strtolower($key));
+        $key = \str_replace('_', '-', \strtolower($key));
 
-        if (strpos($key, 'Http-') === 0) {
-            $key = substr($key, 5);
+        if (\strpos($key, 'Http-') === 0) {
+            $key = \substr($key, 5);
         }
 
         return $key;
@@ -157,12 +160,12 @@ class Headers extends Collection
         $ls = [];
 
         if ($value = $this->getLine('Accept-Language')) {
-            if (strpos($value, ';')) {
-                list($value,) = explode(';', $value, 2);
+            if (\strpos($value, ';')) {
+                list($value,) = \explode(';', $value, 2);
             }
 
-            $value = str_replace(' ', '', $value);
-            $ls = explode(',', $value);
+            $value = \str_replace(' ', '', $value);
+            $ls = \explode(',', $value);
         }
 
         return $ls;
@@ -178,32 +181,32 @@ class Headers extends Collection
         $ens = [];
 
         if ($value = $this->getLine('Accept-Encoding')) {
-            if (strpos($value, ';')) {
-                list($value,) = explode(';', $value, 2);
+            if (\strpos($value, ';')) {
+                list($value,) = \explode(';', $value, 2);
             }
 
-            $value = str_replace(' ', '', $value);
-            $ens = explode(',', $value);
+            $value = \str_replace(' ', '', $value);
+            $ens = \explode(',', $value);
         }
 
         return $ens;
     }
 
     /**
-     * @param bool $toString
-     * @return array
+     * @param bool $join to String
+     * @return array|string
      */
-    public function toHeaderLines(bool $toString = false): array
+    public function toHeaderLines(bool $join = false)
     {
         $output = [];
 
         foreach ($this as $name => $info) {
-            $name = ucwords($name, '-');
-            $value = implode(',', $info['value']);
+            $name = \ucwords($name, '-');
+            $value = \implode(',', $info['value']);
             $output[] = "$name: $value\r\n";
         }
 
-        return $toString ? implode('', $output) : $output;
+        return $join ? \implode('', $output) : $output;
     }
 
     /**
@@ -214,8 +217,8 @@ class Headers extends Collection
         $output = [];
 
         foreach ($this as $name => $info) {
-            $name = ucwords($name, '-');
-            $output[$name] = implode(',', $info['value']);
+            $name = \ucwords($name, '-');
+            $output[$name] = \implode(',', $info['value']);
         }
 
         return $output;
