@@ -345,9 +345,9 @@ class HttpFactory
             return new Collection($data);
         }
 
-        if (\is_object($data) && \method_exists($data, 'get')) {
-            return $data;
-        }
+        // if (\is_object($data) && \method_exists($data, 'get')) {
+        //     return $data;
+        // }
 
         return new Collection((array)$data);
     }
