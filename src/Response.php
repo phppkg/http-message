@@ -240,7 +240,7 @@ class Response implements ResponseInterface
         /** @var self $response */
         $response = $this->withHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        if (null === $status) {
+        if (null !== $status) {
             return $response->withStatus($status);
         }
 
