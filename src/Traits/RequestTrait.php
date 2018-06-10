@@ -173,7 +173,55 @@ trait RequestTrait
     {
         return $this->getMethod() === strtoupper($method);
     }
+    
+    /**
+     * request method is OPTIONS?
+     */
+    public function isOptions(): bool
+    {
+        return $this->isMethod('OPTIONS');
+    }
+    
+    /**
+     * request method is GET?
+     */
+    public function isGet(): bool
+    {
+        return $this->isMethod('GET');
+    }
 
+    /**
+     * request method is POST?
+     */
+    public function isPost(): bool
+    {
+        return $this->isMethod('POST');
+    }
+
+    /**
+     * request method is PUT?
+     */
+    public function isPut(): bool
+    {
+        return $this->isMethod('PUT');
+    }
+    
+    /**
+     * request method is PATCH?
+     */
+    public function isPatch(): bool
+    {
+        return $this->isMethod('PATCH');
+    }
+    
+    /**
+     * request method is DELETE?
+     */
+    public function isDelete(): bool
+    {
+        return $this->isMethod('DELETE');
+    }
+    
     /**
      * @param $method
      * @return RequestTrait
