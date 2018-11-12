@@ -6,9 +6,9 @@
  * Time: 14:06
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
-use Inhere\Http\Body;
+use PhpComp\Http\Message\Body;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -16,14 +16,14 @@ use Psr\Http\Message\UriInterface;
  * trait ExtendedResponseTrait
  *
  * ```php
- * use Inhere\Http\Response;
+ * use PhpComp\Http\Message\Response;
  *
  * class MyResponse extends Response {
  *   use ExtendedResponseTrait;
  * }
  * ```
  *
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  */
 trait ExtendedResponseTrait
 {

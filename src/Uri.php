@@ -7,13 +7,13 @@
  * @from Slim-Http
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
 use Psr\Http\Message\UriInterface;
 
 /**
  * Class Uri
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  */
 class Uri implements UriInterface
 {
@@ -86,7 +86,8 @@ class Uri implements UriInterface
         $fragment = '',
         $user = '',
         $password = ''
-    ) {
+    )
+    {
         $this->scheme = $scheme ? $this->filterScheme($scheme) : '';
         $this->host = $host;
         $this->port = $this->filterPort($port);

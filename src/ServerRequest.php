@@ -7,13 +7,13 @@
  * @ref Slim 3
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Component\Collection;
-use Inhere\Http\Request\RequestBody;
-use Inhere\Http\Traits\CookiesTrait;
-use Inhere\Http\Traits\RequestHeadersTrait;
-use Inhere\Http\Traits\RequestTrait;
+use PhpComp\Http\Message\Component\Collection;
+use PhpComp\Http\Message\Request\RequestBody;
+use PhpComp\Http\Message\Traits\CookiesTrait;
+use PhpComp\Http\Message\Traits\RequestHeadersTrait;
+use PhpComp\Http\Message\Traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -137,7 +137,8 @@ class ServerRequest implements ServerRequestInterface
         array $uploadedFiles = [],
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    ) {
+    )
+    {
         $this->setCookies($cookies);
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);

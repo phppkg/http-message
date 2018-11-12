@@ -6,14 +6,14 @@
  * Time: 14:31
  */
 
-namespace Inhere\Http\Request;
+namespace PhpComp\Http\Message\Request;
 
-use Inhere\Http\Stream;
+use PhpComp\Http\Message\Stream;
 
 /**
  * Class RequestBody
  *   Provides a PSR-7 implementation of a reusable raw request body
- * @package Inhere\Http\Request
+ * @package PhpComp\Http\Message\Request
  */
 class RequestBody extends Stream
 {

@@ -92,4 +92,4 @@ class MyResponse extends Response {
 
 ## License
 
-[MIT](License)
+[MIT](LICENSE)

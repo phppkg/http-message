@@ -6,15 +6,15 @@
  * Time: 22:05
  */
 
-namespace Inhere\Http\Test;
+namespace PhpComp\Http\Message\Test;
 
-use Inhere\Http\Response;
+use PhpComp\Http\Message\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ResponseTest
- * @package Inhere\Http\Test
+ * @package PhpComp\Http\Message\Test
  */
 class ResponseTest extends TestCase
 {

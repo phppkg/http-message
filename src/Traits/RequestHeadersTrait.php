@@ -6,13 +6,13 @@
  * Time: 16:22
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
 /**
  * Trait RequestHeadersTrait
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  *
- * @property \Inhere\Http\Headers $headers
+ * @property \PhpComp\Http\Message\Headers $headers
  */
 trait RequestHeadersTrait
 {

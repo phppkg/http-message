@@ -6,13 +6,13 @@
  * Time: 15:24
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class HttpUtil
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  */
 class HttpUtil
 {

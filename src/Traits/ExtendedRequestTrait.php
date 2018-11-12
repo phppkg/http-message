@@ -6,23 +6,23 @@
  * Time: 14:05
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
-use Inhere\Http\UploadedFile;
-use Inhere\Http\Uri;
+use PhpComp\Http\Message\UploadedFile;
+use PhpComp\Http\Message\Uri;
 
 /**
  * trait ExtendedRequestTrait
  *
  * ```php
- * use Inhere\Http\ServerRequest;
+ * use PhpComp\Http\Message\ServerRequest;
  *
  * class MyRequest extends ServerRequest {
  *   use ExtendedRequestTrait;
  * }
  * ```
  *
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  *
  * @method      string   getRaw($name, $default = null)      Get raw data
  * @method      integer  getInt($name, $default = null)      Get a signed integer.

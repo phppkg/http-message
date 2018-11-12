@@ -6,11 +6,11 @@
  * Time: 下午12:32
  */
 
-namespace Inhere\Http\Response;
+namespace PhpComp\Http\Message\Response;
 
-use Inhere\Http\Response;
-use Inhere\Http\Stream;
-use Inhere\Http\Component\TempStream;
+use PhpComp\Http\Message\Component\TempStream;
+use PhpComp\Http\Message\Response;
+use PhpComp\Http\Message\Stream;
 
 /**
  * JSON response.
@@ -19,7 +19,7 @@ use Inhere\Http\Component\TempStream;
  * serializes the data to JSON, sets a status code of 200 and sets the
  * Content-Type header to application/json.
  *
- * @package Inhere\Http\Response
+ * @package PhpComp\Http\Message\Response
  * @from zendFramework
  */
 class JsonResponse extends Response
@@ -72,7 +72,8 @@ class JsonResponse extends Response
         int $status = 200,
         array $headers = [],
         $encodingOptions = self::DEFAULT_JSON_FLAGS
-    ) {
+    )
+    {
         $this->setPayload($data);
         $this->encodingOptions = $encodingOptions;
         $json = $this->jsonEncode($data, $this->encodingOptions);

@@ -6,15 +6,15 @@
  * Time: 上午12:04
  */
 
-namespace Inhere\Http\Test;
+namespace PhpComp\Http\Message\Test;
 
-use Inhere\Http\Body;
+use PhpComp\Http\Message\Body;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class BodyTest
- * @package Inhere\Http\Test
+ * @package PhpComp\Http\Message\Test
  */
 class BodyTest extends TestCase
 {

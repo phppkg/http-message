@@ -6,13 +6,13 @@
  * Time: 下午1:18
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
-use Inhere\Http\Cookies;
+use PhpComp\Http\Message\Cookies;
 
 /**
  * Trait CookiesTrait
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  */
 trait CookiesTrait
 {

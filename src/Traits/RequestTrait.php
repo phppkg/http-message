@@ -6,14 +6,14 @@
  * Time: 下午12:44
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
-use Inhere\Http\Uri;
+use PhpComp\Http\Message\Uri;
 use Psr\Http\Message\UriInterface;
 
 /**
  * Trait RequestTrait
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  */
 trait RequestTrait
 {
@@ -173,7 +173,7 @@ trait RequestTrait
     {
         return $this->getMethod() === strtoupper($method);
     }
-    
+
     /**
      * request method is OPTIONS?
      */
@@ -181,7 +181,7 @@ trait RequestTrait
     {
         return $this->isMethod('OPTIONS');
     }
-    
+
     /**
      * request method is GET?
      */
@@ -205,7 +205,7 @@ trait RequestTrait
     {
         return $this->isMethod('PUT');
     }
-    
+
     /**
      * request method is PATCH?
      */
@@ -213,7 +213,7 @@ trait RequestTrait
     {
         return $this->isMethod('PATCH');
     }
-    
+
     /**
      * request method is DELETE?
      */
@@ -221,7 +221,7 @@ trait RequestTrait
     {
         return $this->isMethod('DELETE');
     }
-    
+
     /**
      * @param $method
      * @return RequestTrait

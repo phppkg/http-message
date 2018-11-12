@@ -6,11 +6,11 @@
  * Time: 下午12:25
  */
 
-namespace Inhere\Http\Response;
+namespace PhpComp\Http\Message\Response;
 
 /**
  * Trait InjectContentTypeTrait
- * @package Inhere\Http\Response
+ * @package PhpComp\Http\Message\Response
  * @from https://github.com/zendframework/zend-diactoros/blob/master/src/Response/InjectContentTypeTrait.php
  */
 trait InjectContentTypeTrait

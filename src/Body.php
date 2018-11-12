@@ -6,9 +6,9 @@
  * Time: 18:02
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Component\TempStream;
+use PhpComp\Http\Message\Component\TempStream;
 
 /**
  * Body

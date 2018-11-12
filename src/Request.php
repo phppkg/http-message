@@ -7,11 +7,11 @@
  * @ref Slim 3
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Request\RequestBody;
-use Inhere\Http\Traits\RequestHeadersTrait;
-use Inhere\Http\Traits\RequestTrait;
+use PhpComp\Http\Message\Request\RequestBody;
+use PhpComp\Http\Message\Traits\RequestHeadersTrait;
+use PhpComp\Http\Message\Traits\RequestTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -47,7 +47,8 @@ class Request implements RequestInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    ) {
+    )
+    {
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);
 

@@ -7,17 +7,17 @@
  * @from Slim 3
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Traits\CookiesTrait;
-use Inhere\Http\Traits\MessageTrait;
+use PhpComp\Http\Message\Traits\CookiesTrait;
+use PhpComp\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class Response
  * response for handshake
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  * @property int $status
  * @property string $statusMsg
  *
@@ -138,7 +138,8 @@ class Response implements ResponseInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    ): Response {
+    ): Response
+    {
         return new static($status, $headers, $cookies, $body, $protocol, $protocolVersion);
     }
 
@@ -159,7 +160,8 @@ class Response implements ResponseInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    ) {
+    )
+    {
         $this->setCookies($cookies);
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 

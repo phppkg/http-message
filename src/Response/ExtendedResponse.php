@@ -6,14 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace Inhere\Http\Response;
+namespace PhpComp\Http\Message\Response;
 
-use Inhere\Http\Response;
-use Inhere\Http\Traits\ExtendedResponseTrait;
+use PhpComp\Http\Message\Response;
+use PhpComp\Http\Message\Traits\ExtendedResponseTrait;
 
 /**
  * Class ExtendedResponse
- * @package Inhere\Http\Response
+ * @package PhpComp\Http\Message\Response
  */
 class ExtendedResponse extends Response
 {

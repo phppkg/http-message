@@ -6,13 +6,13 @@
  * Time: 下午12:29
  */
 
-namespace Inhere\Http\Component;
+namespace PhpComp\Http\Message\Component;
 
-use Inhere\Http\Stream;
+use PhpComp\Http\Message\Stream;
 
 /**
  * Class InputStream
- * @package Inhere\Http\Component
+ * @package PhpComp\Http\Message\Component
  */
 class InputStream extends Stream
 {

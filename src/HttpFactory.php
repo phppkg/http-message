@@ -6,10 +6,10 @@
  * Time: 13:20
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Component\Collection;
-use Inhere\Http\Request\RequestBody;
+use PhpComp\Http\Message\Component\Collection;
+use PhpComp\Http\Message\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +19,7 @@ use Psr\Http\Message\UriInterface;
 
 /**
  * Class HttpFactory
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  * @link  https://github.com/php-fig/fig-standards/blob/master/proposed/http-factory/http-factory.md
  */
 class HttpFactory
@@ -204,7 +204,8 @@ class HttpFactory
         int $error = \UPLOAD_ERR_OK,
         string $clientFilename = null,
         string $clientMediaType = null
-    ): UploadedFileInterface {
+    ): UploadedFileInterface
+    {
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
     }
 
@@ -316,7 +317,7 @@ class HttpFactory
     /**
      * If HTTP_AUTHORIZATION does not exist tries to get it from
      * getallheaders() when available.
-     * @param Collection $env The Slim application Collection
+     * @param Collection $env The application Collection
      * @return Collection
      */
     public static function determineAuthorization($env): Collection

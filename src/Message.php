@@ -6,9 +6,9 @@
  * Time: 13:12
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Traits\MessageTrait;
+use PhpComp\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\MessageInterface;
 
 /**

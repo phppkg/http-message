@@ -6,17 +6,17 @@
  * Time: 下午12:44
  */
 
-namespace Inhere\Http\Traits;
+namespace PhpComp\Http\Message\Traits;
 
-use Inhere\Http\Headers;
-use Inhere\Http\Stream;
+use PhpComp\Http\Message\Headers;
+use PhpComp\Http\Message\Stream;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Trait MessageTrait
- * @package Inhere\Http\Traits
+ * @package PhpComp\Http\Message\Traits
  */
 trait MessageTrait
 {
@@ -66,7 +66,8 @@ trait MessageTrait
         string $protocolVersion = '1.1',
         $headers = null,
         $body = 'php://memory'
-    ) {
+    )
+    {
         $this->protocol = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
 

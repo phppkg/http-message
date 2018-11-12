@@ -6,13 +6,13 @@
  * Time: 22:25
  */
 
-namespace Inhere\Http\Component;
+namespace PhpComp\Http\Message\Component;
 
-use Inhere\Http\Stream;
+use PhpComp\Http\Message\Stream;
 
 /**
  * Class MemoryStream
- * @package Inhere\Http\Component
+ * @package PhpComp\Http\Message\Component
  */
 class MemoryStream extends Stream
 {

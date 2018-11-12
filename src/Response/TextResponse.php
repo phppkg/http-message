@@ -6,10 +6,10 @@
  * Time: 下午12:24
  */
 
-namespace Inhere\Http\Response;
+namespace PhpComp\Http\Message\Response;
 
-use Inhere\Http\Response;
-use Inhere\Http\Component\TempStream;
+use PhpComp\Http\Message\Component\TempStream;
+use PhpComp\Http\Message\Response;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -19,7 +19,7 @@ use Psr\Http\Message\StreamInterface;
  * by default, sets a status code of 200 and sets the Content-Type header to
  * text/plain.
  *
- * @package Inhere\Http\Response
+ * @package PhpComp\Http\Message\Response
  * @from zendFramework
  */
 class TextResponse extends Response

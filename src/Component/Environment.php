@@ -7,12 +7,12 @@
  * File: Environment.php
  */
 
-namespace Inhere\Http\Component;
+namespace PhpComp\Http\Message\Component;
 
 /**
  * mock 环境信息
  * Class Environment
- * @package Inhere\Http\Component
+ * @package PhpComp\Http\Message\Component
  */
 class Environment extends Collection
 {
@@ -35,7 +35,7 @@ class Environment extends Collection
             'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'HTTP_ACCEPT_LANGUAGE' => 'en-US,en;q=0.8',
             'HTTP_ACCEPT_CHARSET' => 'utf-8;q=0.7,*;q=0.3',
-            'HTTP_USER_AGENT' => 'Slim Framework',
+            'HTTP_USER_AGENT' => 'MY Framework',
             'REMOTE_ADDR' => '127.0.0.1',
             'REQUEST_TIME' => \time(),
             'REQUEST_TIME_FLOAT' => \microtime(true),

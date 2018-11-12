@@ -6,13 +6,13 @@
  * Time: 19:02
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Component\Collection;
+use PhpComp\Http\Message\Component\Collection;
 
 /**
  * Class Headers
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  */
 class Headers extends Collection
 {

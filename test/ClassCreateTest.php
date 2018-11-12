@@ -6,13 +6,13 @@
  * Time: 22:43
  */
 
-namespace Inhere\Http\Test;
+namespace PhpComp\Http\Message\Test;
 
-use Inhere\Http\Body;
-use Inhere\Http\Request;
-use Inhere\Http\Response;
-use Inhere\Http\ServerRequest;
-use Inhere\Http\Uri;
+use PhpComp\Http\Message\Body;
+use PhpComp\Http\Message\Request;
+use PhpComp\Http\Message\Response;
+use PhpComp\Http\Message\ServerRequest;
+use PhpComp\Http\Message\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
     ServerRequestInterface, StreamInterface, ResponseInterface, RequestInterface, UriInterface
@@ -20,7 +20,7 @@ use Psr\Http\Message\{
 
 /**
  * Class ClassCreateTest
- * @package Inhere\Http\Test
+ * @package PhpComp\Http\Message\Test
  */
 class ClassCreateTest extends TestCase
 {

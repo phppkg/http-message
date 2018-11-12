@@ -6,14 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace Inhere\Http\Request;
+namespace PhpComp\Http\Message\Request;
 
-use Inhere\Http\ServerRequest;
-use Inhere\Http\Traits\ExtendedRequestTrait;
+use PhpComp\Http\Message\ServerRequest;
+use PhpComp\Http\Message\Traits\ExtendedRequestTrait;
 
 /**
  * Class ExtendedRequest
- * @package Inhere\Http\Request
+ * @package PhpComp\Http\Message\Request
  */
 class ExtendedRequest extends ServerRequest
 {

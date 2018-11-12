@@ -6,15 +6,15 @@
  * Time: 22:05
  */
 
-namespace Inhere\Http\Test;
+namespace PhpComp\Http\Message\Test;
 
-use Inhere\Http\Request;
+use PhpComp\Http\Message\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
 /**
  * Class RequestTest
- * @package Inhere\Http\Test
+ * @package PhpComp\Http\Message\Test
  */
 class RequestTest extends TestCase
 {

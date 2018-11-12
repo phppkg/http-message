@@ -6,7 +6,7 @@
  * Time: 17:58
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -141,7 +141,8 @@ class UploadedFile implements UploadedFileInterface
         int $size = null,
         int $error = \UPLOAD_ERR_OK,
         $sapi = false
-    ) {
+    )
+    {
         $this->file = $file;
         $this->name = $name;
         $this->type = $type;

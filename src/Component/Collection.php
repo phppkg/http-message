@@ -6,11 +6,11 @@
  * Time: 下午2:04
  */
 
-namespace Inhere\Http\Component;
+namespace PhpComp\Http\Message\Component;
 
 /**
  * Class Collection
- * @package Inhere\Http\Component
+ * @package PhpComp\Http\Message\Component
  */
 class Collection extends \ArrayObject
 {

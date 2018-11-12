@@ -8,13 +8,13 @@
  * @from slim3
  */
 
-namespace Inhere\Http;
+namespace PhpComp\Http\Message;
 
-use Inhere\Http\Component\Collection;
+use PhpComp\Http\Message\Component\Collection;
 
 /**
  * Class Cookies
- * @package Inhere\Http
+ * @package PhpComp\Http\Message
  *
  * Cookies:
  *
