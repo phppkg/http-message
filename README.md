@@ -1,38 +1,39 @@
-# php http message
+# http message
 
-some useful http message library(psr7 implement) of the php
+http message 库，实现自 PSR 7。
 
-## project
+## 安装
 
-- **github** https://github.com/inhere/php-http.git
-- **git@osc** https://git.oschina.net/inhere/php-http.git
+- 通过 `composer.json`
 
-## install
-
-- by composer
-
-edit `composer.json`，at `require` add
+编辑 `composer.json`，在 `require` 添加
 
 ```
-"inhere/http": "dev-master",
+"php-comp/http-message": "dev-master",
 ```
 
-run: `composer update`
+保存，然后执行: `composer update`
 
-- Direct fetch
+- 通过 `composer require`
 
+```bash
+composer require php-comp/http-message
 ```
+
+- git拉取
+
+```bash
 git clone https://gitee.com/inhere/php-http.git // git@osc
-git clone https://github.com/inhere/php-http.git // github
+git clone https://github.com/php-comp/http-message.git // github
 ```
 
-## usage
+## 使用
 
-### basic
+### 基本使用
 
 ```php
-use Inhere\Http\Request;
-use Inhere\Http\Response;
+use PhpComp\Http\Request;
+use PhpComp\Http\Response;
 
 $request = new Request($method, $uri);
 $request = new ServerRequest(... ...);
@@ -40,10 +41,12 @@ $response = new Response($code);
 ... ...
 ```
 
-### use factory
+### 工厂方法
+
+使用提供的工厂方法可以快速创建想要的实例对象。
 
 ```php
-use Inhere\Http\HttpFactory;
+use PhpComp\Http\HttpFactory;
 
 $request = HttpFactory::createRequest($method, $uri);
 
@@ -54,14 +57,14 @@ $request = HttpFactory::createServerRequestFromArray($_SERVER);
 $response = HttpFactory::createResponse($code);
 ```
 
-### Extended
+### 扩展
 
 ```php
-use Inhere\Http\Request;
-use Inhere\Http\Extra\ExtendedRequestTrait;
+use PhpComp\Http\Request;
+use PhpComp\Http\Extra\ExtendedRequestTrait;
 
 class MyRequest extends Request {
-   use ExtendedRequestTrait;
+   use ExtendedRequestTrait; // 里面提供的更多方便使用的方法
 }
 
 // 
@@ -74,14 +77,19 @@ $name = $request->getTrimmed('name');
 ```
 
 ```php
-use Inhere\Http\Response;
-use Inhere\Http\Extra\ExtendedResponseTrait;
+use PhpComp\Http\Response;
+use PhpComp\Http\Extra\ExtendedResponseTrait;
 
 class MyResponse extends Response {
    use ExtendedResponseTrait;
 }
 ```
 
-## license
+## 项目地址
 
-MIT
+- **github** https://github.com/php-comp/http-message
+- **git@osc** https://gitee.com/php-comp/http-message
+
+## License
+
+[MIT](License)
