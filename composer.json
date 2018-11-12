@@ -1,9 +1,9 @@
 {
-  "name": "php-comp/http",
+  "name": "php-comp/http-message",
   "type": "library",
   "description": "http message library of the php, implement the PSR7",
   "keywords": ["library","tool","http", "psr7"],
-  "homepage": "https://github.com/php-comp/php-http",
+  "homepage": "https://github.com/php-comp/http-message",
   "license": "MIT",
   "authors": [
     {
