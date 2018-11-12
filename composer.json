@@ -1,9 +1,9 @@
 {
-  "name": "inhere/http",
+  "name": "php-comp/http",
   "type": "library",
-  "description": "some useful http message library of the php",
-  "keywords": ["library","tool","http", "curl"],
-  "homepage": "https://github.com/inhere/php-http",
+  "description": "http message library of the php, implement the PSR7",
+  "keywords": ["library","tool","http", "psr7"],
+  "homepage": "https://github.com/php-comp/php-http",
   "license": "MIT",
   "authors": [
     {
@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Inhere\\Http\\" : "src/"
+      "PhpComp\\Http\\" : "src/"
     }
   },
   "suggest": {
