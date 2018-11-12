@@ -32,8 +32,8 @@ git clone https://github.com/php-comp/http-message.git // github
 ### 基本使用
 
 ```php
-use PhpComp\Http\Request;
-use PhpComp\Http\Response;
+use PhpComp\Http\Message\Request;
+use PhpComp\Http\Message\Response;
 
 $request = new Request($method, $uri);
 $request = new ServerRequest(... ...);
@@ -46,7 +46,7 @@ $response = new Response($code);
 使用提供的工厂方法可以快速创建想要的实例对象。
 
 ```php
-use PhpComp\Http\HttpFactory;
+use PhpComp\Http\Message\HttpFactory;
 
 $request = HttpFactory::createRequest($method, $uri);
 
@@ -60,8 +60,8 @@ $response = HttpFactory::createResponse($code);
 ### 扩展
 
 ```php
-use PhpComp\Http\Request;
-use PhpComp\Http\Extra\ExtendedRequestTrait;
+use PhpComp\Http\Message\Request;
+use PhpComp\Http\Message\Traits\ExtendedRequestTrait;
 
 class MyRequest extends Request {
    use ExtendedRequestTrait; // 里面提供的更多方便使用的方法
@@ -73,12 +73,11 @@ $request = new MyRequest(...);
 
 $age = $request->getInt('age');
 $name = $request->getTrimmed('name');
-
 ```
 
 ```php
-use PhpComp\Http\Response;
-use PhpComp\Http\Extra\ExtendedResponseTrait;
+use PhpComp\Http\Message\Response;
+use PhpComp\Http\Message\Traits\ExtendedResponseTrait;
 
 class MyResponse extends Response {
    use ExtendedResponseTrait;
