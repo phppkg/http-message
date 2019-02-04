@@ -158,7 +158,7 @@ class HttpFactory
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    public static function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
+    public static function createStreamFromFile(string $filename, string $mode = 'rb'): StreamInterface
     {
         // $stream = fopen('php://temp', $mode);
         $stream = \fopen($filename, $mode);

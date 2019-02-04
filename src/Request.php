@@ -27,7 +27,7 @@ class Request implements RequestInterface
 {
     use RequestTrait, RequestHeadersTrait;
 
-    const FAV_ICON = '/favicon.ico';
+    public const FAV_ICON = '/favicon.ico';
 
     /**
      * Request constructor.

@@ -19,9 +19,9 @@ class Headers extends Collection
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
-    const HEADER_END = "\r\n\r\n";
+    public const HEADER_END = "\r\n\r\n";
 
     /**
      * Special HTTP headers that do not have the "HTTP_" prefix
@@ -93,7 +93,7 @@ class Headers extends Collection
      * @param null $default
      * @return null|string
      */
-    public function getLine($name, $default = null)
+    public function getLine($name, $default = null): ?string
     {
         if ($val = $this->get($name)) {
             return \implode(',', $val);
@@ -161,7 +161,7 @@ class Headers extends Collection
 
         if ($value = $this->getLine('Accept-Language')) {
             if (\strpos($value, ';')) {
-                list($value,) = \explode(';', $value, 2);
+                [$value,] = \explode(';', $value, 2);
             }
 
             $value = \str_replace(' ', '', $value);
@@ -182,7 +182,7 @@ class Headers extends Collection
 
         if ($value = $this->getLine('Accept-Encoding')) {
             if (\strpos($value, ';')) {
-                list($value,) = \explode(';', $value, 2);
+                [$value,] = \explode(';', $value, 2);
             }
 
             $value = \str_replace(' ', '', $value);

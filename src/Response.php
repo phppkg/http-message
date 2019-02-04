@@ -31,7 +31,7 @@ class Response implements ResponseInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * eg: 404

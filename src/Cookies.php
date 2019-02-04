@@ -42,7 +42,7 @@ class Cookies extends Collection
      * Set default cookie properties
      * @param array $settings
      */
-    public function setDefaults(array $settings)
+    public function setDefaults(array $settings): void
     {
         $this->defaults = \array_replace($this->defaults, $settings);
     }

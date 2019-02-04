@@ -350,7 +350,7 @@ class Uri implements UriInterface
      * @return null|int
      * @throws \InvalidArgumentException If the port is invalid.
      */
-    protected function filterPort($port)
+    protected function filterPort($port): ?int
     {
         if (null === $port || (\is_int($port) && ($port >= 1 && $port <= 65535))) {
             return $port;

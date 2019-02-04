@@ -61,7 +61,7 @@ trait RequestTrait
      * @param string|null $method
      * @throws \InvalidArgumentException
      */
-    protected function initializeRequest($uri = null, $method = null)
+    protected function initializeRequest($uri = null, $method = null): void
     {
         try {
             $this->originalMethod = $this->filterMethod($method);
@@ -148,7 +148,7 @@ trait RequestTrait
     /**
      * @param string $method
      */
-    public function setMethod(string $method)
+    public function setMethod(string $method): void
     {
         $this->method = $method;
     }
@@ -244,7 +244,7 @@ trait RequestTrait
      * @return null|string
      * @throws \InvalidArgumentException on invalid HTTP method.
      */
-    protected function filterMethod($method)
+    protected function filterMethod($method): ?string
     {
         if ($method === null) {
             return $method;
@@ -329,7 +329,7 @@ trait RequestTrait
     /**
      * @param Uri $uri
      */
-    public function setUri(Uri $uri)
+    public function setUri(Uri $uri): void
     {
         $this->uri = $uri;
     }

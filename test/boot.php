@@ -8,7 +8,7 @@ date_default_timezone_set('Asia/Shanghai');
 
 $inhereDir = dirname(__DIR__, 2);
 $map = [
-    'PhpComp\Http\Message\Test\\' => __DIR__,
+    'PhpComp\Http\MessageTest\\' => __DIR__,
     'PhpComp\Http\Message\\' => dirname(__DIR__) . '/src',
 ];
 

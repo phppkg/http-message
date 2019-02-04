@@ -115,11 +115,7 @@ trait RequestHeadersTrait
     {
         $mediaTypeParams = $this->getMediaTypeParams();
 
-        if (isset($mediaTypeParams['charset'])) {
-            return $mediaTypeParams['charset'];
-        }
-
-        return '';
+        return $mediaTypeParams['charset'] ?? '';
     }
 
     /**

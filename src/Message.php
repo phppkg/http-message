@@ -25,7 +25,7 @@ class Message implements MessageInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * BaseMessage constructor.

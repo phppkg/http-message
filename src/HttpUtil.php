@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HttpUtil
 {
-    const FAV_ICON = '/favicon.ico';
+    public const FAV_ICON = '/favicon.ico';
 
     /**
      * Send the response the client
@@ -24,7 +24,7 @@ class HttpUtil
      * @param array $options
      * @throws \RuntimeException
      */
-    public static function respond(ResponseInterface $response, array $options = [])
+    public static function respond(ResponseInterface $response, array $options = []): void
     {
         $options = \array_merge([
             'chunkSize' => 4096,

@@ -37,7 +37,7 @@ class Collection extends \ArrayObject
     /**
      * @param array $values
      */
-    public function sets(array $values)
+    public function sets(array $values): void
     {
         $this->replace($values);
     }
@@ -45,7 +45,7 @@ class Collection extends \ArrayObject
     /**
      * @param array $items
      */
-    public function replace(array $items)
+    public function replace(array $items): void
     {
         foreach ($items as $key => $value) {
             $this->set($key, $value);
@@ -122,7 +122,7 @@ class Collection extends \ArrayObject
     /**
      * clear all data
      */
-    public function clear()
+    public function clear(): void
     {
         foreach ($this as $key) {
             unset($this[$key]);

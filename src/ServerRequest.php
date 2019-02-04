@@ -29,7 +29,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * the connection header line data end char
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * @var array
@@ -75,14 +75,14 @@ class ServerRequest implements ServerRequestInterface
 
         // e.g: `GET / HTTP/1.1`
         $first = array_shift($list);
-        list($method, $uri, $protoStr) = array_map('trim', explode(' ', trim($first)));
-        list($protocol, $protocolVersion) = explode('/', $protoStr);
+        [$method, $uri, $protoStr] = array_map('trim', explode(' ', trim($first)));
+        [$protocol, $protocolVersion] = explode('/', $protoStr);
 
         // other header info
         $headers = [];
         foreach ($list as $item) {
             if ($item) {
-                list($name, $value) = explode(': ', trim($item));
+                [$name, $value] = explode(': ', trim($item));
                 $headers[$name] = trim($value);
             }
         }
@@ -96,7 +96,7 @@ class ServerRequest implements ServerRequestInterface
         $port = 80;
         $host = '';
         if ($val = $headers['Host'] ?? '') {
-            list($host, $port) = strpos($val, ':') ? explode(':', $val) : [$val, 80];
+            [$host, $port] = strpos($val, ':') ? explode(':', $val) : [$val, 80];
         }
 
         $path = $uri;
@@ -180,7 +180,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * registerDataParsers
      */
-    protected function registerDataParsers()
+    protected function registerDataParsers(): void
     {
         $this->registerMediaTypeParser('application/json', function ($input) {
             $result = \json_decode($input, true);
@@ -245,7 +245,7 @@ class ServerRequest implements ServerRequestInterface
      * @param $mediaType
      * @param callable $callable
      */
-    public function registerMediaTypeParser($mediaType, callable $callable)
+    public function registerMediaTypeParser($mediaType, callable $callable): void
     {
         if ($callable instanceof \Closure) {
             $callable = $callable->bindTo($this);
@@ -281,7 +281,7 @@ class ServerRequest implements ServerRequestInterface
      * @see getQueryParam()
      * @see getQueryParams()
      */
-    public function setQueryParams($values)
+    public function setQueryParams($values): void
     {
         $this->_queryParams = $values;
     }
@@ -363,7 +363,7 @@ class ServerRequest implements ServerRequestInterface
      * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
      * @param string $rawBody the request body
      */
-    public function setRawBody($rawBody)
+    public function setRawBody($rawBody): void
     {
         $this->_rawBody = $rawBody;
     }
@@ -454,7 +454,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param array $data
      */
-    public function setParsedBody($data)
+    public function setParsedBody($data): void
     {
         $this->bodyParsed = $data;
     }
@@ -743,7 +743,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param array $serverParams
      */
-    public function setServerParams(array $serverParams)
+    public function setServerParams(array $serverParams): void
     {
         $this->serverParams = $serverParams;
     }

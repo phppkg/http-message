@@ -6,7 +6,7 @@
  * Time: 22:43
  */
 
-namespace PhpComp\Http\Message\Test;
+namespace PhpComp\Http\MessageTest;
 
 use PhpComp\Http\Message\Body;
 use PhpComp\Http\Message\Request;
@@ -20,11 +20,11 @@ use Psr\Http\Message\{
 
 /**
  * Class ClassCreateTest
- * @package PhpComp\Http\Message\Test
+ * @package PhpComp\Http\MessageTest
  */
 class ClassCreateTest extends TestCase
 {
-    public function testCreateClass()
+    public function testCreateClass(): void
     {
         $obj = new Uri();
         $this->assertInstanceOf(UriInterface::class, $obj);

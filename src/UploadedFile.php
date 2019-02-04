@@ -72,7 +72,7 @@ class UploadedFile implements UploadedFileInterface
      * Create a normalized tree of UploadedFile instances from the Environment.
      * @return array|null A normalized tree of UploadedFile instances or null if none are provided.
      */
-    public static function createFromFILES()
+    public static function createFromFILES(): ?array
     {
         if (null !== $_FILES) {
             return static::parseUploadedFiles($_FILES);

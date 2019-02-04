@@ -66,8 +66,7 @@ trait MessageTrait
         string $protocolVersion = '1.1',
         $headers = null,
         $body = 'php://memory'
-    )
-    {
+    ): void {
         $this->protocol = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
 
@@ -99,7 +98,7 @@ trait MessageTrait
     /**
      * @param string $protocol
      */
-    public function setProtocol(string $protocol)
+    public function setProtocol(string $protocol): void
     {
         $this->protocol = $protocol;
     }
@@ -119,7 +118,7 @@ trait MessageTrait
     /**
      * @param string $protocolVersion
      */
-    public function setProtocolVersion(string $protocolVersion)
+    public function setProtocolVersion(string $protocolVersion): void
     {
         $this->protocolVersion = $protocolVersion;
     }
@@ -265,7 +264,7 @@ trait MessageTrait
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    protected function createBodyStream($body, string $mode = 'r'): StreamInterface
+    protected function createBodyStream($body, string $mode = 'rb'): StreamInterface
     {
         if ($body instanceof StreamInterface) {
             return $body;
