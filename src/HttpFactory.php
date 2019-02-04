@@ -131,6 +131,68 @@ class HttpFactory
         return $request;
     }
 
+    /**
+     * @param string $rawData
+     * @return ServerRequestInterface
+     */
+    public static function createServerRequestFromRaw(string $rawData): ServerRequestInterface
+    {
+        if (!$rawData) {
+            return new ServerRequest('GET', Uri::createFromString('/'));
+        }
+
+        // $rawData = trim($rawData);
+        // split head and body
+        $two = \explode("\r\n\r\n", $rawData, 2);
+
+        if (!$rawHeader = $two[0] ?? '') {
+            return new ServerRequest('GET', Uri::createFromString('/'));
+        }
+
+        $body = $two[1] ? new RequestBody($two[1]) : null;
+
+        /** @var array $list */
+        $list = \explode("\n", trim($rawHeader));
+
+        // e.g: `GET / HTTP/1.1`
+        $first = \array_shift($list);
+        // parse
+        [$method, $uri, $protoStr] = \array_map('trim', \explode(' ', \trim($first)));
+        [$protocol, $protocolVersion] = \explode('/', $protoStr);
+
+        // other header info
+        $headers = [];
+        foreach ($list as $item) {
+            if ($item) {
+                [$name, $value] = \explode(': ', \trim($item));
+                $headers[$name] = \trim($value);
+            }
+        }
+
+        $cookies = [];
+        if (isset($headers['Cookie'])) {
+            $cookies    = Cookies::parseFromRawHeader($headers['Cookie']);
+        }
+
+        $port = 80;
+        $host = '';
+        if ($val = $headers['Host'] ?? '') {
+            [$host, $port] = \strpos($val, ':') ? \explode(':', $val) : [$val, 80];
+        }
+
+        $path  = $uri;
+        $query = $fragment = '';
+        if (\strlen($uri) > 1) {
+            $parts    = \parse_url($uri);
+            $path     = $parts['path'] ?? '';
+            $query    = $parts['query'] ?? '';
+            $fragment = $parts['fragment'] ?? '';
+        }
+
+        $uri = new Uri($protocol, $host, (int)$port, $path, $query, $fragment);
+        return new ServerRequest($method, $uri, $headers, $cookies, [], $body, [], $protocol, $protocolVersion);
+    }
+
     /*****************************************************
      * StreamFactoryInterface
      ****************************************************/

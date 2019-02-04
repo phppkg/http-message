@@ -20,7 +20,7 @@ class HttpUtil
 
     /**
      * Send the response the client
-     * @param ResponseInterface $response
+     * @param ResponseInterface|Response $response
      * @param array             $options
      * @throws \RuntimeException
      */

@@ -50,67 +50,13 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @param string $rawData
-     * @return static
+     * @return ServerRequestInterface
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public static function makeByParseRawData(string $rawData)
+    public static function makeByParseRawData(string $rawData): ServerRequestInterface
     {
-        if (!$rawData) {
-            return new static('GET', Uri::createFromString('/'));
-        }
-
-        // $rawData = trim($rawData);
-        // split head and body
-        $two = explode("\r\n\r\n", $rawData, 2);
-
-        if (!$rawHeader = $two[0] ?? '') {
-            return new static('GET', Uri::createFromString('/'));
-        }
-
-        $body = $two[1] ? new RequestBody($two[1]) : null;
-
-        /** @var array $list */
-        $list = explode("\n", trim($rawHeader));
-
-        // e.g: `GET / HTTP/1.1`
-        $first = array_shift($list);
-        [$method, $uri, $protoStr] = array_map('trim', explode(' ', trim($first)));
-        [$protocol, $protocolVersion] = explode('/', $protoStr);
-
-        // other header info
-        $headers = [];
-        foreach ($list as $item) {
-            if ($item) {
-                [$name, $value] = explode(': ', trim($item));
-                $headers[$name] = trim($value);
-            }
-        }
-
-        $cookies = [];
-        if (isset($headers['Cookie'])) {
-            $cookieData = $headers['Cookie'];
-            $cookies    = Cookies::parseFromRawHeader($cookieData);
-        }
-
-        $port = 80;
-        $host = '';
-        if ($val = $headers['Host'] ?? '') {
-            [$host, $port] = strpos($val, ':') ? explode(':', $val) : [$val, 80];
-        }
-
-        $path  = $uri;
-        $query = $fragment = '';
-        if (\strlen($uri) > 1) {
-            $parts    = parse_url($uri);
-            $path     = $parts['path'] ?? '';
-            $query    = $parts['query'] ?? '';
-            $fragment = $parts['fragment'] ?? '';
-        }
-
-        $uri = new Uri($protocol, $host, (int)$port, $path, $query, $fragment);
-
-        return new static($method, $uri, $headers, $cookies, [], $body, [], $protocol, $protocolVersion);
+        return HttpFactory::createServerRequestFromRaw($rawData);
     }
 
     /**
@@ -147,7 +93,7 @@ class ServerRequest implements ServerRequestInterface
         $this->attributes    = new Collection();
 
         if (isset($serverParams['SERVER_PROTOCOL'])) {
-            $this->protocolVersion = str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
+            $this->protocolVersion = \str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
         }
 
         if (!$this->headers->has('Host') || $this->uri->getHost() !== '') {
@@ -240,10 +186,10 @@ class ServerRequest implements ServerRequestInterface
 
 
     /**
-     * @param          $mediaType
+     * @param string   $mediaType
      * @param callable $callable
      */
-    public function registerMediaTypeParser($mediaType, callable $callable): void
+    public function registerMediaTypeParser(string $mediaType, callable $callable): void
     {
         if ($callable instanceof \Closure) {
             $callable = $callable->bindTo($this);
@@ -351,7 +297,7 @@ class ServerRequest implements ServerRequestInterface
     public function getRawBody(): string
     {
         if ($this->_rawBody === null) {
-            $this->_rawBody = file_get_contents('php://input');
+            $this->_rawBody = \file_get_contents('php://input');
         }
 
         return $this->_rawBody;
@@ -373,7 +319,7 @@ class ServerRequest implements ServerRequestInterface
      * @return array|null
      * @throws \RuntimeException
      */
-    public function getParsedBody()
+    public function getParsedBody(): ?array
     {
         if ($this->bodyParsed !== null) {
             return $this->bodyParsed;
@@ -450,7 +396,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param array $data
+     * @param array|null $data set Null to reset data.
      */
     public function setParsedBody($data): void
     {
@@ -542,7 +488,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /*******************************************************************************
-     * Files
+     * Uploaded Files
      ******************************************************************************/
 
     /**
@@ -732,10 +678,9 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getServerParam(string $key, $default = null)
     {
-        $key          = \strtoupper($key);
-        $serverParams = $this->getServerParams();
+        $key = \strtoupper($key);
 
-        return $serverParams[$key] ?? $default;
+        return $this->serverParams[$key] ?? $default;
     }
 
     /**
