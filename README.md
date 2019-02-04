@@ -1,5 +1,9 @@
 # http message
 
+[![License](https://img.shields.io/packagist/l/php-comp/http-message.svg?style=flat-square)](LICENSE)
+[![Php Version](https://img.shields.io/badge/php-%3E=7.1.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/php-comp/http-message)
+[![Latest Stable Version](http://img.shields.io/packagist/v/php-comp/http-message.svg)](https://packagist.org/packages/php-comp/http-message)
+
 http message 库，实现自 PSR 7。
 
 ## 安装
@@ -23,7 +27,6 @@ composer require php-comp/http-message
 - git拉取
 
 ```bash
-git clone https://gitee.com/inhere/php-http.git // git@osc
 git clone https://github.com/php-comp/http-message.git // github
 ```
 
