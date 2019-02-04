@@ -20,8 +20,8 @@ class ExtendedRequest extends ServerRequest
     use ExtendedRequestTrait;
 
     /**
-     * @param string $name
-     * @param null|mixed $default
+     * @param string      $name
+     * @param null|mixed  $default
      * @param null|string $filter
      * @return mixed
      */
@@ -34,7 +34,7 @@ class ExtendedRequest extends ServerRequest
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      * @param string $filter
      * @return mixed
      */
@@ -49,7 +49,7 @@ class ExtendedRequest extends ServerRequest
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      * @param string $filter
      * @return mixed
      * @throws \RuntimeException
@@ -65,7 +65,7 @@ class ExtendedRequest extends ServerRequest
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      * @param string $filter
      * @return mixed
      * @throws \RuntimeException
@@ -81,7 +81,7 @@ class ExtendedRequest extends ServerRequest
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      * @param string $filter
      * @return mixed
      */

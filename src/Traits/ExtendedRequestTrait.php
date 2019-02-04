@@ -73,37 +73,37 @@ trait ExtendedRequestTrait
      */
     protected static $filters = [
         // return raw
-        'raw' => '',
+        'raw'     => '',
 
         // (int)$var
-        'int' => 'int',
+        'int'     => 'int',
         'integer' => 'int',
         // (float)$var
-        'float' => 'float',
+        'float'   => 'float',
         // (bool)$var
-        'bool' => 'bool',
+        'bool'    => 'bool',
         // (bool)$var
         'boolean' => 'bool',
         // (string)$var
-        'string' => 'string',
+        'string'  => 'string',
         // (array)$var
-        'array' => 'array',
+        'array'   => 'array',
 
         // trim($var)
         'trimmed' => 'trim',
 
         // safe data
-        'safe' => 'htmlspecialchars',
-        'escape' => 'htmlspecialchars',
+        'safe'    => 'htmlspecialchars',
+        'escape'  => 'htmlspecialchars',
 
         // abs((int)$var)
-        'number' => 'int|abs',
+        'number'  => 'int|abs',
 
         // will use filter_var($var ,FILTER_SANITIZE_EMAIL)
-        'email' => ['filter_var', FILTER_SANITIZE_EMAIL],
+        'email'   => ['filter_var', FILTER_SANITIZE_EMAIL],
 
         // will use filter_var($var ,FILTER_SANITIZE_URL)
-        'url' => ['filter_var', FILTER_SANITIZE_URL],
+        'url'     => ['filter_var', FILTER_SANITIZE_URL],
 
         // will use filter_var($var ,FILTER_SANITIZE_ENCODED, $settings);
         'encoded' => ['filter_var', FILTER_SANITIZE_ENCODED],
@@ -135,7 +135,7 @@ trait ExtendedRequestTrait
      *     'password',
      *     'status' => 'int'
      * ]
-     * @param bool $onlyValue
+     * @param bool  $onlyValue
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -202,14 +202,14 @@ trait ExtendedRequestTrait
 
     /**
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
      * @return mixed
      * @throws \BadMethodCallException
      */
     public function __call($name, array $arguments)
     {
         if ($arguments && 0 === \strpos($name, 'get')) {
-            $filter = \substr($name, 3);
+            $filter  = \substr($name, 3);
             $default = $arguments[1] ?? null;
 
             return $this->get($arguments[0], $default, \lcfirst($filter));
@@ -219,7 +219,7 @@ trait ExtendedRequestTrait
     }
 
     /**
-     * @param mixed $value
+     * @param mixed           $value
      * @param string|callable $filter
      * @return mixed|null
      * @throws \InvalidArgumentException
@@ -292,7 +292,7 @@ trait ExtendedRequestTrait
     }
 
     /**
-     * @param mixed $value
+     * @param mixed  $value
      * @param string $filter
      * @return mixed
      * @throws \InvalidArgumentException

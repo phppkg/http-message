@@ -37,7 +37,7 @@ trait ExtendedResponseTrait
      * This method prepares the response object to return an HTTP Redirect
      * response to the client.
      * @param  string|UriInterface $url The redirect destination.
-     * @param  int|null $status The redirect HTTP status code.
+     * @param  int|null            $status The redirect HTTP status code.
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      */
@@ -63,8 +63,8 @@ trait ExtendedResponseTrait
      * This method prepares the response object to return an HTTP Json
      * response to the client.
      * @param  mixed $data The data
-     * @param  int $status The HTTP status code.
-     * @param  int $encodingOptions Json encoding options
+     * @param  int   $status The HTTP status code.
+     * @param  int   $encodingOptions Json encoding options
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @return ResponseInterface
@@ -92,7 +92,7 @@ trait ExtendedResponseTrait
 
     /**
      * @param string $fallbackUrl
-     * @param int $status
+     * @param int    $status
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      */

@@ -13,7 +13,6 @@ use Psr\Http\Message\MessageInterface;
 
 /**
  * Class Message
- * @package Sws\parts
  *
  * @property Cookies $cookies
  *
@@ -29,10 +28,10 @@ class Message implements MessageInterface
 
     /**
      * BaseMessage constructor.
-     * @param string $protocol
-     * @param string $protocolVersion
+     * @param string        $protocol
+     * @param string        $protocolVersion
      * @param array|Headers $headers
-     * @param string $body
+     * @param string        $body
      * @throws \InvalidArgumentException
      */
     public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = '')

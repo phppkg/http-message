@@ -18,7 +18,7 @@ use Psr\Http\Message\StreamInterface;
  * Class Response
  * response for handshake
  * @package PhpComp\Http\Message
- * @property int $status
+ * @property int    $status
  * @property string $statusMsg
  *
  * @link https://github.com/php-fig/http-message/blob/master/src/MessageInterface.php
@@ -122,12 +122,12 @@ class Response implements ResponseInterface
     ];
 
     /**
-     * @param int $status
-     * @param null $headers
-     * @param array $cookies
+     * @param int                  $status
+     * @param null                 $headers
+     * @param array                $cookies
      * @param StreamInterface|null $body
-     * @param string $protocol
-     * @param string $protocolVersion
+     * @param string               $protocol
+     * @param string               $protocolVersion
      * @return Response
      * @throws \InvalidArgumentException
      */
@@ -138,19 +138,18 @@ class Response implements ResponseInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    ): Response
-    {
+    ): Response {
         return new static($status, $headers, $cookies, $body, $protocol, $protocolVersion);
     }
 
     /**
      * Request constructor.
-     * @param int $status
-     * @param array|Headers $headers
-     * @param array $cookies
+     * @param int             $status
+     * @param array|Headers   $headers
+     * @param array           $cookies
      * @param StreamInterface $body
-     * @param string $protocol
-     * @param string $protocolVersion
+     * @param string          $protocol
+     * @param string          $protocolVersion
      * @throws \InvalidArgumentException
      */
     public function __construct(
@@ -160,8 +159,7 @@ class Response implements ResponseInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    )
-    {
+    ) {
         $this->setCookies($cookies);
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 
@@ -223,8 +221,8 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * This method prepares the response object to return an HTTP Json response to the client.
      * @param  mixed $data The data
-     * @param  int $status The HTTP status code.
-     * @param  int $encodingOptions Json encoding options
+     * @param  int   $status The HTTP status code.
+     * @param  int   $encodingOptions Json encoding options
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @return self|mixed
@@ -251,7 +249,7 @@ class Response implements ResponseInterface
 
     /**
      * @param string $url
-     * @param int $status
+     * @param int    $status
      * @return $this|mixed
      * @throws \InvalidArgumentException
      */
@@ -276,7 +274,7 @@ class Response implements ResponseInterface
      * updated status and reason phrase.
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     * @param int $code The 3-digit integer result code to set.
+     * @param int    $code The 3-digit integer result code to set.
      * @param string $reasonPhrase The reason phrase to use with the
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
@@ -291,7 +289,7 @@ class Response implements ResponseInterface
             throw new \InvalidArgumentException('ReasonPhrase must be a string');
         }
 
-        $clone = clone $this;
+        $clone         = clone $this;
         $clone->status = $code;
 
         if ($reasonPhrase === '' && isset(static::$messages[$code])) {
@@ -308,7 +306,7 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @param int $code
+     * @param int    $code
      * @param string $reasonPhrase
      * @return Response
      * @throws \InvalidArgumentException

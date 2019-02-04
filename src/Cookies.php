@@ -29,12 +29,12 @@ class Cookies extends Collection
      * @var array
      */
     protected $defaults = [
-        'value' => '',
-        'domain' => null,
+        'value'    => '',
+        'domain'   => null,
         'hostOnly' => null,
-        'path' => null,
-        'expires' => null,
-        'secure' => false,
+        'path'     => null,
+        'expires'  => null,
+        'secure'   => false,
         'httpOnly' => false
     ];
 
@@ -49,7 +49,7 @@ class Cookies extends Collection
 
     /**
      * Set cookie
-     * @param string $name Cookie name
+     * @param string       $name Cookie name
      * @param string|array $value Cookie value, or cookie properties
      * @return $this
      */
@@ -66,7 +66,7 @@ class Cookies extends Collection
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return self
      */
     public function add($name, $value): self
@@ -95,7 +95,7 @@ class Cookies extends Collection
     /**
      * Convert to `Set-Cookie` header
      * @param  string $name Cookie name
-     * @param  array $properties Cookie properties
+     * @param  array  $properties Cookie properties
      * @return string
      */
     protected function toHeaderLine(string $name, array $properties): string
@@ -180,7 +180,7 @@ class Cookies extends Collection
             $cookie = \explode('=', $cookie, 2);
 
             if (\count($cookie) === 2) {
-                $key = \urldecode($cookie[0]);
+                $key   = \urldecode($cookie[0]);
                 $value = \urldecode($cookie[1]);
 
                 if (!isset($cookies[$key])) {

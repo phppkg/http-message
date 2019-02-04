@@ -35,7 +35,7 @@ trait CookiesTrait
 
     /**
      * @param string $key
-     * @param null $default
+     * @param null   $default
      * @return mixed
      */
     public function getCookieParam(string $key, $default = null)
@@ -49,14 +49,14 @@ trait CookiesTrait
      */
     public function withCookieParams(array $cookies): self
     {
-        $clone = clone $this;
+        $clone          = clone $this;
         $clone->cookies = new Cookies($cookies);
 
         return $clone;
     }
 
     /**
-     * @param string $name
+     * @param string       $name
      * @param string|array $value
      * @return $this
      */

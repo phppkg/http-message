@@ -8,8 +8,8 @@
 
 namespace PhpComp\Http\Message\Response;
 
-use PhpComp\Http\Message\Component\TempStream;
 use PhpComp\Http\Message\Response;
+use PhpComp\Http\Message\Stream\TempStream;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -33,17 +33,18 @@ class TextResponse extends Response
      * status of 200.
      *
      * @param string|StreamInterface $text String or stream for the message body.
-     * @param int $status Integer status code for the response; 200 by default.
-     * @param array $headers Array of headers to use at initialization.
+     * @param int                    $status Integer status code for the response; 200 by default.
+     * @param array                  $headers Array of headers to use at initialization.
      * @throws \RuntimeException
      * @throws \InvalidArgumentException if $text is neither a string or stream.
      */
-    public function __construct($text, $status = 200, array $headers = [])
+    public function __construct($text, int $status = 200, array $headers = [])
     {
         parent::__construct(
-            $this->createBody($text),
             $status,
-            $this->injectContentType('text/plain; charset=utf-8', $headers)
+            $this->injectContentType('text/plain; charset=utf-8', $headers),
+            [],
+            $this->createBody($text)
         );
     }
 
@@ -62,7 +63,7 @@ class TextResponse extends Response
         }
 
         if (!\is_string($text)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Invalid content (%s) provided to %s',
                 (\is_object($text) ? \get_class($text) : \gettype($text)),
                 __CLASS__

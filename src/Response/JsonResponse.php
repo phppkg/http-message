@@ -8,9 +8,9 @@
 
 namespace PhpComp\Http\Message\Response;
 
-use PhpComp\Http\Message\Component\TempStream;
 use PhpComp\Http\Message\Response;
 use PhpComp\Http\Message\Stream;
+use PhpComp\Http\Message\Stream\TempStream;
 
 /**
  * JSON response.
@@ -61,9 +61,9 @@ class JsonResponse extends Response
      * - JSON_UNESCAPED_SLASHES
      *
      * @param mixed $data Data to convert to JSON.
-     * @param int $status Integer status code for the response; 200 by default.
+     * @param int   $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
-     * @param int $encodingOptions JSON encoding options to use.
+     * @param int   $encodingOptions JSON encoding options to use.
      * @throws \RuntimeException
      * @throws \InvalidArgumentException if unable to encode the $data to JSON.
      */
@@ -72,16 +72,15 @@ class JsonResponse extends Response
         int $status = 200,
         array $headers = [],
         $encodingOptions = self::DEFAULT_JSON_FLAGS
-    )
-    {
+    ) {
         $this->setPayload($data);
         $this->encodingOptions = $encodingOptions;
-        $json = $this->jsonEncode($data, $this->encodingOptions);
-        $body = $this->createBodyFromJson($json);
+        $json                  = $this->jsonEncode($data, $this->encodingOptions);
+        $body                  = $this->createBodyFromJson($json);
 
         $headers = $this->injectContentType('application/json', $headers);
 
-        parent::__construct($body, $status, $headers);
+        parent::__construct($status, $headers, [], $body);
     }
 
     /**
@@ -124,7 +123,7 @@ class JsonResponse extends Response
      */
     public function withEncodingOptions($encodingOptions): self
     {
-        $new = clone $this;
+        $new                  = clone $this;
         $new->encodingOptions = $encodingOptions;
         return $this->updateBodyFor($new);
     }
@@ -149,7 +148,7 @@ class JsonResponse extends Response
      * Encode the provided data to JSON.
      *
      * @param mixed $data
-     * @param int $encodingOptions
+     * @param int   $encodingOptions
      * @return string
      * @throws \InvalidArgumentException if unable to encode the $data to JSON.
      */

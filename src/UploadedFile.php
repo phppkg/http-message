@@ -111,11 +111,11 @@ class UploadedFile implements UploadedFileInterface
                 $subArray = [];
                 foreach ($uploadedFile['error'] as $fileIdx => $error) {
                     // normalise subarray and re-parse to move the input's keyname up a level
-                    $subArray[$fileIdx]['name'] = $uploadedFile['name'][$fileIdx];
-                    $subArray[$fileIdx]['type'] = $uploadedFile['type'][$fileIdx];
+                    $subArray[$fileIdx]['name']     = $uploadedFile['name'][$fileIdx];
+                    $subArray[$fileIdx]['type']     = $uploadedFile['type'][$fileIdx];
                     $subArray[$fileIdx]['tmp_name'] = $uploadedFile['tmp_name'][$fileIdx];
-                    $subArray[$fileIdx]['error'] = $uploadedFile['error'][$fileIdx];
-                    $subArray[$fileIdx]['size'] = $uploadedFile['size'][$fileIdx];
+                    $subArray[$fileIdx]['error']    = $uploadedFile['error'][$fileIdx];
+                    $subArray[$fileIdx]['size']     = $uploadedFile['size'][$fileIdx];
 
                     $parsed[$field] = static::parseUploadedFiles($subArray);
                 }
@@ -127,12 +127,12 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * Construct a new UploadedFile instance.
-     * @param string $file The full path to the uploaded file provided by the client.
+     * @param string      $file The full path to the uploaded file provided by the client.
      * @param string|null $name The file name.
      * @param string|null $type The file media type.
-     * @param int|null $size The file size in bytes.
-     * @param int $error The UPLOAD_ERR_XXX code representing the status of the upload.
-     * @param bool $sapi Indicates if the upload is in a SAPI environment.
+     * @param int|null    $size The file size in bytes.
+     * @param int         $error The UPLOAD_ERR_XXX code representing the status of the upload.
+     * @param bool        $sapi Indicates if the upload is in a SAPI environment.
      */
     public function __construct(
         string $file,
@@ -141,14 +141,13 @@ class UploadedFile implements UploadedFileInterface
         int $size = null,
         int $error = \UPLOAD_ERR_OK,
         $sapi = false
-    )
-    {
-        $this->file = $file;
-        $this->name = $name;
-        $this->type = $type;
-        $this->size = $size;
+    ) {
+        $this->file  = $file;
+        $this->name  = $name;
+        $this->type  = $type;
+        $this->size  = $size;
         $this->error = $error;
-        $this->sapi = $sapi;
+        $this->sapi  = $sapi;
     }
 
     /**

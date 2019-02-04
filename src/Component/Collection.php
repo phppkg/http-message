@@ -54,7 +54,7 @@ class Collection extends \ArrayObject
 
     /**
      * @param string $name
-     * @param null $default
+     * @param null   $default
      * @return mixed|null
      */
     public function get(string $name, $default = null)
@@ -64,7 +64,7 @@ class Collection extends \ArrayObject
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return mixed|null
      */
     public function add($name, $value)
@@ -80,13 +80,12 @@ class Collection extends \ArrayObject
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return mixed|null
      */
     public function set($name, $value)
     {
         $this[$name] = $value;
-
         return $this;
     }
 
@@ -94,6 +93,14 @@ class Collection extends \ArrayObject
      * @return array
      */
     public function all(): array
+    {
+        return $this->getArrayCopy();
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
     {
         return $this->getArrayCopy();
     }
@@ -111,8 +118,8 @@ class Collection extends \ArrayObject
     {
         if (isset($this[$key])) {
             $val = $this[$key];
-            unset($this[$key]);
 
+            unset($this[$key]);
             return $val;
         }
 

@@ -18,7 +18,7 @@ use Psr\Http\Message\UriInterface;
 
 /**
  * Class Request
- * @property string $method
+ * @property string      $method
  * @property-read string $origin
  *
  * @method Body getBody()
@@ -31,11 +31,11 @@ class Request implements RequestInterface
 
     /**
      * Request constructor.
-     * @param string $method
-     * @param UriInterface $uri
-     * @param string $protocol
-     * @param string $protocolVersion
-     * @param array|Headers $headers
+     * @param string          $method
+     * @param UriInterface    $uri
+     * @param string          $protocol
+     * @param string          $protocolVersion
+     * @param array|Headers   $headers
      * @param StreamInterface $body
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
@@ -47,8 +47,7 @@ class Request implements RequestInterface
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    )
-    {
+    ) {
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);
 
@@ -61,7 +60,7 @@ class Request implements RequestInterface
     public function __clone()
     {
         $this->headers = clone $this->headers;
-        $this->body = clone $this->body;
+        $this->body    = clone $this->body;
     }
 
     /**

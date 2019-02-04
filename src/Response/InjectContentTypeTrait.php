@@ -19,7 +19,7 @@ trait InjectContentTypeTrait
      * Inject the provided Content-Type, if none is already present.
      *
      * @param string $contentType
-     * @param array $headers
+     * @param array  $headers
      * @return array Headers with injected Content-Type
      */
     private function injectContentType(string $contentType, array $headers): array

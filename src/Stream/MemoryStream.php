@@ -6,13 +6,13 @@
  * Time: 22:25
  */
 
-namespace PhpComp\Http\Message\Component;
+namespace PhpComp\Http\Message\Stream;
 
 use PhpComp\Http\Message\Stream;
 
 /**
  * Class MemoryStream
- * @package PhpComp\Http\Message\Component
+ * @package PhpComp\Http\Message\Stream
  */
 class MemoryStream extends Stream
 {

@@ -21,13 +21,13 @@ class HttpUtil
     /**
      * Send the response the client
      * @param ResponseInterface $response
-     * @param array $options
+     * @param array             $options
      * @throws \RuntimeException
      */
     public static function respond(ResponseInterface $response, array $options = []): void
     {
         $options = \array_merge([
-            'chunkSize' => 4096,
+            'chunkSize'              => 4096,
             'addContentLengthHeader' => false,
         ], $options);
 
@@ -57,7 +57,7 @@ class HttpUtil
                 $body->rewind();
             }
 
-            $chunkSize = $options['chunkSize'];
+            $chunkSize     = $options['chunkSize'];
             $contentLength = $response->getHeaderLine('Content-Length');
 
             if (!$contentLength) {

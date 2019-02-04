@@ -29,14 +29,13 @@ class Headers extends Collection
      * @var array
      */
     protected static $special = [
-        'CONTENT_TYPE' => 1,
-        'CONTENT_LENGTH' => 1,
-        'PHP_AUTH_USER' => 1,
-        'PHP_AUTH_PW' => 1,
+        'CONTENT_TYPE'    => 1,
+        'CONTENT_LENGTH'  => 1,
+        'PHP_AUTH_USER'   => 1,
+        'PHP_AUTH_PW'     => 1,
         'PHP_AUTH_DIGEST' => 1,
-        'AUTH_TYPE' => 1,
+        'AUTH_TYPE'       => 1,
     ];
-
 
     /**
      * Return array of HTTP header names and values.
@@ -59,14 +58,14 @@ class Headers extends Collection
      * Set HTTP header value
      * This method sets a header value. It replaces
      * any values that may already exist for the header name.
-     * @param string $key The case-insensitive header name
+     * @param string       $key The case-insensitive header name
      * @param string|array $value The header value
      * @return mixed
      */
     public function set($key, $value)
     {
         return parent::set($this->normalizeKey($key), [
-            'value' => (array)$value,
+            'value'       => (array)$value,
             'originalKey' => $key
         ]);
     }
@@ -75,9 +74,9 @@ class Headers extends Collection
      * Get HTTP header value
      *
      * @param  string $key The case-insensitive header name
-     * @param  mixed $default The default value if key does not exist
+     * @param  mixed  $default The default value if key does not exist
      *
-     * @return string[]|null
+     * @return string[]|mixed|null
      */
     public function get(string $key, $default = null)
     {
@@ -89,7 +88,7 @@ class Headers extends Collection
     }
 
     /**
-     * @param $name
+     * @param      $name
      * @param null $default
      * @return null|string
      */
@@ -104,7 +103,7 @@ class Headers extends Collection
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      * @return mixed|null
      */
     public function add($key, $value)
@@ -114,7 +113,7 @@ class Headers extends Collection
         }
 
         return parent::add($this->normalizeKey($key), [
-            'value' => (array)$value,
+            'value'       => (array)$value,
             'originalKey' => $key
         ]);
     }
@@ -165,7 +164,7 @@ class Headers extends Collection
             }
 
             $value = \str_replace(' ', '', $value);
-            $ls = \explode(',', $value);
+            $ls    = \explode(',', $value);
         }
 
         return $ls;
@@ -186,7 +185,7 @@ class Headers extends Collection
             }
 
             $value = \str_replace(' ', '', $value);
-            $ens = \explode(',', $value);
+            $ens   = \explode(',', $value);
         }
 
         return $ens;
@@ -201,8 +200,8 @@ class Headers extends Collection
         $output = [];
 
         foreach ($this as $name => $info) {
-            $name = \ucwords($name, '-');
-            $value = \implode(',', $info['value']);
+            $name     = \ucwords($name, '-');
+            $value    = \implode(',', $info['value']);
             $output[] = "$name: $value\r\n";
         }
 
@@ -217,7 +216,7 @@ class Headers extends Collection
         $output = [];
 
         foreach ($this as $name => $info) {
-            $name = \ucwords($name, '-');
+            $name          = \ucwords($name, '-');
             $output[$name] = \implode(',', $info['value']);
         }
 

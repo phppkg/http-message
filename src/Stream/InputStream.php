@@ -6,13 +6,13 @@
  * Time: 下午12:29
  */
 
-namespace PhpComp\Http\Message\Component;
+namespace PhpComp\Http\Message\Stream;
 
 use PhpComp\Http\Message\Stream;
 
 /**
  * Class InputStream
- * @package PhpComp\Http\Message\Component
+ * @package PhpComp\Http\Message\Stream
  */
 class InputStream extends Stream
 {

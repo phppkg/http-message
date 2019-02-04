@@ -46,19 +46,19 @@ trait RequestTrait
      */
     private $validMethods = [
         'CONNECT' => 1,
-        'DELETE' => 1,
-        'GET' => 1,
-        'HEAD' => 1,
+        'DELETE'  => 1,
+        'GET'     => 1,
+        'HEAD'    => 1,
         'OPTIONS' => 1,
-        'PATCH' => 1,
-        'POST' => 1,
-        'PUT' => 1,
-        'TRACE' => 1,
+        'PATCH'   => 1,
+        'POST'    => 1,
+        'PUT'     => 1,
+        'TRACE'   => 1,
     ];
 
     /**
      * @param string|UriInterface|null $uri
-     * @param string|null $method
+     * @param string|null              $method
      * @throws \InvalidArgumentException
      */
     protected function initializeRequest($uri = null, $method = null): void
@@ -231,9 +231,9 @@ trait RequestTrait
     {
         $method = (string)$this->filterMethod($method);
 
-        $clone = clone $this;
+        $clone                 = clone $this;
         $clone->originalMethod = $method;
-        $clone->method = $method;
+        $clone->method         = $method;
 
         return $clone;
     }
@@ -287,7 +287,7 @@ trait RequestTrait
             return '/';
         }
 
-        $path = $this->uri->getPath();
+        $path  = $this->uri->getPath();
         $query = $this->uri->getQuery();
 
         if ($query) {
@@ -312,7 +312,7 @@ trait RequestTrait
             );
         }
 
-        $clone = clone $this;
+        $clone                = clone $this;
         $clone->requestTarget = $requestTarget;
 
         return $clone;
@@ -336,12 +336,12 @@ trait RequestTrait
 
     /**
      * @param UriInterface $uri
-     * @param bool $preserveHost
+     * @param bool         $preserveHost
      * @return self
      */
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
-        $clone = clone $this;
+        $clone      = clone $this;
         $clone->uri = $uri;
 
         if (!$preserveHost) {

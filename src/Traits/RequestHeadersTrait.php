@@ -90,15 +90,15 @@ trait RequestHeadersTrait
      */
     public function getMediaTypeParams(): array
     {
-        $contentType = $this->getContentType();
+        $contentType       = $this->getContentType();
         $contentTypeParams = [];
 
         if ($contentType) {
-            $contentTypeParts = \preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypeParts       = \preg_split('/\s*[;,]\s*/', $contentType);
             $contentTypePartsLength = \count($contentTypeParts);
 
             for ($i = 1; $i < $contentTypePartsLength; $i++) {
-                $paramParts = \explode('=', $contentTypeParts[$i]);
+                $paramParts                                     = \explode('=', $contentTypeParts[$i]);
                 $contentTypeParams[\strtolower($paramParts[0])] = $paramParts[1];
             }
         }

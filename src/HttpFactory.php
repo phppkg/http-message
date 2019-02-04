@@ -29,12 +29,12 @@ class HttpFactory
      * @var array
      */
     protected static $special = [
-        'CONTENT_TYPE' => 1,
-        'CONTENT_LENGTH' => 1,
-        'PHP_AUTH_USER' => 1,
-        'PHP_AUTH_PW' => 1,
+        'CONTENT_TYPE'    => 1,
+        'CONTENT_LENGTH'  => 1,
+        'PHP_AUTH_USER'   => 1,
+        'PHP_AUTH_PW'     => 1,
         'PHP_AUTH_DIGEST' => 1,
-        'AUTH_TYPE' => 1,
+        'AUTH_TYPE'       => 1,
     ];
 
     /**
@@ -43,7 +43,7 @@ class HttpFactory
 
     /**
      * Create a new request.
-     * @param string $method
+     * @param string              $method
      * @param UriInterface|string $uri
      * @return RequestInterface
      * @throws \RuntimeException
@@ -79,7 +79,7 @@ class HttpFactory
 
     /**
      * Create a new server request.
-     * @param string $method
+     * @param string              $method
      * @param UriInterface|string $uri
      * @return ServerRequestInterface
      * @throws \RuntimeException
@@ -108,11 +108,11 @@ class HttpFactory
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
 
-        $body = new RequestBody();
-        $method = $env->get('REQUEST_METHOD', 'GET');
-        $headers = static::createHeadersFromArray($env);
-        $cookies = Cookies::parseFromRawHeader($headers->get('Cookie', []));
-        $serverParams = $env->all();
+        $body          = new RequestBody();
+        $method        = $env->get('REQUEST_METHOD', 'GET');
+        $headers       = static::createHeadersFromArray($env);
+        $cookies       = Cookies::parseFromRawHeader($headers->get('Cookie', []));
+        $serverParams  = $env->all();
         $uploadedFiles = UploadedFile::createFromFILES();
 
         $class = $class ?: ServerRequest::class;
@@ -191,10 +191,10 @@ class HttpFactory
      * @see http://php.net/manual/features.file-upload.post-method.php
      * @see http://php.net/manual/features.file-upload.errors.php
      * @param string|resource $file
-     * @param integer $size in bytes
-     * @param integer $error PHP file upload error
-     * @param string $clientFilename
-     * @param string $clientMediaType
+     * @param integer         $size in bytes
+     * @param integer         $error PHP file upload error
+     * @param string          $clientFilename
+     * @param string          $clientMediaType
      * @return UploadedFileInterface
      * @throws \InvalidArgumentException If the file resource is not readable.
      */
@@ -204,8 +204,7 @@ class HttpFactory
         int $error = \UPLOAD_ERR_OK,
         string $clientFilename = null,
         string $clientMediaType = null
-    ): UploadedFileInterface
-    {
+    ): UploadedFileInterface {
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
     }
 
@@ -235,7 +234,7 @@ class HttpFactory
 
         // Scheme
         $isSecure = $env->get('HTTPS');
-        $scheme = (empty($isSecure) || $isSecure === 'off') ? 'http' : 'https';
+        $scheme   = (empty($isSecure) || $isSecure === 'off') ? 'http' : 'https';
 
         // Authority: Username and password
         $username = $env->get('PHP_AUTH_USER', '');
@@ -298,8 +297,8 @@ class HttpFactory
     public static function createHeadersFromArray($env): Headers
     {
         $data = [];
-        $env = self::ensureIsCollection($env);
-        $env = self::determineAuthorization($env);
+        $env  = self::ensureIsCollection($env);
+        $env  = self::determineAuthorization($env);
 
         foreach ($env as $key => $value) {
             $key = \strtoupper($key);

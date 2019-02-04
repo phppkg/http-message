@@ -90,7 +90,7 @@ class ServerRequest implements ServerRequestInterface
         $cookies = [];
         if (isset($headers['Cookie'])) {
             $cookieData = $headers['Cookie'];
-            $cookies = Cookies::parseFromRawHeader($cookieData);
+            $cookies    = Cookies::parseFromRawHeader($cookieData);
         }
 
         $port = 80;
@@ -99,12 +99,12 @@ class ServerRequest implements ServerRequestInterface
             [$host, $port] = strpos($val, ':') ? explode(':', $val) : [$val, 80];
         }
 
-        $path = $uri;
+        $path  = $uri;
         $query = $fragment = '';
         if (\strlen($uri) > 1) {
-            $parts = parse_url($uri);
-            $path = $parts['path'] ?? '';
-            $query = $parts['query'] ?? '';
+            $parts    = parse_url($uri);
+            $path     = $parts['path'] ?? '';
+            $query    = $parts['query'] ?? '';
             $fragment = $parts['fragment'] ?? '';
         }
 
@@ -115,15 +115,15 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * Request constructor.
-     * @param string $method
-     * @param UriInterface $uri
-     * @param string $protocol
-     * @param string $protocolVersion
-     * @param array|Headers $headers
-     * @param array $cookies
-     * @param array $serverParams
+     * @param string          $method
+     * @param UriInterface    $uri
+     * @param string          $protocol
+     * @param string          $protocolVersion
+     * @param array|Headers   $headers
+     * @param array           $cookies
+     * @param array           $serverParams
      * @param StreamInterface $body
-     * @param array $uploadedFiles
+     * @param array           $uploadedFiles
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
@@ -137,15 +137,14 @@ class ServerRequest implements ServerRequestInterface
         array $uploadedFiles = [],
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
-    )
-    {
+    ) {
         $this->setCookies($cookies);
         $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
         $this->initializeRequest($uri, $method);
 
-        $this->serverParams = $serverParams;
+        $this->serverParams  = $serverParams;
         $this->uploadedFiles = $uploadedFiles;
-        $this->attributes = new Collection();
+        $this->attributes    = new Collection();
 
         if (isset($serverParams['SERVER_PROTOCOL'])) {
             $this->protocolVersion = str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
@@ -160,9 +159,9 @@ class ServerRequest implements ServerRequestInterface
 
     public function __clone()
     {
-        $this->headers = clone $this->headers;
+        $this->headers    = clone $this->headers;
         $this->attributes = clone $this->attributes;
-        $this->body = clone $this->body;
+        $this->body       = clone $this->body;
     }
 
     /**
@@ -192,9 +191,9 @@ class ServerRequest implements ServerRequestInterface
         });
 
         $xmlParser = function ($input) {
-            $backup = \libxml_disable_entity_loader();
+            $backup        = \libxml_disable_entity_loader();
             $backup_errors = \libxml_use_internal_errors(true);
-            $result = \simplexml_load_string($input);
+            $result        = \simplexml_load_string($input);
             \libxml_disable_entity_loader($backup);
             \libxml_clear_errors();
             \libxml_use_internal_errors($backup_errors);
@@ -211,7 +210,6 @@ class ServerRequest implements ServerRequestInterface
 
         $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
             \parse_str($input, $data);
-
             return $data;
         });
     }
@@ -242,7 +240,7 @@ class ServerRequest implements ServerRequestInterface
 
 
     /**
-     * @param $mediaType
+     * @param          $mediaType
      * @param callable $callable
      */
     public function registerMediaTypeParser($mediaType, callable $callable): void
@@ -310,7 +308,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withQueryParams(array $query)
     {
-        $clone = clone $this;
+        $clone               = clone $this;
         $clone->_queryParams = $query;
 
         return $clone;
@@ -319,7 +317,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
      * @param string $name the parameter name
-     * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+     * @param mixed  $defaultValue the default parameter value if the parameter does not exist.
      * @return array|mixed
      */
     public function get($name = null, $defaultValue = null)
@@ -332,7 +330,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param $name
+     * @param      $name
      * @param null $defaultValue
      * @return mixed|null
      */
@@ -396,7 +394,7 @@ class ServerRequest implements ServerRequestInterface
         }
 
         if (isset($this->bodyParsers[$mediaType]) === true) {
-            $body = (string)$this->getBody();
+            $body   = (string)$this->getBody();
             $parsed = $this->bodyParsers[$mediaType]($body);
 
             if (null !== $parsed && !\is_object($parsed) && !\is_array($parsed)) {
@@ -445,7 +443,7 @@ class ServerRequest implements ServerRequestInterface
             throw new \InvalidArgumentException('Parsed body value must be an array, an object, or null');
         }
 
-        $clone = clone $this;
+        $clone             = clone $this;
         $clone->bodyParsed = $data;
 
         return $clone;
@@ -463,14 +461,14 @@ class ServerRequest implements ServerRequestInterface
      * Fetch parameter value from request body.
      * Note: This method is not part of the PSR-7 standard.
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      * @throws \RuntimeException
      */
     public function getParsedBodyParam($key, $default = null)
     {
         $postParams = $this->getParsedBody();
-        $result = $default;
+        $result     = $default;
 
         if (\is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
@@ -508,7 +506,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getParams(): array
     {
-        $params = $this->getQueryParams();
+        $params     = $this->getQueryParams();
         $postParams = $this->getParsedBody();
 
         if ($postParams) {
@@ -528,8 +526,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getParam($key, $default = null)
     {
-        $result = $default;
-        $getParams = $this->getQueryParams();
+        $result     = $default;
+        $getParams  = $this->getQueryParams();
         $postParams = $this->getParsedBody();
 
         if (\is_array($postParams) && isset($postParams[$key])) {
@@ -572,7 +570,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
-        $clone = clone $this;
+        $clone                = clone $this;
         $clone->uploadedFiles = $uploadedFiles;
 
         return $clone;
@@ -610,7 +608,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      * @param string $name The attribute name.
-     * @param mixed $default Default value to return if the attribute does not exist.
+     * @param mixed  $default Default value to return if the attribute does not exist.
      * @return mixed
      */
     public function getAttribute($name, $default = null)
@@ -620,7 +618,7 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
     public function setAttribute(string $name, $value): self
@@ -653,7 +651,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      * @param string $name The attribute name.
-     * @param mixed $value The value of the attribute.
+     * @param mixed  $value The value of the attribute.
      * @return static
      */
     public function withAttribute($name, $value)
@@ -670,7 +668,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withAttributes(array $attributes): self
     {
-        $clone = clone $this;
+        $clone             = clone $this;
         $clone->attributes = new Collection($attributes);
 
         return $clone;
@@ -729,12 +727,12 @@ class ServerRequest implements ServerRequestInterface
      * Retrieve a server parameter.
      * Note: This method is not part of the PSR-7 standard.
      * @param  string $key
-     * @param  mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     public function getServerParam(string $key, $default = null)
     {
-        $key = \strtoupper($key);
+        $key          = \strtoupper($key);
         $serverParams = $this->getServerParams();
 
         return $serverParams[$key] ?? $default;

@@ -11,19 +11,19 @@ namespace PhpComp\Http\Message\Stream;
 use PhpComp\Http\Message\Stream;
 
 /**
- * Class TempStream
+ * Class FileStream
  * @package PhpComp\Http\Message\Stream
  */
-class TempStream extends Stream
+class FileStream extends Stream
 {
     /**
-     * TempStream constructor.
+     * Class constructor.
+     * @param string $file
      * @param string $mode
-     * @throws \InvalidArgumentException
      */
-    public function __construct(string $mode = 'wb+')
+    public function __construct(string $file, string $mode = 'rb+')
     {
-        $stream = \fopen('php://temp', $mode);
+        $stream = \fopen($file, $mode);
 
         parent::__construct($stream);
     }

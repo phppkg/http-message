@@ -55,9 +55,9 @@ trait MessageTrait
 
     /**
      * BaseMessage constructor.
-     * @param string $protocol
-     * @param string $protocolVersion
-     * @param array|Headers $headers
+     * @param string                          $protocol
+     * @param string                          $protocolVersion
+     * @param array|Headers                   $headers
      * @param string|resource|StreamInterface $body
      * @throws \InvalidArgumentException
      */
@@ -67,7 +67,7 @@ trait MessageTrait
         $headers = null,
         $body = 'php://memory'
     ): void {
-        $this->protocol = $protocol ?: 'http';
+        $this->protocol        = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
 
         if ($headers) {
@@ -137,7 +137,7 @@ trait MessageTrait
             );
         }
 
-        $clone = clone $this;
+        $clone                  = clone $this;
         $clone->protocolVersion = $version;
 
         return $clone;
@@ -176,7 +176,7 @@ trait MessageTrait
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return $this
      */
     public function setHeader(string $name, $value): self
@@ -189,7 +189,7 @@ trait MessageTrait
     /**
      * PSR 7 method
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return self
      */
     public function withHeader($name, $value): self
@@ -216,7 +216,7 @@ trait MessageTrait
     /**
      * PSR 7 method
      * @param string $name
-     * @param $value
+     * @param        $value
      * @return self
      */
     public function withAddedHeader($name, $value): self
@@ -260,7 +260,7 @@ trait MessageTrait
 
     /**
      * @param string|resource|StreamInterface|bool $body
-     * @param string $mode
+     * @param string                               $mode
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
@@ -321,7 +321,7 @@ trait MessageTrait
     public function withBody(StreamInterface $body)
     {
         // TODO: Test for invalid body?
-        $clone = clone $this;
+        $clone       = clone $this;
         $clone->body = $body;
 
         return $clone;
@@ -335,7 +335,6 @@ trait MessageTrait
     public function addContent(string $content): self
     {
         $this->body->write($content);
-
         return $this;
     }
 
@@ -347,7 +346,6 @@ trait MessageTrait
     public function write(string $content): self
     {
         $this->body->write($content);
-
         return $this;
     }
 }

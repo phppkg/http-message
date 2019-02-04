@@ -69,7 +69,7 @@ class Uri implements UriInterface
      * Create new Uri.
      * @param string $scheme Uri scheme.
      * @param string $host Uri host.
-     * @param int $port Uri port number.
+     * @param int    $port Uri port number.
      * @param string $path Uri path.
      * @param string $query Uri query string.
      * @param string $fragment Uri fragment.
@@ -86,15 +86,14 @@ class Uri implements UriInterface
         $fragment = '',
         $user = '',
         $password = ''
-    )
-    {
-        $this->scheme = $scheme ? $this->filterScheme($scheme) : '';
-        $this->host = $host;
-        $this->port = $this->filterPort($port);
-        $this->path = empty($path) ? '/' : $this->filterPath($path);
-        $this->query = $this->filterQuery($query);
+    ) {
+        $this->scheme   = $scheme ? $this->filterScheme($scheme) : '';
+        $this->host     = $host;
+        $this->port     = $this->filterPort($port);
+        $this->path     = empty($path) ? '/' : $this->filterPath($path);
+        $this->query    = $this->filterQuery($query);
         $this->fragment = $this->filterQuery($fragment);
-        $this->user = $user;
+        $this->user     = $user;
         $this->password = $password;
     }
 
@@ -111,14 +110,14 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException('Uri must be a string');
         }
 
-        $parts = \parse_url($uri);
-        $scheme = $parts['scheme'] ?? '';
-        $user = $parts['user'] ?? '';
-        $pass = $parts['pass'] ?? '';
-        $host = $parts['host'] ?? '';
-        $port = $parts['port'] ?? null;
-        $path = $parts['path'] ?? '';
-        $query = $parts['query'] ?? '';
+        $parts    = \parse_url($uri);
+        $scheme   = $parts['scheme'] ?? '';
+        $user     = $parts['user'] ?? '';
+        $pass     = $parts['pass'] ?? '';
+        $host     = $parts['host'] ?? '';
+        $port     = $parts['port'] ?? null;
+        $path     = $parts['path'] ?? '';
+        $query    = $parts['query'] ?? '';
         $fragment = $parts['fragment'] ?? '';
 
         return new static($scheme, $host, $port, $path, $query, $fragment, $user, $pass);
@@ -166,8 +165,8 @@ class Uri implements UriInterface
      */
     public function withScheme($scheme): self
     {
-        $scheme = $this->filterScheme($scheme);
-        $clone = clone $this;
+        $scheme        = $this->filterScheme($scheme);
+        $clone         = clone $this;
         $clone->scheme = $scheme;
 
         return $clone;
@@ -177,11 +176,11 @@ class Uri implements UriInterface
      * @var array
      */
     protected static $validScheme = [
-        '' => true,
+        ''      => true,
         'https' => true,
-        'http' => true,
-        'ws' => true,
-        'wss' => true,
+        'http'  => true,
+        'ws'    => true,
+        'wss'   => true,
     ];
 
     /**
@@ -225,8 +224,8 @@ class Uri implements UriInterface
     public function getAuthority(): string
     {
         $userInfo = $this->getUserInfo();
-        $host = $this->getHost();
-        $port = $this->getPort();
+        $host     = $this->getHost();
+        $port     = $this->getPort();
 
         return ($userInfo ? $userInfo . '@' : '') . $host . ($port !== null ? ':' . $port : '');
     }
@@ -254,14 +253,14 @@ class Uri implements UriInterface
      * Password is optional, but the user information MUST include the
      * user; an empty string for the user is equivalent to removing user
      * information.
-     * @param string $user The user name to use for authority.
+     * @param string      $user The user name to use for authority.
      * @param null|string $password The password associated with $user.
      * @return self A new instance with the specified user information.
      */
     public function withUserInfo($user, $password = null): self
     {
-        $clone = clone $this;
-        $clone->user = $user;
+        $clone           = clone $this;
+        $clone->user     = $user;
         $clone->password = $password ?: '';
 
         return $clone;
@@ -291,7 +290,7 @@ class Uri implements UriInterface
      */
     public function withHost($host): self
     {
-        $clone = clone $this;
+        $clone       = clone $this;
         $clone->host = $host;
 
         return $clone;
@@ -328,8 +327,8 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
-        $port = $this->filterPort($port);
-        $clone = clone $this;
+        $port        = $this->filterPort($port);
+        $clone       = clone $this;
         $clone->port = $port;
 
         return $clone;
@@ -411,7 +410,7 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException('Uri path must be a string');
         }
 
-        $clone = clone $this;
+        $clone       = clone $this;
         $clone->path = $this->filterPath($path);
 
         return $clone;
@@ -474,8 +473,8 @@ class Uri implements UriInterface
         if (!\is_string($query) && !method_exists($query, '__toString')) {
             throw new \InvalidArgumentException('Uri query must be a string');
         }
-        $query = ltrim((string)$query, '?');
-        $clone = clone $this;
+        $query        = ltrim((string)$query, '?');
+        $clone        = clone $this;
         $clone->query = $this->filterQuery($query);
 
         return $clone;
@@ -535,8 +534,8 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException('Uri fragment must be a string');
         }
 
-        $fragment = ltrim((string)$fragment, '#');
-        $clone = clone $this;
+        $fragment        = ltrim((string)$fragment, '#');
+        $clone           = clone $this;
         $clone->fragment = $this->filterQuery($fragment);
 
         return $clone;
@@ -568,11 +567,11 @@ class Uri implements UriInterface
      */
     public function __toString()
     {
-        $scheme = $this->getScheme();
+        $scheme    = $this->getScheme();
         $authority = $this->getAuthority();
         // $basePath = $this->getBasePath();
-        $path = $this->getPath();
-        $query = $this->getQuery();
+        $path     = $this->getPath();
+        $query    = $this->getQuery();
         $fragment = $this->getFragment();
 
         $path = '/' . ltrim($path, '/');
@@ -592,7 +591,7 @@ class Uri implements UriInterface
      */
     public function getBaseUrl(): string
     {
-        $scheme = $this->getScheme();
+        $scheme    = $this->getScheme();
         $authority = $this->getAuthority();
         // $basePath = $this->getBasePath();
         //

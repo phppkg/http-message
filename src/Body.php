@@ -8,7 +8,7 @@
 
 namespace PhpComp\Http\Message;
 
-use PhpComp\Http\Message\Component\TempStream;
+use PhpComp\Http\Message\Stream\TempStream;
 
 /**
  * Body
