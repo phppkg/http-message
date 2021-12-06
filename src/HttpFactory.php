@@ -8,6 +8,7 @@
 
 namespace PhpPkg\Http\Message;
 
+use InvalidArgumentException;
 use PhpPkg\Http\Message\Component\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
@@ -16,6 +17,22 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use function array_change_key_case;
+use function explode;
+use function fopen;
+use function getallheaders;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_string;
+use function parse_url;
+use function preg_match;
+use function strlen;
+use function strpos;
+use function strstr;
+use function strtoupper;
+use function substr;
 
 /**
  * Class HttpFactory
@@ -46,12 +63,12 @@ class HttpFactory
      * @param string              $method
      * @param UriInterface|string $uri
      * @return RequestInterface
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public static function createRequest(string $method, $uri): RequestInterface
     {
-        if (\is_string($uri)) {
+        if (is_string($uri)) {
             $uri = Uri::createFromString($uri);
         }
 
@@ -66,7 +83,7 @@ class HttpFactory
      * Create a new response.
      * @param integer $code HTTP status code
      * @return ResponseInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function createResponse(int $code = 200): ResponseInterface
     {
@@ -82,12 +99,12 @@ class HttpFactory
      * @param string              $method
      * @param UriInterface|string $uri
      * @return ServerRequestInterface
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public static function createServerRequest($method, $uri): ServerRequestInterface
     {
-        if (\is_string($uri)) {
+        if (is_string($uri)) {
             $uri = Uri::createFromString($uri);
         }
 
@@ -99,8 +116,8 @@ class HttpFactory
      * @param array|mixed $server Typically $_SERVER or similar structure.
      * @param string|null $class The custom request class
      * @return ServerRequestInterface
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
     public static function createServerRequestFromArray($server, string $class = null): ServerRequestInterface
@@ -122,7 +139,7 @@ class HttpFactory
 
         if (
             $method === 'POST' &&
-            \in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
+            in_array($request->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'], true)
         ) {
             // parsed body must be $_POST
             $request = $request->withParsedBody($_POST);
@@ -143,7 +160,7 @@ class HttpFactory
 
         // $rawData = trim($rawData);
         // split head and body
-        $two = \explode("\r\n\r\n", $rawData, 2);
+        $two = explode("\r\n\r\n", $rawData, 2);
 
         if (!$rawHeader = $two[0] ?? '') {
             return new ServerRequest('GET', Uri::createFromString('/'));
@@ -152,19 +169,19 @@ class HttpFactory
         $body = $two[1] ? new RequestBody($two[1]) : null;
 
         /** @var array $list */
-        $list = \explode("\n", trim($rawHeader));
+        $list = explode("\n", trim($rawHeader));
 
         // e.g: `GET / HTTP/1.1`
         $first = \array_shift($list);
         // parse
-        [$method, $uri, $protoStr] = \array_map('trim', \explode(' ', \trim($first)));
-        [$protocol, $protocolVersion] = \explode('/', $protoStr);
+        [$method, $uri, $protoStr] = \array_map('trim', explode(' ', \trim($first)));
+        [$protocol, $protocolVersion] = explode('/', $protoStr);
 
         // other header info
         $headers = [];
         foreach ($list as $item) {
             if ($item) {
-                [$name, $value] = \explode(': ', \trim($item));
+                [$name, $value] = explode(': ', \trim($item));
                 $headers[$name] = \trim($value);
             }
         }
@@ -177,13 +194,13 @@ class HttpFactory
         $port = 80;
         $host = '';
         if ($val = $headers['Host'] ?? '') {
-            [$host, $port] = \strpos($val, ':') ? \explode(':', $val) : [$val, 80];
+            [$host, $port] = strpos($val, ':') ? explode(':', $val) : [$val, 80];
         }
 
         $path  = $uri;
         $query = $fragment = '';
-        if (\strlen($uri) > 1) {
-            $parts    = \parse_url($uri);
+        if (strlen($uri) > 1) {
+            $parts    = parse_url($uri);
             $path     = $parts['path'] ?? '';
             $query    = $parts['query'] ?? '';
             $fragment = $parts['fragment'] ?? '';
@@ -202,8 +219,8 @@ class HttpFactory
      * The stream SHOULD be created with a temporary resource.
      * @param string $content
      * @return StreamInterface
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public static function createStream(string $content = ''): StreamInterface
     {
@@ -218,12 +235,12 @@ class HttpFactory
      * @param string $filename
      * @param string $mode
      * @return StreamInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function createStreamFromFile(string $filename, string $mode = 'rb'): StreamInterface
     {
         // $stream = fopen('php://temp', $mode);
-        $stream = \fopen($filename, $mode);
+        $stream = fopen($filename, $mode);
 
         return new Stream($stream);
     }
@@ -233,7 +250,7 @@ class HttpFactory
      * The stream MUST be readable and may be writable.
      * @param resource $resource e.g `$resource = fopen('php://temp', 'r+');`
      * @return StreamInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function createStreamFromResource($resource): StreamInterface
     {
@@ -258,7 +275,7 @@ class HttpFactory
      * @param string          $clientFilename
      * @param string          $clientMediaType
      * @return UploadedFileInterface
-     * @throws \InvalidArgumentException If the file resource is not readable.
+     * @throws InvalidArgumentException If the file resource is not readable.
      */
     public static function createUploadedFile(
         $file,
@@ -278,7 +295,7 @@ class HttpFactory
      * Create a new URI.
      * @param string $uri
      * @return UriInterface
-     * @throws \InvalidArgumentException If the given URI cannot be parsed.
+     * @throws InvalidArgumentException If the given URI cannot be parsed.
      */
     public static function createUri(string $uri = ''): UriInterface
     {
@@ -288,7 +305,7 @@ class HttpFactory
     /**
      * @param Collection|array $env
      * @return Uri
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function createUriFromArray($env): Uri
     {
@@ -311,17 +328,17 @@ class HttpFactory
 
         // Authority: Port
         $port = (int)$env->get('SERVER_PORT', 80);
-        if (\preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
+        if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
             $host = $matches[1];
 
             if ($matches[2]) {
-                $port = (int)\substr($matches[2], 1);
+                $port = (int)substr($matches[2], 1);
             }
         } else {
-            $pos = \strpos($host, ':');
+            $pos = strpos($host, ':');
             if ($pos !== false) {
-                $port = (int)\substr($host, $pos + 1);
-                $host = \strstr($host, ':', true);
+                $port = (int)substr($host, $pos + 1);
+                $host = strstr($host, ':', true);
             }
         }
 
@@ -331,12 +348,12 @@ class HttpFactory
 
         // parse_url() requires a full URL. As we don't extract the domain name or scheme,
         // we use a stand-in.
-        $uriPath = \parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
+        $uriPath = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
 
         // Query string
         $queryString = $env->get('QUERY_STRING', '');
         if ($queryString === '') {
-            $queryString = \parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
+            $queryString = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
         }
 
         // Fragment
@@ -363,7 +380,7 @@ class HttpFactory
         $env  = self::determineAuthorization($env);
 
         foreach ($env as $key => $value) {
-            $key = \strtoupper($key);
+            $key = strtoupper($key);
 
             if (isset(static::$special[$key]) || strpos($key, 'HTTP_') === 0) {
                 if ($key !== 'HTTP_CONTENT_LENGTH') {
@@ -385,9 +402,9 @@ class HttpFactory
     {
         $authorization = $env->get('HTTP_AUTHORIZATION');
 
-        if (null === $authorization && \is_callable('getallheaders')) {
-            $headers = \getallheaders();
-            $headers = \array_change_key_case($headers, CASE_LOWER);
+        if (null === $authorization && is_callable('getallheaders')) {
+            $headers = getallheaders();
+            $headers = array_change_key_case($headers, CASE_LOWER);
 
             if (isset($headers['authorization'])) {
                 $env->set('HTTP_AUTHORIZATION', $headers['authorization']);
@@ -403,7 +420,7 @@ class HttpFactory
      */
     public static function ensureIsCollection($data): Collection
     {
-        if (\is_array($data)) {
+        if (is_array($data)) {
             return new Collection($data);
         }
 

@@ -12,6 +12,14 @@ namespace PhpPkg\Http\Message;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+use function fclose;
+use function fread;
+use function fstat;
+use function ftell;
+use function is_resource;
+use function pclose;
+use function stream_get_contents;
+use function strpos;
 
 /**
  * Represents a data stream as defined in PSR-7.
@@ -132,7 +140,7 @@ class Stream implements StreamInterface
      */
     protected function isAttached(): bool
     {
-        return \is_resource($this->stream);
+        return is_resource($this->stream);
     }
 
     /**
@@ -146,7 +154,7 @@ class Stream implements StreamInterface
      */
     protected function attach($newStream): void
     {
-        if (\is_resource($newStream) === false) {
+        if (is_resource($newStream) === false) {
             throw new InvalidArgumentException(__METHOD__ . ' argument must be a valid PHP resource');
         }
 
@@ -213,9 +221,9 @@ class Stream implements StreamInterface
     {
         if ($this->isAttached() === true) {
             if ($this->isPipe()) {
-                \pclose($this->stream);
+                pclose($this->stream);
             } else {
-                \fclose($this->stream);
+                fclose($this->stream);
             }
         }
 
@@ -246,7 +254,7 @@ class Stream implements StreamInterface
      */
     public function tell(): int
     {
-        if (!$this->isAttached() || ($position = \ftell($this->stream)) === false || $this->isPipe()) {
+        if (!$this->isAttached() || ($position = ftell($this->stream)) === false || $this->isPipe()) {
             throw new RuntimeException('Could not get the position of the pointer in stream');
         }
 
@@ -279,7 +287,7 @@ class Stream implements StreamInterface
                 if ($this->isAttached()) {
                     $meta = $this->getMetadata();
                     foreach (self::$modes['readable'] as $mode) {
-                        if (\strpos($meta['mode'], $mode) === 0) {
+                        if (str_starts_with($meta['mode'], $mode)) {
                             $this->readable = true;
                             break;
                         }
@@ -304,7 +312,7 @@ class Stream implements StreamInterface
             if ($this->isAttached()) {
                 $meta = $this->getMetadata();
                 foreach (self::$modes['writable'] as $mode) {
-                    if (strpos($meta['mode'], $mode) === 0) {
+                    if (str_starts_with($meta['mode'], $mode)) {
                         $this->writable = true;
                         break;
                     }
@@ -389,7 +397,7 @@ class Stream implements StreamInterface
      */
     public function read($length): string
     {
-        if (!$this->isReadable() || ($data = \fread($this->stream, $length)) === false) {
+        if (!$this->isReadable() || ($data = fread($this->stream, $length)) === false) {
             throw new RuntimeException('Could not read from stream');
         }
 
@@ -427,7 +435,7 @@ class Stream implements StreamInterface
      */
     public function getContents(): string
     {
-        if (!$this->isReadable() || ($contents = \stream_get_contents($this->stream)) === false) {
+        if (!$this->isReadable() || ($contents = stream_get_contents($this->stream)) === false) {
             throw new RuntimeException('Could not get contents of stream');
         }
 
@@ -445,7 +453,7 @@ class Stream implements StreamInterface
             $this->isPipe = false;
 
             if ($this->isAttached()) {
-                $mode         = \fstat($this->stream)['mode'];
+                $mode         = fstat($this->stream)['mode'];
                 $this->isPipe = ($mode & self::FSTAT_MODE_S_IFIFO) !== 0;
             }
         }

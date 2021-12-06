@@ -8,8 +8,13 @@
 
 namespace PhpPkg\Http\Message\Response;
 
+use function array_keys;
+use function array_reduce;
+use function strtolower;
+
 /**
  * Trait InjectContentTypeTrait
+ *
  * @package PhpPkg\Http\Message\Response
  * @from https://github.com/zendframework/zend-diactoros/blob/master/src/Response/InjectContentTypeTrait.php
  */
@@ -24,8 +29,8 @@ trait InjectContentTypeTrait
      */
     private function injectContentType(string $contentType, array $headers): array
     {
-        $hasContentType = \array_reduce(\array_keys($headers), function ($carry, $item) {
-            return $carry ?: (\strtolower($item) === 'content-type');
+        $hasContentType = array_reduce(array_keys($headers), function ($carry, $item) {
+            return $carry ?: (strtolower($item) === 'content-type');
         }, false);
 
         if (!$hasContentType) {

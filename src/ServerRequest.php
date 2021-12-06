@@ -9,14 +9,29 @@
 
 namespace PhpPkg\Http\Message;
 
+use InvalidArgumentException;
 use PhpPkg\Http\Message\Component\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\RequestHeadersTrait;
 use PhpPkg\Http\Message\Traits\RequestTrait;
+use PhpPkg\Http\Message\Util\MediaType;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use Throwable;
+use function is_array;
+use function is_object;
+use function json_decode;
+use function libxml_clear_errors;
+use function libxml_disable_entity_loader;
+use function libxml_use_internal_errors;
+use function parse_str;
+use function property_exists;
+use function simplexml_load_string;
+use function strtoupper;
+use const PHP_VERSION_ID;
 
 /**
  * Class ServerRequest
@@ -51,8 +66,8 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param string $rawData
      * @return ServerRequestInterface
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public static function makeByParseRawData(string $rawData): ServerRequestInterface
     {
@@ -70,8 +85,8 @@ class ServerRequest implements ServerRequestInterface
      * @param array           $serverParams
      * @param StreamInterface $body
      * @param array           $uploadedFiles
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         string $method = 'GET',
@@ -117,7 +132,7 @@ class ServerRequest implements ServerRequestInterface
     {
         try {
             return $this->toString();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return '';
         }
     }
@@ -127,9 +142,9 @@ class ServerRequest implements ServerRequestInterface
      */
     protected function registerDataParsers(): void
     {
-        $this->registerMediaTypeParser('application/json', function ($input) {
-            $result = \json_decode($input, true);
-            if (!\is_array($result)) {
+        $this->registerMediaTypeParser(MediaType::APP_JSON, function ($input) {
+            $result = json_decode($input, true);
+            if (!is_array($result)) {
                 return null;
             }
 
@@ -137,12 +152,22 @@ class ServerRequest implements ServerRequestInterface
         });
 
         $xmlParser = function ($input) {
-            $backup        = \libxml_disable_entity_loader();
-            $backup_errors = \libxml_use_internal_errors(true);
-            $result        = \simplexml_load_string($input);
-            \libxml_disable_entity_loader($backup);
-            \libxml_clear_errors();
-            \libxml_use_internal_errors($backup_errors);
+            $backup = true;
+            if (PHP_VERSION_ID < 80000) {
+                $backup =  libxml_disable_entity_loader(true);
+            }
+
+            $backup_errors = libxml_use_internal_errors(true);
+
+            $result = simplexml_load_string($input);
+            libxml_disable_entity_loader($backup);
+
+            if (PHP_VERSION_ID < 80000) {
+                libxml_disable_entity_loader($backup);
+            }
+
+            libxml_clear_errors();
+            libxml_use_internal_errors($backup_errors);
 
             if ($result === false) {
                 return null;
@@ -151,11 +176,10 @@ class ServerRequest implements ServerRequestInterface
             return $result;
         };
 
-        $this->registerMediaTypeParser('text/xml', $xmlParser);
-        $this->registerMediaTypeParser('application/xml', $xmlParser);
-
-        $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
-            \parse_str($input, $data);
+        $this->registerMediaTypeParser(MediaType::TEXT_XML, $xmlParser);
+        $this->registerMediaTypeParser(MediaType::APP_XML, $xmlParser);
+        $this->registerMediaTypeParser(MediaType::FORM_URLENCODED, function ($input) {
+            parse_str($input, $data);
             return $data;
         });
     }
@@ -163,8 +187,8 @@ class ServerRequest implements ServerRequestInterface
     /**
      * build response data
      * @return string
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function toString(): string
     {
@@ -317,7 +341,7 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @return array|null
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function getParsedBody(): ?array
     {
@@ -343,8 +367,8 @@ class ServerRequest implements ServerRequestInterface
             $body   = (string)$this->getBody();
             $parsed = $this->bodyParsers[$mediaType]($body);
 
-            if (null !== $parsed && !\is_object($parsed) && !\is_array($parsed)) {
-                throw new \RuntimeException(
+            if (null !== $parsed && !is_object($parsed) && !is_array($parsed)) {
+                throw new RuntimeException(
                     'Request body media type parser return value must be an array, an object, or null'
                 );
             }
@@ -380,13 +404,13 @@ class ServerRequest implements ServerRequestInterface
      * @param null|array|object $data The deserialized body data. This will
      *     typically be in an array or object.
      * @return static
-     * @throws \InvalidArgumentException if an unsupported argument type is
+     * @throws InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
     public function withParsedBody($data)
     {
-        if (null !== $data && !\is_object($data) && !\is_array($data)) {
-            throw new \InvalidArgumentException('Parsed body value must be an array, an object, or null');
+        if (null !== $data && !is_object($data) && !is_array($data)) {
+            throw new InvalidArgumentException('Parsed body value must be an array, an object, or null');
         }
 
         $clone             = clone $this;
@@ -409,16 +433,16 @@ class ServerRequest implements ServerRequestInterface
      * @param string $key
      * @param mixed  $default
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function getParsedBodyParam($key, $default = null)
     {
         $postParams = $this->getParsedBody();
         $result     = $default;
 
-        if (\is_array($postParams) && isset($postParams[$key])) {
+        if (is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (\is_object($postParams) && property_exists($postParams, $key)) {
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
             $result = $postParams->$key;
         }
 
@@ -429,7 +453,7 @@ class ServerRequest implements ServerRequestInterface
      * @param null $name
      * @param null $defaultValue
      * @return array|mixed|null
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function post($name = null, $defaultValue = null)
     {
@@ -448,7 +472,7 @@ class ServerRequest implements ServerRequestInterface
      * Fetch associative array of body and query string parameters.
      * Note: This method is not part of the PSR-7 standard.
      * @return array
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function getParams(): array
     {
@@ -468,7 +492,7 @@ class ServerRequest implements ServerRequestInterface
      * @param  string $key The parameter key.
      * @param  string $default The default value.
      * @return mixed The parameter value.
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function getParam($key, $default = null)
     {
@@ -476,9 +500,9 @@ class ServerRequest implements ServerRequestInterface
         $getParams  = $this->getQueryParams();
         $postParams = $this->getParsedBody();
 
-        if (\is_array($postParams) && isset($postParams[$key])) {
+        if (is_array($postParams) && isset($postParams[$key])) {
             $result = $postParams[$key];
-        } elseif (\is_object($postParams) && \property_exists($postParams, $key)) {
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
             $result = $postParams->$key;
         } elseif (isset($getParams[$key])) {
             $result = $getParams[$key];
@@ -678,7 +702,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getServerParam(string $key, $default = null)
     {
-        $key = \strtoupper($key);
+        $key = strtoupper($key);
 
         return $this->serverParams[$key] ?? $default;
     }
