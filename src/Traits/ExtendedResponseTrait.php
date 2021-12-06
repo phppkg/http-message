@@ -6,24 +6,27 @@
  * Time: 14:06
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
-use PhpComp\Http\Message\Body;
+use InvalidArgumentException;
+use PhpPkg\Http\Message\Body;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use Toolkit\Stdlib\Php;
 
 /**
  * trait ExtendedResponseTrait
  *
  * ```php
- * use PhpComp\Http\Message\Response;
+ * use PhpPkg\Http\Message\Response;
  *
  * class MyResponse extends Response {
  *   use ExtendedResponseTrait;
  * }
  * ```
  *
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  */
 trait ExtendedResponseTrait
 {
@@ -39,7 +42,7 @@ trait ExtendedResponseTrait
      * @param  string|UriInterface $url The redirect destination.
      * @param  int|null            $status The redirect HTTP status code.
      * @return ResponseInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function withRedirect(string $url, int $status = null): ResponseInterface
     {
@@ -63,10 +66,10 @@ trait ExtendedResponseTrait
      * This method prepares the response object to return an HTTP Json
      * response to the client.
      * @param  mixed $data The data
-     * @param  int   $status The HTTP status code.
+     * @param  int|null $status The HTTP status code.
      * @param  int   $encodingOptions Json encoding options
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      * @return ResponseInterface
      */
     public function withJson($data, int $status = null, int $encodingOptions = 0): ResponseInterface
@@ -77,13 +80,12 @@ trait ExtendedResponseTrait
 
         // Ensure that the json encoding passed successfully
         if ($json === false) {
-            throw new \RuntimeException(json_last_error_msg(), json_last_error());
+            throw new RuntimeException(json_last_error_msg(), json_last_error());
         }
 
-        /** @var ResponseInterface $responseWithJson */
         $responseWithJson = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
 
-        if (null === $status) {
+        if (null !== $status) {
             return $responseWithJson->withStatus($status);
         }
 
@@ -94,11 +96,11 @@ trait ExtendedResponseTrait
      * @param string $fallbackUrl
      * @param int    $status
      * @return ResponseInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function withGoBack(string $fallbackUrl = '/', int $status = 301): ResponseInterface
     {
-        $backTo = $this->getServerParam('HTTP_REFERER') ?: $fallbackUrl;
+        $backTo = Php::serverParam('HTTP_REFERER', $fallbackUrl);
 
         return $this->withRedirect($backTo, $status);
     }

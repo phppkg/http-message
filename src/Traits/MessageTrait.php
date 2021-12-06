@@ -6,17 +6,17 @@
  * Time: 下午12:44
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
-use PhpComp\Http\Message\Headers;
-use PhpComp\Http\Message\Stream;
+use PhpPkg\Http\Message\Headers;
+use PhpPkg\Http\Message\Stream;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Trait MessageTrait
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  */
 trait MessageTrait
 {

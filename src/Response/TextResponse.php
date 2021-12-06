@@ -6,10 +6,10 @@
  * Time: 下午12:24
  */
 
-namespace PhpComp\Http\Message\Response;
+namespace PhpPkg\Http\Message\Response;
 
-use PhpComp\Http\Message\Response;
-use PhpComp\Http\Message\Stream\TempStream;
+use PhpPkg\Http\Message\Response;
+use PhpPkg\Http\Message\Stream\TempStream;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -19,7 +19,7 @@ use Psr\Http\Message\StreamInterface;
  * by default, sets a status code of 200 and sets the Content-Type header to
  * text/plain.
  *
- * @package PhpComp\Http\Message\Response
+ * @package PhpPkg\Http\Message\Response
  * @from zendFramework
  */
 class TextResponse extends Response

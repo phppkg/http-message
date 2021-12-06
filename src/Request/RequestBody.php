@@ -6,14 +6,14 @@
  * Time: 14:31
  */
 
-namespace PhpComp\Http\Message\Request;
+namespace PhpPkg\Http\Message\Request;
 
-use PhpComp\Http\Message\Stream;
+use PhpPkg\Http\Message\Stream;
 
 /**
  * Class RequestBody
  *   Provides a PSR-7 implementation of a reusable raw request body
- * @package PhpComp\Http\Message\Request
+ * @package PhpPkg\Http\Message\Request
  */
 class RequestBody extends Stream
 {

@@ -1,5 +1,5 @@
 {
-  "name": "php-comp/http-message",
+  "name": "phppkg/http-message",
   "type": "library",
   "description": "http message library of the php, implement the PSR7",
   "keywords": [
@@ -8,22 +8,23 @@
     "http",
     "psr7"
   ],
-  "homepage": "https://github.com/php-comp/http-message",
+  "homepage": "https://github.com/phppkg/http-message",
   "license": "MIT",
   "authors": [
     {
       "name": "inhere",
       "email": "in.798@qq.com",
-      "homepage": "http://www.yzone.net/"
+      "homepage": "https://github.com/inhere"
     }
   ],
   "require": {
     "php": ">7.1.0",
+    "toolkit/stdlib": "~1.0",
     "psr/http-message": "^1.0"
   },
   "autoload": {
     "psr-4": {
-      "PhpComp\\Http\\Message\\": "src/"
+      "PhpPkg\\Http\\Message\\": "src/"
     }
   },
   "suggest": {

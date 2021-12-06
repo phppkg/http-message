@@ -8,13 +8,13 @@
  * @from slim3
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Component\Collection;
 
 /**
  * Class Cookies
- * @package PhpComp\Http\Message
+ * @package PhpPkg\Http\Message
  *
  * Cookies:
  *

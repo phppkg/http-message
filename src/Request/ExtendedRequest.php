@@ -6,14 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace PhpComp\Http\Message\Request;
+namespace PhpPkg\Http\Message\Request;
 
-use PhpComp\Http\Message\ServerRequest;
-use PhpComp\Http\Message\Traits\ExtendedRequestTrait;
+use PhpPkg\Http\Message\ServerRequest;
+use PhpPkg\Http\Message\Traits\ExtendedRequestTrait;
 
 /**
  * Class ExtendedRequest
- * @package PhpComp\Http\Message\Request
+ * @package PhpPkg\Http\Message\Request
  */
 class ExtendedRequest extends ServerRequest
 {

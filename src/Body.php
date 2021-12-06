@@ -6,9 +6,9 @@
  * Time: 18:02
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Stream\TempStream;
+use PhpPkg\Http\Message\Stream\TempStream;
 
 /**
  * Body

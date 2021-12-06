@@ -6,15 +6,15 @@
  * Time: 上午12:04
  */
 
-namespace PhpComp\Http\MessageTest;
+namespace PhpPkg\Http\MessageTest;
 
-use PhpComp\Http\Message\Body;
+use PhpPkg\Http\Message\Body;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class BodyTest
- * @package PhpComp\Http\MessageTest
+ * @package PhpPkg\Http\MessageTest
  */
 class BodyTest extends TestCase
 {

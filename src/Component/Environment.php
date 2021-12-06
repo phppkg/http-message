@@ -7,12 +7,17 @@
  * File: Environment.php
  */
 
-namespace PhpComp\Http\Message\Component;
+namespace PhpPkg\Http\Message\Component;
+
+use function array_merge;
+use function microtime;
+use function time;
 
 /**
  * mock 环境信息
  * Class Environment
- * @package PhpComp\Http\Message\Component
+ *
+ * @package PhpPkg\Http\Message\Component
  */
 class Environment extends Collection
 {
@@ -23,7 +28,7 @@ class Environment extends Collection
      */
     public static function mock(array $userData = []): self
     {
-        $data = \array_merge([
+        $data = array_merge([
             'SERVER_PROTOCOL'      => 'HTTP/1.1',
             'REQUEST_METHOD'       => 'GET',
             'SCRIPT_NAME'          => '',
@@ -37,8 +42,8 @@ class Environment extends Collection
             'HTTP_ACCEPT_CHARSET'  => 'utf-8;q=0.7,*;q=0.3',
             'HTTP_USER_AGENT'      => 'MY Framework',
             'REMOTE_ADDR'          => '127.0.0.1',
-            'REQUEST_TIME'         => \time(),
-            'REQUEST_TIME_FLOAT'   => \microtime(true),
+            'REQUEST_TIME'         => time(),
+            'REQUEST_TIME_FLOAT'   => microtime(true),
         ], $userData);
 
         return new static($data);

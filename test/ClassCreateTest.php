@@ -6,13 +6,13 @@
  * Time: 22:43
  */
 
-namespace PhpComp\Http\MessageTest;
+namespace PhpPkg\Http\MessageTest;
 
-use PhpComp\Http\Message\Body;
-use PhpComp\Http\Message\Request;
-use PhpComp\Http\Message\Response;
-use PhpComp\Http\Message\ServerRequest;
-use PhpComp\Http\Message\Uri;
+use PhpPkg\Http\Message\Body;
+use PhpPkg\Http\Message\Request;
+use PhpPkg\Http\Message\Response;
+use PhpPkg\Http\Message\ServerRequest;
+use PhpPkg\Http\Message\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
     ServerRequestInterface, StreamInterface, ResponseInterface, RequestInterface, UriInterface
@@ -20,7 +20,7 @@ use Psr\Http\Message\{
 
 /**
  * Class ClassCreateTest
- * @package PhpComp\Http\MessageTest
+ * @package PhpPkg\Http\MessageTest
  */
 class ClassCreateTest extends TestCase
 {

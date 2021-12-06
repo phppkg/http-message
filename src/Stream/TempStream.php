@@ -6,13 +6,13 @@
  * Time: 下午12:29
  */
 
-namespace PhpComp\Http\Message\Stream;
+namespace PhpPkg\Http\Message\Stream;
 
-use PhpComp\Http\Message\Stream;
+use PhpPkg\Http\Message\Stream;
 
 /**
  * Class TempStream
- * @package PhpComp\Http\Message\Stream
+ * @package PhpPkg\Http\Message\Stream
  */
 class TempStream extends Stream
 {

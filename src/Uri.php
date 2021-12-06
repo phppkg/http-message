@@ -7,13 +7,17 @@
  * @from Slim-Http
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
+use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
+use function is_string;
+use function method_exists;
+use function parse_url;
 
 /**
  * Class Uri
- * @package PhpComp\Http\Message
+ * @package PhpPkg\Http\Message
  */
 class Uri implements UriInterface
 {
@@ -75,7 +79,7 @@ class Uri implements UriInterface
      * @param string $fragment Uri fragment.
      * @param string $user Uri user.
      * @param string $password Uri password.
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         $scheme = '',
@@ -102,15 +106,15 @@ class Uri implements UriInterface
      * @param  string $uri Complete Uri string
      *     (i.e., https://user:pass@host:443/path?query).
      * @return self
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function createFromString(string $uri): self
     {
-        if (!\is_string($uri) && !\method_exists($uri, '__toString')) {
-            throw new \InvalidArgumentException('Uri must be a string');
+        if (!is_string($uri) && !method_exists($uri, '__toString')) {
+            throw new InvalidArgumentException('Uri must be a string');
         }
 
-        $parts    = \parse_url($uri);
+        $parts    = parse_url($uri);
         $scheme   = $parts['scheme'] ?? '';
         $user     = $parts['user'] ?? '';
         $pass     = $parts['pass'] ?? '';
@@ -161,7 +165,7 @@ class Uri implements UriInterface
      * An empty scheme is equivalent to removing the scheme.
      * @param string $scheme The scheme to use with the new instance.
      * @return self A new instance with the specified scheme.
-     * @throws \InvalidArgumentException for invalid or unsupported schemes.
+     * @throws InvalidArgumentException for invalid or unsupported schemes.
      */
     public function withScheme($scheme): self
     {
@@ -187,18 +191,18 @@ class Uri implements UriInterface
      * Filter Uri scheme.
      * @param  string $scheme Raw Uri scheme.
      * @return string
-     * @throws \InvalidArgumentException If the Uri scheme is not a string.
-     * @throws \InvalidArgumentException If Uri scheme is not "", "https", or "http".
+     * @throws InvalidArgumentException If the Uri scheme is not a string.
+     * @throws InvalidArgumentException If Uri scheme is not "", "https", or "http".
      */
     protected function filterScheme($scheme): string
     {
-        if (!\is_string($scheme) && !\method_exists($scheme, '__toString')) {
-            throw new \InvalidArgumentException('Uri scheme must be a string');
+        if (!is_string($scheme) && !method_exists($scheme, '__toString')) {
+            throw new InvalidArgumentException('Uri scheme must be a string');
         }
 
         $scheme = \str_replace('://', '', \strtolower((string)$scheme));
         if (!isset(static::$validScheme[$scheme])) {
-            throw new \InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
+            throw new InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
         }
 
         return $scheme;
@@ -286,7 +290,7 @@ class Uri implements UriInterface
      * An empty host value is equivalent to removing the host.
      * @param string $host The hostname to use with the new instance.
      * @return self A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
+     * @throws InvalidArgumentException for invalid hostnames.
      */
     public function withHost($host): self
     {
@@ -323,7 +327,7 @@ class Uri implements UriInterface
      * @param null|int $port The port to use with the new instance; a null value
      *     removes the port information.
      * @return self A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports.
      */
     public function withPort($port): self
     {
@@ -347,7 +351,7 @@ class Uri implements UriInterface
      * Filter Uri port.
      * @param  null|int $port The Uri port number.
      * @return null|int
-     * @throws \InvalidArgumentException If the port is invalid.
+     * @throws InvalidArgumentException If the port is invalid.
      */
     protected function filterPort($port): ?int
     {
@@ -355,7 +359,7 @@ class Uri implements UriInterface
             return $port;
         }
 
-        throw new \InvalidArgumentException('Uri port must be null or an integer between 1 and 65535 (inclusive)');
+        throw new InvalidArgumentException('Uri port must be null or an integer between 1 and 65535 (inclusive)');
     }
 
     /********************************************************************************
@@ -402,12 +406,12 @@ class Uri implements UriInterface
      * Implementations ensure the correct encoding as outlined in getPath().
      * @param string $path The path to use with the new instance.
      * @return self A new instance with the specified path.
-     * @throws \InvalidArgumentException for invalid paths.
+     * @throws InvalidArgumentException for invalid paths.
      */
     public function withPath($path): self
     {
-        if (!\is_string($path)) {
-            throw new \InvalidArgumentException('Uri path must be a string');
+        if (!is_string($path)) {
+            throw new InvalidArgumentException('Uri path must be a string');
         }
 
         $clone       = clone $this;
@@ -466,12 +470,12 @@ class Uri implements UriInterface
      * An empty query string value is equivalent to removing the query string.
      * @param string $query The query string to use with the new instance.
      * @return self A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
+     * @throws InvalidArgumentException for invalid query strings.
      */
     public function withQuery($query): self
     {
-        if (!\is_string($query) && !method_exists($query, '__toString')) {
-            throw new \InvalidArgumentException('Uri query must be a string');
+        if (!is_string($query) && !method_exists($query, '__toString')) {
+            throw new InvalidArgumentException('Uri query must be a string');
         }
         $query        = ltrim((string)$query, '?');
         $clone        = clone $this;
@@ -526,12 +530,12 @@ class Uri implements UriInterface
      * An empty fragment value is equivalent to removing the fragment.
      * @param string $fragment The fragment to use with the new instance.
      * @return self A new instance with the specified fragment.
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function withFragment($fragment): self
     {
-        if (!\is_string($fragment) && !\method_exists($fragment, '__toString')) {
-            throw new \InvalidArgumentException('Uri fragment must be a string');
+        if (!is_string($fragment) && !method_exists($fragment, '__toString')) {
+            throw new InvalidArgumentException('Uri fragment must be a string');
         }
 
         $fragment        = ltrim((string)$fragment, '#');

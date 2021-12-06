@@ -8,8 +8,8 @@ date_default_timezone_set('Asia/Shanghai');
 
 $inhereDir = dirname(__DIR__, 2);
 $map = [
-    'PhpComp\Http\MessageTest\\' => __DIR__,
-    'PhpComp\Http\Message\\' => dirname(__DIR__) . '/src',
+    'PhpPkg\Http\MessageTest\\' => __DIR__,
+    'PhpPkg\Http\Message\\' => dirname(__DIR__) . '/src',
 ];
 
 spl_autoload_register(function ($class) use ($map) {

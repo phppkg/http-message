@@ -6,11 +6,13 @@
  * Time: 下午12:32
  */
 
-namespace PhpComp\Http\Message\Response;
+namespace PhpPkg\Http\Message\Response;
 
-use PhpComp\Http\Message\Response;
-use PhpComp\Http\Message\Stream;
-use PhpComp\Http\Message\Stream\TempStream;
+use InvalidArgumentException;
+use PhpPkg\Http\Message\Response;
+use PhpPkg\Http\Message\Stream;
+use PhpPkg\Http\Message\Stream\TempStream;
+use RuntimeException;
 
 /**
  * JSON response.
@@ -19,7 +21,7 @@ use PhpComp\Http\Message\Stream\TempStream;
  * serializes the data to JSON, sets a status code of 200 and sets the
  * Content-Type header to application/json.
  *
- * @package PhpComp\Http\Message\Response
+ * @package PhpPkg\Http\Message\Response
  * @from zendFramework
  */
 class JsonResponse extends Response
@@ -64,8 +66,8 @@ class JsonResponse extends Response
      * @param int   $status Integer status code for the response; 200 by default.
      * @param array $headers Array of headers to use at initialization.
      * @param int   $encodingOptions JSON encoding options to use.
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException if unable to encode the $data to JSON.
+     * @throws RuntimeException
+     * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
     public function __construct(
         $data,
@@ -75,8 +77,9 @@ class JsonResponse extends Response
     ) {
         $this->setPayload($data);
         $this->encodingOptions = $encodingOptions;
-        $json                  = $this->jsonEncode($data, $this->encodingOptions);
-        $body                  = $this->createBodyFromJson($json);
+        
+        $json = $this->jsonEncode($data, $this->encodingOptions);
+        $body = $this->createBodyFromJson($json);
 
         $headers = $this->injectContentType('application/json', $headers);
 
@@ -95,8 +98,8 @@ class JsonResponse extends Response
      * @param $data
      *
      * @return JsonResponse
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function withPayload($data): self
     {
@@ -118,8 +121,8 @@ class JsonResponse extends Response
      * @param int $encodingOptions
      *
      * @return JsonResponse
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function withEncodingOptions($encodingOptions): self
     {
@@ -132,8 +135,8 @@ class JsonResponse extends Response
      * @param string $json
      *
      * @return Stream
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     private function createBodyFromJson($json): Stream
     {
@@ -150,12 +153,12 @@ class JsonResponse extends Response
      * @param mixed $data
      * @param int   $encodingOptions
      * @return string
-     * @throws \InvalidArgumentException if unable to encode the $data to JSON.
+     * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
     private function jsonEncode($data, int $encodingOptions): string
     {
         if (\is_resource($data)) {
-            throw new \InvalidArgumentException('Cannot JSON encode resources');
+            throw new InvalidArgumentException('Cannot JSON encode resources');
         }
 
         // Clear json_last_error()
@@ -163,7 +166,7 @@ class JsonResponse extends Response
         $json = \json_encode($data, $encodingOptions);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Unable to encode data to JSON in %s: %s',
                 __CLASS__,
                 \json_last_error_msg()
@@ -190,8 +193,8 @@ class JsonResponse extends Response
      *
      * @param self $toUpdate Instance to update.
      * @return JsonResponse Returns a new instance with an updated body.
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     private function updateBodyFor(self $toUpdate): JsonResponse
     {

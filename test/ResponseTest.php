@@ -6,15 +6,15 @@
  * Time: 22:05
  */
 
-namespace PhpComp\Http\MessageTest;
+namespace PhpPkg\Http\MessageTest;
 
-use PhpComp\Http\Message\Response;
+use PhpPkg\Http\Message\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ResponseTest
- * @package PhpComp\Http\MessageTest
+ * @package PhpPkg\Http\MessageTest
  */
 class ResponseTest extends TestCase
 {

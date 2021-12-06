@@ -6,9 +6,9 @@
  * Time: 13:12
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Traits\MessageTrait;
+use PhpPkg\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\MessageInterface;
 
 /**

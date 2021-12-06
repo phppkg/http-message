@@ -6,13 +6,13 @@
  * Time: 19:02
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Component\Collection;
 
 /**
  * Class Headers
- * @package PhpComp\Http\Message
+ * @package PhpPkg\Http\Message
  */
 class Headers extends Collection
 {

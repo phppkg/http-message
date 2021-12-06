@@ -7,7 +7,7 @@
  * @from Slim-Http
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;

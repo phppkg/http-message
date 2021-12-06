@@ -7,17 +7,17 @@
  * @from Slim 3
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Traits\CookiesTrait;
-use PhpComp\Http\Message\Traits\MessageTrait;
+use PhpPkg\Http\Message\Traits\CookiesTrait;
+use PhpPkg\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class Response
  * response for handshake
- * @package PhpComp\Http\Message
+ * @package PhpPkg\Http\Message
  * @property int    $status
  * @property string $statusMsg
  *

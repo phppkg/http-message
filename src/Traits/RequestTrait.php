@@ -6,14 +6,14 @@
  * Time: 下午12:44
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
-use PhpComp\Http\Message\Uri;
+use PhpPkg\Http\Message\Uri;
 use Psr\Http\Message\UriInterface;
 
 /**
  * Trait RequestTrait
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  */
 trait RequestTrait
 {

@@ -6,7 +6,7 @@
  * Time: 17:58
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;

@@ -6,14 +6,14 @@
  * Time: 下午11:43
  */
 
-namespace PhpComp\Http\Message\Response;
+namespace PhpPkg\Http\Message\Response;
 
-use PhpComp\Http\Message\Response;
-use PhpComp\Http\Message\Traits\ExtendedResponseTrait;
+use PhpPkg\Http\Message\Response;
+use PhpPkg\Http\Message\Traits\ExtendedResponseTrait;
 
 /**
  * Class ExtendedResponse
- * @package PhpComp\Http\Message\Response
+ * @package PhpPkg\Http\Message\Response
  */
 class ExtendedResponse extends Response
 {

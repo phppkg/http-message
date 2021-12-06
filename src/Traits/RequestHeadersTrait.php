@@ -6,13 +6,13 @@
  * Time: 16:22
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
 /**
  * Trait RequestHeadersTrait
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  *
- * @property \PhpComp\Http\Message\Headers $headers
+ * @property \PhpPkg\Http\Message\Headers $headers
  */
 trait RequestHeadersTrait
 {

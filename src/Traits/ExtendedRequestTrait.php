@@ -6,23 +6,35 @@
  * Time: 14:05
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
-use PhpComp\Http\Message\UploadedFile;
-use PhpComp\Http\Message\Uri;
+use BadMethodCallException;
+use InvalidArgumentException;
+use PhpPkg\Http\Message\UploadedFile;
+use PhpPkg\Http\Message\Uri;
+use function array_values;
+use function explode;
+use function in_array;
+use function is_array;
+use function is_callable;
+use function is_int;
+use function lcfirst;
+use function strpos;
+use function substr;
+use function trim;
 
 /**
  * trait ExtendedRequestTrait
  *
  * ```php
- * use PhpComp\Http\Message\ServerRequest;
+ * use PhpPkg\Http\Message\ServerRequest;
  *
  * class MyRequest extends ServerRequest {
  *   use ExtendedRequestTrait;
  * }
  * ```
  *
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  *
  * @method      string   getRaw($name, $default = null)      Get raw data
  * @method      integer  getInt($name, $default = null)      Get a signed integer.
@@ -120,9 +132,9 @@ trait ExtendedRequestTrait
 
     /**
      * @param string $name
-     * @return UploadedFile
+     * @return UploadedFile|null
      */
-    public function getUploadedFile(string $name): UploadedFile
+    public function getUploadedFile(string $name): ?UploadedFile
     {
         return $this->getUploadedFiles()[$name] ?? null;
     }
@@ -137,21 +149,21 @@ trait ExtendedRequestTrait
      * ]
      * @param bool  $onlyValue
      * @return array
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getMulti(array $needKeys = [], $onlyValue = false): array
     {
         $needed = [];
 
         foreach ($needKeys as $key => $value) {
-            if (\is_int($key)) {
+            if (is_int($key)) {
                 $needed[$value] = $this->getParam($value);
             } else {
                 $needed[$key] = $this->filtering($key, $value);
             }
         }
 
-        return $onlyValue ? \array_values($needed) : $needed;
+        return $onlyValue ? array_values($needed) : $needed;
     }
 
     /**
@@ -204,25 +216,25 @@ trait ExtendedRequestTrait
      * @param string $name
      * @param array  $arguments
      * @return mixed
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function __call($name, array $arguments)
     {
-        if ($arguments && 0 === \strpos($name, 'get')) {
-            $filter  = \substr($name, 3);
+        if ($arguments && 0 === strpos($name, 'get')) {
+            $filter  = substr($name, 3);
             $default = $arguments[1] ?? null;
 
-            return $this->get($arguments[0], $default, \lcfirst($filter));
+            return $this->get($arguments[0], $default, lcfirst($filter));
         }
 
-        throw new \BadMethodCallException("Method '$name' is not exists in the class");
+        throw new BadMethodCallException("Method '$name' is not exists in the class");
     }
 
     /**
      * @param mixed           $value
      * @param string|callable $filter
      * @return mixed|null
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function filtering($value, $filter = null)
     {
@@ -235,7 +247,7 @@ trait ExtendedRequestTrait
             $result = $value;
 
             // is custom callable filter
-            if (\is_callable($filter)) {
+            if (is_callable($filter)) {
                 $result = $filter($value);
             }
 
@@ -243,8 +255,8 @@ trait ExtendedRequestTrait
         }
 
         // is a php data type filter name
-        if (\in_array($filter, self::$phpTypes, true)) {
-            switch (\lcfirst(\trim($filter))) {
+        if (in_array($filter, self::$phpTypes, true)) {
+            switch (lcfirst(trim($filter))) {
                 case 'bool':
                 case 'boolean':
                     $result = (bool)$value;
@@ -282,7 +294,7 @@ trait ExtendedRequestTrait
         $internalFilter = self::$filters[$filter];
 
         // url, email ...
-        if (\is_array($internalFilter)) {
+        if (is_array($internalFilter)) {
             $filter = $internalFilter[0];
 
             return $filter($value, $internalFilter[1]);
@@ -295,17 +307,17 @@ trait ExtendedRequestTrait
      * @param mixed  $value
      * @param string $filter
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function callFilterChain($value, $filter)
     {
-        if (\strpos($filter, '|') === false) {
+        if (strpos($filter, '|') === false) {
             return $filter($value);
         }
 
-        foreach (\explode('|', $filter) as $func) {
-            if (!\is_callable($func)) {
-                throw new \InvalidArgumentException("The filter '$func' is not a callable");
+        foreach (explode('|', $filter) as $func) {
+            if (!is_callable($func)) {
+                throw new InvalidArgumentException("The filter '$func' is not a callable");
             }
 
             $value = $filter($value);

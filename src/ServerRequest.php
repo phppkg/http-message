@@ -7,13 +7,13 @@
  * @ref Slim 3
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Component\Collection;
-use PhpComp\Http\Message\Request\RequestBody;
-use PhpComp\Http\Message\Traits\CookiesTrait;
-use PhpComp\Http\Message\Traits\RequestHeadersTrait;
-use PhpComp\Http\Message\Traits\RequestTrait;
+use PhpPkg\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Request\RequestBody;
+use PhpPkg\Http\Message\Traits\CookiesTrait;
+use PhpPkg\Http\Message\Traits\RequestHeadersTrait;
+use PhpPkg\Http\Message\Traits\RequestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;

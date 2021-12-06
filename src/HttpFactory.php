@@ -6,10 +6,10 @@
  * Time: 13:20
  */
 
-namespace PhpComp\Http\Message;
+namespace PhpPkg\Http\Message;
 
-use PhpComp\Http\Message\Component\Collection;
-use PhpComp\Http\Message\Request\RequestBody;
+use PhpPkg\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,7 +19,7 @@ use Psr\Http\Message\UriInterface;
 
 /**
  * Class HttpFactory
- * @package PhpComp\Http\Message
+ * @package PhpPkg\Http\Message
  * @link  https://github.com/php-fig/fig-standards/blob/master/proposed/http-factory/http-factory.md
  */
 class HttpFactory

@@ -6,13 +6,16 @@
  * Time: 下午2:04
  */
 
-namespace PhpComp\Http\Message\Component;
+namespace PhpPkg\Http\Message\Component;
+
+use ArrayObject;
 
 /**
  * Class Collection
- * @package PhpComp\Http\Message\Component
+ *
+ * @package PhpPkg\Http\Message\Component
  */
-class Collection extends \ArrayObject
+class Collection extends ArrayObject
 {
     /**
      * @param array|null $items

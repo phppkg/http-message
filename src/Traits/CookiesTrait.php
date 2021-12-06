@@ -6,13 +6,14 @@
  * Time: 下午1:18
  */
 
-namespace PhpComp\Http\Message\Traits;
+namespace PhpPkg\Http\Message\Traits;
 
-use PhpComp\Http\Message\Cookies;
+use PhpPkg\Http\Message\Cookies;
+use function is_array;
 
 /**
  * Trait CookiesTrait
- * @package PhpComp\Http\Message\Traits
+ * @package PhpPkg\Http\Message\Traits
  */
 trait CookiesTrait
 {
@@ -81,7 +82,7 @@ trait CookiesTrait
      */
     public function setCookies($cookies): self
     {
-        if (\is_array($cookies)) {
+        if (is_array($cookies)) {
             return $this->setCookiesFromArray($cookies);
         }
 
