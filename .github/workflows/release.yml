@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [7.4]
+        php: [8.0]
 
     steps:
       - name: Checkout
@@ -36,29 +36,24 @@ jobs:
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
 
-      - name: Install dependencies # eg: v1.0.3
+      # more see https://github.com/inhere/kite
+      - name: Generate changelog file
+        id: changelog
         run: |
           echo $RELEASE_TAG
           echo $RELEASE_NAME
           tag1=${GITHUB_REF#refs/*/}
           echo "release tag: ${tag1}"
-          composer update --no-progress
-
-      # more see https://github.com/inhere/kite
-      - name: Generate changelog file
-       id: changelog
-       run: |
-         wget -c -q https://github.com/inhere/kite/releases/latest/download/kite.phar
-         php kite.phar git cl prev last --style gh-release --no-merges --fetch-tags --unshallow --file changelog.md
-         cat changelog.md
+          wget -c -q https://github.com/inhere/kite/releases/latest/download/kite.phar
+          php kite.phar git cl prev last --style gh-release --no-merges --fetch-tags --unshallow --file changelog.md
+          cat changelog.md
 
       # https://github.com/softprops/action-gh-release
       - name: Create release and upload assets
-       uses: softprops/action-gh-release@v1
-      #        if: startsWith(github.ref, 'refs/tags/')
-      with:
-        name: ${{ env.RELEASE_TAG }}
-        tag_name: ${{ env.RELEASE_TAG }}
-        body_path: changelog.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.RELEASE_TAG }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          body_path: changelog.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
