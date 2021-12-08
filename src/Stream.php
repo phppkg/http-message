@@ -41,7 +41,7 @@ class Stream implements StreamInterface
      * @var  array[]
      * @link http://php.net/manual/function.fopen.php
      */
-    protected static $modes = [
+    protected static array $modes = [
         'readable' => ['r', 'r+', 'w+', 'a+', 'x+', 'c+'],
         'writable' => ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'],
     ];
@@ -58,42 +58,42 @@ class Stream implements StreamInterface
      *
      * @var array
      */
-    protected $meta;
+    protected array $meta;
 
     /**
      * Is this stream readable?
      *
      * @var bool
      */
-    protected $readable;
+    protected bool $readable;
 
     /**
      * Is this stream writable?
      *
      * @var bool
      */
-    protected $writable;
+    protected bool $writable;
 
     /**
      * Is this stream seekable?
      *
      * @var bool
      */
-    protected $seekable;
+    protected bool $seekable;
 
     /**
      * The size of the stream if known
      *
      * @var null|int
      */
-    protected $size;
+    protected ?int $size;
 
     /**
      * Is this stream a pipe?
      *
      * @var bool
      */
-    protected $isPipe;
+    protected bool $isPipe;
 
     /**
      * Create a new Stream.
@@ -121,7 +121,7 @@ class Stream implements StreamInterface
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null)
+    public function getMetadata($key = null): mixed
     {
         $this->meta = \stream_get_meta_data($this->stream);
         if (null === $key) {

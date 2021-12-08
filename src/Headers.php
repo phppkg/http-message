@@ -28,7 +28,7 @@ class Headers extends Collection
      *
      * @var array
      */
-    protected static $special = [
+    protected static array $special = [
         'CONTENT_TYPE'    => 1,
         'CONTENT_LENGTH'  => 1,
         'PHP_AUTH_USER'   => 1,
@@ -62,7 +62,7 @@ class Headers extends Collection
      * @param string|array $value The header value
      * @return mixed
      */
-    public function set($key, $value)
+    public function set($key, $value): mixed
     {
         return parent::set($this->normalizeKey($key), [
             'value'       => (array)$value,
@@ -78,7 +78,7 @@ class Headers extends Collection
      *
      * @return string[]|mixed|null
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, $default = null): mixed
     {
         if ($this->has($key)) {
             return parent::get($this->normalizeKey($key))['value'];
@@ -102,19 +102,20 @@ class Headers extends Collection
     }
 
     /**
-     * @param string $key
+     * @param string $name
      * @param mixed  $value
+     *
      * @return mixed|null
      */
-    public function add($key, $value)
+    public function add(string $name, mixed $value): mixed
     {
         if (!$value) {
             return $this;
         }
 
-        return parent::add($this->normalizeKey($key), [
+        return parent::add($this->normalizeKey($name), [
             'value'       => (array)$value,
-            'originalKey' => $key
+            'originalKey' => $name
         ]);
     }
 
@@ -138,11 +139,11 @@ class Headers extends Collection
      * @param string $key
      * @return bool|string
      */
-    public function normalizeKey(string $key)
+    public function normalizeKey(string $key): bool|string
     {
         $key = \str_replace('_', '-', \strtolower($key));
 
-        if (\strpos($key, 'Http-') === 0) {
+        if (\str_starts_with($key, 'Http-')) {
             $key = \substr($key, 5);
         }
 
@@ -195,7 +196,7 @@ class Headers extends Collection
      * @param bool $join to String
      * @return array|string
      */
-    public function toHeaderLines(bool $join = false)
+    public function toHeaderLines(bool $join = false): array|string
     {
         $output = [];
 

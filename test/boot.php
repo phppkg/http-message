@@ -14,7 +14,7 @@ $map = [
 
 spl_autoload_register(function ($class) use ($map) {
     foreach ($map as $np => $dir) {
-        if (0 === strpos($class, $np)) {
+        if (str_starts_with($class, $np)) {
             $path = str_replace('\\', '/', substr($class, strlen($np)));
             $file = $dir . "/{$path}.php";
 

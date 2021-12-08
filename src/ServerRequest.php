@@ -9,6 +9,7 @@
 
 namespace PhpPkg\Http\Message;
 
+use Closure;
 use InvalidArgumentException;
 use PhpPkg\Http\Message\Component\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
@@ -21,6 +22,8 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use Throwable;
+use function count;
+use function explode;
 use function is_array;
 use function is_object;
 use function json_decode;
@@ -49,19 +52,19 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @var array
      */
-    private $uploadedFiles;
+    private array $uploadedFiles;
 
     /**
      * List of request body parsers (e.g., url-encoded, JSON, XML, multipart)
      * @var callable[]
      */
-    private $bodyParsers = [];
+    private array $bodyParsers = [];
 
     /** @var array */
-    private $serverParams;
+    private array $serverParams;
 
     /** @var Collection */
-    private $attributes;
+    private Collection $attributes;
 
     /**
      * @param string $rawData
@@ -76,22 +79,24 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * Request constructor.
+     *
      * @param string          $method
      * @param UriInterface    $uri
      * @param string          $protocol
      * @param string          $protocolVersion
-     * @param array|Headers   $headers
+     * @param array|Headers|null   $headers
      * @param array           $cookies
      * @param array           $serverParams
      * @param StreamInterface $body
      * @param array           $uploadedFiles
+     *
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
     public function __construct(
         string $method = 'GET',
         UriInterface $uri = null,
-        $headers = null,
+        array|Headers $headers = null,
         array $cookies = [],
         array $serverParams = [],
         StreamInterface $body = null,
@@ -143,7 +148,7 @@ class ServerRequest implements ServerRequestInterface
     protected function registerDataParsers(): void
     {
         $this->registerMediaTypeParser(MediaType::APP_JSON, function ($input) {
-            $result = json_decode($input, true);
+            $result = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($result)) {
                 return null;
             }
@@ -215,18 +220,21 @@ class ServerRequest implements ServerRequestInterface
      */
     public function registerMediaTypeParser(string $mediaType, callable $callable): void
     {
-        if ($callable instanceof \Closure) {
+        if ($callable instanceof Closure) {
             $callable = $callable->bindTo($this);
         }
 
-        $this->bodyParsers[(string)$mediaType] = $callable;
+        $this->bodyParsers[$mediaType] = $callable;
     }
 
     /*******************************************************************************
      * Query Params
      ******************************************************************************/
 
-    private $_queryParams;
+    /**
+     * @var array|null
+     */
+    private ?array $_queryParams = null;
 
     /**
      * Returns the request parameters given in the [[queryString]].
@@ -236,20 +244,18 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getQueryParams(): array
     {
-        if ($this->_queryParams === null) {
-            return $_GET;
-        }
-
-        return $this->_queryParams;
+        return $this->_queryParams ?? $_GET;
     }
 
     /**
      * Sets the request [[queryString]] parameters.
+     *
      * @param array $values the request query parameters (name-value pairs)
+     *
      * @see getQueryParam()
      * @see getQueryParams()
      */
-    public function setQueryParams($values): void
+    public function setQueryParams(array $values): void
     {
         $this->_queryParams = $values;
     }
@@ -276,7 +282,7 @@ class ServerRequest implements ServerRequestInterface
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): ServerRequest|static
     {
         $clone               = clone $this;
         $clone->_queryParams = $query;
@@ -286,11 +292,13 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
-     * @param string $name the parameter name
-     * @param mixed  $defaultValue the default parameter value if the parameter does not exist.
+     *
+     * @param string|null $name the parameter name
+     * @param mixed|null  $defaultValue the default parameter value if the parameter does not exist.
+     *
      * @return array|mixed
      */
-    public function get($name = null, $defaultValue = null)
+    public function get(string $name = null, mixed $defaultValue = null): mixed
     {
         if ($name === null) {
             return $this->getQueryParams();
@@ -304,7 +312,7 @@ class ServerRequest implements ServerRequestInterface
      * @param null $defaultValue
      * @return mixed|null
      */
-    public function getQueryParam($name, $defaultValue = null)
+    public function getQueryParam($name, $defaultValue = null): mixed
     {
         $params = $this->getQueryParams();
 
@@ -312,7 +320,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /** @var string */
-    private $_rawBody;
+    private string $_rawBody;
 
     /**
      * Returns the raw HTTP request body.
@@ -329,15 +337,16 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
+     *
      * @param string $rawBody the request body
      */
-    public function setRawBody($rawBody): void
+    public function setRawBody(string $rawBody): void
     {
         $this->_rawBody = $rawBody;
     }
 
     /** @var array|null */
-    private $bodyParsed;
+    private ?array $bodyParsed;
 
     /**
      * @return array|null
@@ -358,9 +367,9 @@ class ServerRequest implements ServerRequestInterface
         $mediaType = $this->getMediaType();
 
         // look for a media type with a structured syntax suffix (RFC 6839)
-        $parts = \explode('+', $mediaType);
-        if (\count($parts) >= 2) {
-            $mediaType = 'application/' . $parts[\count($parts) - 1];
+        $parts = explode('+', $mediaType);
+        if (count($parts) >= 2) {
+            $mediaType = 'application/' . $parts[count($parts) - 1];
         }
 
         if (isset($this->bodyParsers[$mediaType]) === true) {
@@ -407,7 +416,7 @@ class ServerRequest implements ServerRequestInterface
      * @throws InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): ServerRequest|static
     {
         if (null !== $data && !is_object($data) && !is_array($data)) {
             throw new InvalidArgumentException('Parsed body value must be an array, an object, or null');
@@ -422,7 +431,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param array|null $data set Null to reset data.
      */
-    public function setParsedBody($data): void
+    public function setParsedBody(?array $data): void
     {
         $this->bodyParsed = $data;
     }
@@ -430,12 +439,13 @@ class ServerRequest implements ServerRequestInterface
     /**
      * Fetch parameter value from request body.
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed|null  $default
+     *
      * @return mixed
-     * @throws RuntimeException
      */
-    public function getParsedBodyParam($key, $default = null)
+    public function getParsedBodyParam(string $key, mixed $default = null): mixed
     {
         $postParams = $this->getParsedBody();
         $result     = $default;
@@ -450,18 +460,17 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param null $name
-     * @param null $defaultValue
-     * @return array|mixed|null
-     * @throws RuntimeException
+     * @param string|null $name
+     * @param mixed $default
+     * @return mixed
      */
-    public function post($name = null, $defaultValue = null)
+    public function post(string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
         }
 
-        return $this->getParsedBodyParam($name, $defaultValue);
+        return $this->getParsedBodyParam($name, $default);
     }
 
     /*******************************************************************************
@@ -489,12 +498,14 @@ class ServerRequest implements ServerRequestInterface
     /**
      * Fetch request parameter value from body or query string (in that order).
      * Note: This method is not part of the PSR-7 standard.
-     * @param  string $key The parameter key.
-     * @param  string $default The default value.
+     *
+     * @param string $key The parameter key.
+     * @param string|null $default The default value.
+     *
      * @return mixed The parameter value.
      * @throws RuntimeException
      */
-    public function getParam($key, $default = null)
+    public function getParam(string $key, string $default = null): mixed
     {
         $result     = $default;
         $getParams  = $this->getQueryParams();
@@ -538,7 +549,7 @@ class ServerRequest implements ServerRequestInterface
      * @param array $uploadedFiles
      * @return static
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): ServerRequest|static
     {
         $clone                = clone $this;
         $clone->uploadedFiles = $uploadedFiles;
@@ -581,7 +592,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed  $default Default value to return if the attribute does not exist.
      * @return mixed
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute($name, $default = null): mixed
     {
         return $this->attributes->get($name, $default);
     }
@@ -591,7 +602,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed  $value
      * @return $this
      */
-    public function setAttribute(string $name, $value): self
+    public function setAttribute(string $name, mixed $value): self
     {
         $this->attributes->set($name, $value);
 
@@ -624,7 +635,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed  $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value): ServerRequest|static
     {
         $clone = clone $this;
         $clone->attributes->set($name, $value);
@@ -669,7 +680,7 @@ class ServerRequest implements ServerRequestInterface
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute($name): ServerRequest|static
     {
         $clone = clone $this;
         $clone->attributes->remove($name);
@@ -696,11 +707,13 @@ class ServerRequest implements ServerRequestInterface
     /**
      * Retrieve a server parameter.
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @param  string $key
-     * @param  mixed  $default
+     * @param mixed|null  $default
+     *
      * @return mixed
      */
-    public function getServerParam(string $key, $default = null)
+    public function getServerParam(string $key, mixed $default = null): mixed
     {
         $key = strtoupper($key);
 

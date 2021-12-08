@@ -45,7 +45,7 @@ class HttpFactory
      * Special HTTP headers that do not have the "HTTP_" prefix
      * @var array
      */
-    protected static $special = [
+    protected static array $special = [
         'CONTENT_TYPE'    => 1,
         'CONTENT_LENGTH'  => 1,
         'PHP_AUTH_USER'   => 1,
@@ -60,13 +60,15 @@ class HttpFactory
 
     /**
      * Create a new request.
+     *
      * @param string              $method
-     * @param UriInterface|string $uri
+     * @param string|UriInterface $uri
+     *
      * @return RequestInterface
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    public static function createRequest(string $method, $uri): RequestInterface
+    public static function createRequest(string $method, UriInterface|string $uri): RequestInterface
     {
         if (is_string($uri)) {
             $uri = Uri::createFromString($uri);
@@ -96,13 +98,15 @@ class HttpFactory
 
     /**
      * Create a new server request.
-     * @param string              $method
-     * @param UriInterface|string $uri
+     *
+     * @param string $method
+     * @param string|UriInterface $uri
+     *
      * @return ServerRequestInterface
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    public static function createServerRequest($method, $uri): ServerRequestInterface
+    public static function createServerRequest(string $method, UriInterface|string $uri): ServerRequestInterface
     {
         if (is_string($uri)) {
             $uri = Uri::createFromString($uri);
@@ -120,7 +124,7 @@ class HttpFactory
      * @throws InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray($server, string $class = null): ServerRequestInterface
+    public static function createServerRequestFromArray(mixed $server, string $class = null): ServerRequestInterface
     {
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
@@ -267,18 +271,21 @@ class HttpFactory
      * created with the content of the string.
      * If a size is not provided it will be determined by checking the size of
      * the file.
+     *
      * @see http://php.net/manual/features.file-upload.post-method.php
      * @see http://php.net/manual/features.file-upload.errors.php
-     * @param string|resource $file
+     *
+     * @param string $file
      * @param integer         $size in bytes
      * @param integer         $error PHP file upload error
      * @param string          $clientFilename
      * @param string          $clientMediaType
+     *
      * @return UploadedFileInterface
      * @throws InvalidArgumentException If the file resource is not readable.
      */
     public static function createUploadedFile(
-        $file,
+        string $file,
         int $size = null,
         int $error = \UPLOAD_ERR_OK,
         string $clientFilename = null,
@@ -303,11 +310,12 @@ class HttpFactory
     }
 
     /**
-     * @param Collection|array $env
+     * @param array|Collection $env
+     *
      * @return Uri
      * @throws InvalidArgumentException
      */
-    public static function createUriFromArray($env): Uri
+    public static function createUriFromArray(array|Collection $env): Uri
     {
         $env = self::ensureIsCollection($env);
 
@@ -370,10 +378,11 @@ class HttpFactory
      ******************************************************************************/
 
     /**
-     * @param Collection|array $env
+     * @param array|Collection $env
+     *
      * @return Headers
      */
-    public static function createHeadersFromArray($env): Headers
+    public static function createHeadersFromArray(array|Collection $env): Headers
     {
         $data = [];
         $env  = self::ensureIsCollection($env);
@@ -382,7 +391,7 @@ class HttpFactory
         foreach ($env as $key => $value) {
             $key = strtoupper($key);
 
-            if (isset(static::$special[$key]) || strpos($key, 'HTTP_') === 0) {
+            if (isset(static::$special[$key]) || str_starts_with($key, 'HTTP_')) {
                 if ($key !== 'HTTP_CONTENT_LENGTH') {
                     $data[$key] = $value;
                 }
@@ -395,10 +404,12 @@ class HttpFactory
     /**
      * If HTTP_AUTHORIZATION does not exist tries to get it from
      * getallheaders() when available.
+     *
      * @param Collection $env The application Collection
+     *
      * @return Collection
      */
-    public static function determineAuthorization($env): Collection
+    public static function determineAuthorization(Collection $env): Collection
     {
         $authorization = $env->get('HTTP_AUTHORIZATION');
 
@@ -418,7 +429,7 @@ class HttpFactory
      * @param mixed $data
      * @return Collection
      */
-    public static function ensureIsCollection($data): Collection
+    public static function ensureIsCollection(mixed $data): Collection
     {
         if (is_array($data)) {
             return new Collection($data);

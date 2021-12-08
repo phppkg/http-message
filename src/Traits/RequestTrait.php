@@ -8,8 +8,12 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
+use InvalidArgumentException;
 use PhpPkg\Http\Message\Uri;
 use Psr\Http\Message\UriInterface;
+use function get_debug_type;
+use function is_string;
+use function strtoupper;
 
 /**
  * Trait RequestTrait
@@ -22,29 +26,30 @@ trait RequestTrait
     /**
      * @var string
      */
-    private $method;
+    private string $method;
 
     /**
      * The original request method (ignoring override)
      * @var string
      */
-    private $originalMethod;
+    private string $originalMethod;
 
 
     /** @var  string */
-    private $requestTarget;
+    private string $requestTarget;
 
     /**
      * The request URI object
-     * @var Uri
+     *
+     * @var UriInterface|null
      */
-    private $uri;
+    private ?UriInterface $uri = null;
 
     /**
      * Valid request methods
      * @var string[]
      */
-    private $validMethods = [
+    private array $validMethods = [
         'CONNECT' => 1,
         'DELETE'  => 1,
         'GET'     => 1,
@@ -58,14 +63,15 @@ trait RequestTrait
 
     /**
      * @param string|UriInterface|null $uri
-     * @param string|null              $method
-     * @throws \InvalidArgumentException
+     * @param string|null $method
+     *
+     * @throws InvalidArgumentException
      */
-    protected function initializeRequest($uri = null, $method = null): void
+    protected function initializeRequest(UriInterface|string $uri = null, string $method = null): void
     {
         try {
             $this->originalMethod = $this->filterMethod($method);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->originalMethod = $method;
             throw $e;
         }
@@ -76,7 +82,7 @@ trait RequestTrait
     /**
      * @return string
      * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function buildFirstLine(): string
     {
@@ -92,15 +98,16 @@ trait RequestTrait
 
     /**
      * @param string|UriInterface|null $uri
+     *
      * @return UriInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    private function createUri($uri): UriInterface
+    private function createUri(UriInterface|string|null $uri): UriInterface
     {
         if ($uri instanceof UriInterface) {
             return $uri;
         }
-        if (\is_string($uri)) {
+        if (is_string($uri)) {
             return Uri::createFromString($uri);
         }
 
@@ -108,7 +115,7 @@ trait RequestTrait
             return new Uri();
         }
 
-        throw new \InvalidArgumentException(
+        throw new InvalidArgumentException(
             'Invalid URI provided; must be null, a string, or a Psr\Http\Message\UriInterface instance'
         );
     }
@@ -119,8 +126,7 @@ trait RequestTrait
 
     /**
      * @return string
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
      */
     public function getMethod(): string
     {
@@ -164,12 +170,14 @@ trait RequestTrait
     /**
      * Does this request use a given method?
      * Note: This method is not part of the PSR-7 standard.
-     * @param  string $method HTTP method
+     *
+     * @param string $method HTTP method
+     *
      * @return bool
      * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function isMethod($method): bool
+    public function isMethod(string $method): bool
     {
         return $this->getMethod() === strtoupper($method);
     }
@@ -223,15 +231,15 @@ trait RequestTrait
     }
 
     /**
-     * @param $method
-     * @return RequestTrait
-     * @throws \InvalidArgumentException
+     * @param string $method
+     * @return static
+     * @throws InvalidArgumentException
      */
-    public function withMethod($method): self
+    public function withMethod($method): static
     {
-        $method = (string)$this->filterMethod($method);
+        $method = $this->filterMethod($method);
+        $clone  = clone $this;
 
-        $clone                 = clone $this;
         $clone->originalMethod = $method;
         $clone->method         = $method;
 
@@ -240,26 +248,26 @@ trait RequestTrait
 
     /**
      * Validate the HTTP method
-     * @param  null|string|mixed $method
-     * @return null|string
-     * @throws \InvalidArgumentException on invalid HTTP method.
+     *
+     * @param  string $method
+     * @return string
      */
-    protected function filterMethod($method): ?string
+    protected function filterMethod(string $method): string
     {
-        if ($method === null) {
+        if (!$method) {
             return $method;
         }
 
-        if (!\is_string($method)) {
-            throw new \InvalidArgumentException(sprintf(
+        if (!is_string($method)) {
+            throw new InvalidArgumentException(sprintf(
                 'Unsupported HTTP method; must be a string, received %s',
-                (\is_object($method) ? \get_class($method) : \gettype($method))
+                get_debug_type($method)
             ));
         }
 
-        $method = \strtoupper($method);
+        $method = strtoupper($method);
         if (!isset($this->validMethods[$method])) {
-            throw new \InvalidArgumentException($this, $method);
+            throw new InvalidArgumentException($this, $method);
         }
 
         return $method;
@@ -301,20 +309,19 @@ trait RequestTrait
 
     /**
      * @param string $requestTarget
-     * @return $this
-     * @throws \InvalidArgumentException
+     * @return static
      */
-    public function withRequestTarget($requestTarget): self
+    public function withRequestTarget($requestTarget): static
     {
         if (preg_match('#\s#', $requestTarget)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Invalid request target provided; must be a string and cannot contain whitespace'
             );
         }
 
-        $clone                = clone $this;
-        $clone->requestTarget = $requestTarget;
+        $clone = clone $this;
 
+        $clone->requestTarget = $requestTarget;
         return $clone;
     }
 
@@ -337,13 +344,13 @@ trait RequestTrait
     /**
      * @param UriInterface $uri
      * @param bool         $preserveHost
-     * @return self
+     * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false): self
+    public function withUri(UriInterface $uri, $preserveHost = false): static
     {
-        $clone      = clone $this;
-        $clone->uri = $uri;
+        $clone = clone $this;
 
+        $clone->uri = $uri;
         if (!$preserveHost) {
             if ($uri->getHost() !== '') {
                 $clone->headers->set('Host', $uri->getHost());

@@ -42,12 +42,12 @@ class JsonResponse extends Response
     /**
      * @var mixed
      */
-    private $payload;
+    private mixed $payload;
 
     /**
      * @var int
      */
-    private $encodingOptions;
+    private int $encodingOptions;
 
 
     /**
@@ -77,7 +77,7 @@ class JsonResponse extends Response
     ) {
         $this->setPayload($data);
         $this->encodingOptions = $encodingOptions;
-        
+
         $json = $this->jsonEncode($data, $this->encodingOptions);
         $body = $this->createBodyFromJson($json);
 
@@ -89,7 +89,7 @@ class JsonResponse extends Response
     /**
      * @return mixed
      */
-    public function getPayload()
+    public function getPayload(): mixed
     {
         return $this->payload;
     }
@@ -124,7 +124,7 @@ class JsonResponse extends Response
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    public function withEncodingOptions($encodingOptions): self
+    public function withEncodingOptions(int $encodingOptions): self
     {
         $new                  = clone $this;
         $new->encodingOptions = $encodingOptions;
@@ -138,7 +138,7 @@ class JsonResponse extends Response
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function createBodyFromJson($json): Stream
+    private function createBodyFromJson(string $json): Stream
     {
         $body = new TempStream('wb+');
         $body->write($json);
@@ -155,7 +155,7 @@ class JsonResponse extends Response
      * @return string
      * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
-    private function jsonEncode($data, int $encodingOptions): string
+    private function jsonEncode(mixed $data, int $encodingOptions): string
     {
         if (\is_resource($data)) {
             throw new InvalidArgumentException('Cannot JSON encode resources');

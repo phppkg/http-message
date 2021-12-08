@@ -24,49 +24,49 @@ class UploadedFile implements UploadedFileInterface
      * @note this is public to maintain BC with 3.1.0 and earlier.
      * @var string
      */
-    public $file;
+    public string $file;
 
     /**
      * The client-provided file name.
      * @var string
      */
-    protected $name;
+    protected ?string $name;
 
     /**
      * The client-provided media type of the file.
      * @var string
      */
-    protected $type;
+    protected ?string $type;
 
     /**
      * The size of the file in bytes.
      * @var int
      */
-    protected $size;
+    protected ?int $size;
 
     /**
      * A valid PHP UPLOAD_ERR_xxx code for the file upload.
      * @var int
      */
-    protected $error = \UPLOAD_ERR_OK;
+    protected int $error = \UPLOAD_ERR_OK;
 
     /**
      * Indicates if the upload is from a SAPI environment.
      * @var bool
      */
-    protected $sapi = false;
+    protected bool $sapi = false;
 
     /**
      * An optional StreamInterface wrapping the file resource.
      * @var StreamInterface
      */
-    protected $stream;
+    protected StreamInterface $stream;
 
     /**
      * Indicates if the uploaded file has already been moved.
      * @var bool
      */
-    protected $moved = false;
+    protected bool $moved = false;
 
     /**
      * Create a normalized tree of UploadedFile instances from the Environment.
@@ -127,12 +127,13 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * Construct a new UploadedFile instance.
+     *
      * @param string      $file The full path to the uploaded file provided by the client.
      * @param string|null $name The file name.
      * @param string|null $type The file media type.
      * @param int|null    $size The file size in bytes.
      * @param int         $error The UPLOAD_ERR_XXX code representing the status of the upload.
-     * @param bool        $sapi Indicates if the upload is in a SAPI environment.
+     * @param bool $sapi Indicates if the upload is in a SAPI environment.
      */
     public function __construct(
         string $file,
@@ -140,7 +141,7 @@ class UploadedFile implements UploadedFileInterface
         string $type = null,
         int $size = null,
         int $error = \UPLOAD_ERR_OK,
-        $sapi = false
+        bool $sapi
     ) {
         $this->file  = $file;
         $this->name  = $name;
@@ -262,7 +263,7 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The filename sent by the client or null if none
      *     was provided.
      */
-    public function getClientFilename()
+    public function getClientFilename(): ?string
     {
         return $this->name;
     }
@@ -277,7 +278,7 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The media type sent by the client or null if none
      *     was provided.
      */
-    public function getClientMediaType()
+    public function getClientMediaType(): ?string
     {
         return $this->type;
     }
@@ -289,7 +290,7 @@ class UploadedFile implements UploadedFileInterface
      * on the actual size transmitted.
      * @return int|null The file size in bytes or null if unknown.
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }

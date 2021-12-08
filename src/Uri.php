@@ -25,71 +25,73 @@ class Uri implements UriInterface
      * Uri scheme (without "://" suffix)
      * @var string
      */
-    protected $scheme = '';
+    protected string $scheme = '';
 
     /**
      * Uri user
      * @var string
      */
-    protected $user = '';
+    protected string $user = '';
 
     /**
      * Uri password
      * @var string
      */
-    protected $password = '';
+    protected string $password = '';
 
     /**
      * Uri host
      * @var string
      */
-    protected $host = '';
+    protected string $host = '';
 
     /**
      * Uri port number
      * @var null|int
      */
-    protected $port;
+    protected ?int $port;
 
     /**
      * Uri path
      * @var string
      */
-    protected $path = '/';
+    protected string $path = '/';
 
     /**
      * Uri query string (without "?" prefix)
      * @var string
      */
-    protected $query = '';
+    protected string $query = '';
 
     /**
      * Uri fragment string (without "#" prefix)
      * @var string
      */
-    protected $fragment = '';
+    protected string $fragment = '';
 
     /**
      * Create new Uri.
+     *
      * @param string $scheme Uri scheme.
      * @param string $host Uri host.
-     * @param int    $port Uri port number.
+     * @param int|null $port Uri port number.
      * @param string $path Uri path.
      * @param string $query Uri query string.
      * @param string $fragment Uri fragment.
      * @param string $user Uri user.
      * @param string $password Uri password.
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(
-        $scheme = '',
-        $host = '',
-        $port = null,
-        $path = '/',
-        $query = '',
-        $fragment = '',
-        $user = '',
-        $password = ''
+        string $scheme = '',
+        string $host = '',
+        int $port = null,
+        string $path = '/',
+        string $query = '',
+        string $fragment = '',
+        string $user = '',
+        string $password = ''
     ) {
         $this->scheme   = $scheme ? $this->filterScheme($scheme) : '';
         $this->host     = $host;
@@ -179,7 +181,7 @@ class Uri implements UriInterface
     /**
      * @var array
      */
-    protected static $validScheme = [
+    protected static array $validScheme = [
         ''      => true,
         'https' => true,
         'http'  => true,
@@ -189,12 +191,14 @@ class Uri implements UriInterface
 
     /**
      * Filter Uri scheme.
-     * @param  string $scheme Raw Uri scheme.
+     *
+     * @param string $scheme Raw Uri scheme.
+     *
      * @return string
      * @throws InvalidArgumentException If the Uri scheme is not a string.
      * @throws InvalidArgumentException If Uri scheme is not "", "https", or "http".
      */
-    protected function filterScheme($scheme): string
+    protected function filterScheme(string $scheme): string
     {
         if (!is_string($scheme) && !method_exists($scheme, '__toString')) {
             throw new InvalidArgumentException('Uri scheme must be a string');
@@ -311,7 +315,7 @@ class Uri implements UriInterface
      * the standard port for that scheme, but SHOULD return null.
      * @return null|int The URI port.
      */
-    public function getPort()
+    public function getPort(): ?int
     {
         return $this->port && !$this->hasStandardPort() ? $this->port : null;
     }
@@ -349,11 +353,13 @@ class Uri implements UriInterface
 
     /**
      * Filter Uri port.
-     * @param  null|int $port The Uri port number.
+     *
+     * @param int|null $port The Uri port number.
+     *
      * @return null|int
      * @throws InvalidArgumentException If the port is invalid.
      */
-    protected function filterPort($port): ?int
+    protected function filterPort(?int $port): ?int
     {
         if (null === $port || (\is_int($port) && ($port >= 1 && $port <= 65535))) {
             return $port;
@@ -426,11 +432,13 @@ class Uri implements UriInterface
      * characters in the provided path string. This method
      * will NOT double-encode characters that are already
      * percent-encoded.
-     * @param  string $path The raw uri path.
+     *
+     * @param string $path The raw uri path.
+     *
      * @return string       The RFC 3986 percent-encoded uri path.
      * @link   http://www.faqs.org/rfcs/rfc3986.html
      */
-    protected function filterPath($path): string
+    protected function filterPath(string $path): string
     {
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~:@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
@@ -486,10 +494,12 @@ class Uri implements UriInterface
 
     /**
      * Filters the query string or fragment of a URI.
+     *
      * @param string $query The raw uri query string.
+     *
      * @return string The percent-encoded query string.
      */
-    protected function filterQuery($query): string
+    protected function filterQuery(string $query): string
     {
         return \preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',

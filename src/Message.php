@@ -28,13 +28,15 @@ class Message implements MessageInterface
 
     /**
      * BaseMessage constructor.
+     *
      * @param string        $protocol
      * @param string        $protocolVersion
-     * @param array|Headers $headers
-     * @param string        $body
+     * @param array|Headers|null $headers
+     * @param string $body
+     *
      * @throws \InvalidArgumentException
      */
-    public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', $headers = null, $body = '')
+    public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', array|Headers $headers = null, string $body = '')
     {
         $this->initialize($protocol, $protocolVersion, $headers, $body);
     }

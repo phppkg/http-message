@@ -19,9 +19,10 @@ class Collection extends ArrayObject
 {
     /**
      * @param array|null $items
+     *
      * @return static
      */
-    public static function make($items = null)
+    public static function make(array $items = null): static
     {
         return new static((array)$items);
     }
@@ -60,7 +61,7 @@ class Collection extends ArrayObject
      * @param null   $default
      * @return mixed|null
      */
-    public function get(string $name, $default = null)
+    public function get(string $name, $default = null): mixed
     {
         return $this[$name] ?? $default;
     }
@@ -68,9 +69,10 @@ class Collection extends ArrayObject
     /**
      * @param string $name
      * @param mixed  $value
+     *
      * @return mixed|null
      */
-    public function add($name, $value)
+    public function add(string $name, mixed $value): mixed
     {
         if (isset($this[$name])) {
             return $this;
@@ -84,9 +86,10 @@ class Collection extends ArrayObject
     /**
      * @param string $name
      * @param mixed  $value
+     *
      * @return mixed|null
      */
-    public function set($name, $value)
+    public function set(string $name, mixed $value): mixed
     {
         $this[$name] = $value;
         return $this;

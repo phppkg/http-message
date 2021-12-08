@@ -37,19 +37,19 @@ class Response implements ResponseInterface
      * eg: 404
      * @var int
      */
-    private $status;
+    private int $status;
 
     /**
      * eg: 'OK'
      * @var string
      */
-    private $reasonPhrase;
+    private string $reasonPhrase;
 
     /**
      * Status codes and reason phrases
      * @var array
      */
-    protected static $messages = [
+    protected static array $messages = [
         //Informational 1xx
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -144,17 +144,19 @@ class Response implements ResponseInterface
 
     /**
      * Request constructor.
+     *
      * @param int             $status
-     * @param array|Headers   $headers
+     * @param array|Headers|null   $headers
      * @param array           $cookies
      * @param StreamInterface $body
      * @param string          $protocol
      * @param string          $protocolVersion
+     *
      * @throws \InvalidArgumentException
      */
     public function __construct(
         int $status = 200,
-        $headers = null,
+        array|Headers $headers = null,
         array $cookies = [],
         StreamInterface $body = null,
         string $protocol = 'HTTP',
@@ -227,7 +229,7 @@ class Response implements ResponseInterface
      * @throws \RuntimeException
      * @return self|mixed
      */
-    public function json($data, int $status = null, int $encodingOptions = 0): self
+    public function json(mixed $data, int $status = null, int $encodingOptions = 0): self
     {
         $this->setBody(new Body());
         $this->write($json = \json_encode($data, $encodingOptions));
@@ -249,11 +251,12 @@ class Response implements ResponseInterface
 
     /**
      * @param string $url
-     * @param int    $status
+     * @param int $status
+     *
      * @return $this|mixed
      * @throws \InvalidArgumentException
      */
-    public function redirect(string $url, $status = 302): self
+    public function redirect(string $url, int $status = 302): self
     {
         return $this
             ->withStatus((int)$status)
@@ -281,7 +284,7 @@ class Response implements ResponseInterface
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): Response|static
     {
         $code = $this->filterStatus($code);
 

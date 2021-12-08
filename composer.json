@@ -18,8 +18,8 @@
     }
   ],
   "require": {
-    "php": ">7.1.0",
-    "toolkit/stdlib": "~1.0",
+    "php": ">8.0.0",
+    "toolkit/stdlib": "~2.0",
     "psr/http-message": "^1.0"
   },
   "autoload": {

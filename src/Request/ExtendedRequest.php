@@ -13,6 +13,7 @@ use PhpPkg\Http\Message\Traits\ExtendedRequestTrait;
 
 /**
  * Class ExtendedRequest
+ *
  * @package PhpPkg\Http\Message\Request
  */
 class ExtendedRequest extends ServerRequest
@@ -20,12 +21,13 @@ class ExtendedRequest extends ServerRequest
     use ExtendedRequestTrait;
 
     /**
-     * @param string      $name
-     * @param null|mixed  $default
-     * @param null|string $filter
+     * @param string $name
+     * @param mixed|null $default
+     * @param string|null $filter
+     *
      * @return mixed
      */
-    public function getQuery($name, $default = null, $filter = null)
+    public function getQuery(string $name, mixed $default = null, string $filter = null): mixed
     {
         $value = $this->getQueryParam($name, $default);
 
@@ -33,12 +35,13 @@ class ExtendedRequest extends ServerRequest
     }
 
     /**
-     * @param string $name
-     * @param mixed  $default
-     * @param string $filter
+     * @param string|null $name
+     * @param mixed|null $default
+     * @param string|null $filter
+     *
      * @return mixed
      */
-    public function get($name = null, $default = null, $filter = null)
+    public function get(string $name = null, mixed $default = null, string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getQueryParams();
@@ -50,11 +53,11 @@ class ExtendedRequest extends ServerRequest
     /**
      * @param string $name
      * @param mixed  $default
-     * @param string $filter
+     * @param string|null $filter
+     *
      * @return mixed
-     * @throws \RuntimeException
      */
-    public function post($name = null, $default = null, $filter = null)
+    public function post(string $name = null, mixed $default = null, string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -64,13 +67,14 @@ class ExtendedRequest extends ServerRequest
     }
 
     /**
-     * @param string $name
-     * @param mixed  $default
-     * @param string $filter
+     * @param string|null $name
+     * @param mixed|null $default
+     * @param string|null $filter
+     *
      * @return mixed
      * @throws \RuntimeException
      */
-    public function json($name = null, $default = null, $filter = null)
+    public function json(string $name = null, mixed $default = null, string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -80,12 +84,13 @@ class ExtendedRequest extends ServerRequest
     }
 
     /**
-     * @param string $name
-     * @param mixed  $default
-     * @param string $filter
+     * @param string|null $name
+     * @param mixed|null $default
+     * @param string|null $filter
+     *
      * @return mixed
      */
-    public function put($name = null, $default = null, $filter = null)
+    public function put(string $name = null, mixed $default = null, string $filter = null): mixed
     {
         return $this->post($name, $default, $filter);
     }

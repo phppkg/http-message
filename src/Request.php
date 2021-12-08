@@ -31,19 +31,21 @@ class Request implements RequestInterface
 
     /**
      * Request constructor.
+     *
      * @param string          $method
      * @param UriInterface    $uri
      * @param string          $protocol
      * @param string          $protocolVersion
-     * @param array|Headers   $headers
+     * @param array|Headers|null   $headers
      * @param StreamInterface $body
+     *
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
     public function __construct(
         string $method = 'GET',
         UriInterface $uri = null,
-        $headers = null,
+        array|Headers $headers = null,
         StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'

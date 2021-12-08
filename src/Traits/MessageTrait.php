@@ -24,30 +24,30 @@ trait MessageTrait
      * protocol/schema
      * @var string
      */
-    protected $protocol;
+    protected string $protocol;
 
     /**
      * @var string
      */
-    protected $protocolVersion;
+    protected string $protocolVersion;
 
     /**
      * @var Headers
      */
-    protected $headers;
+    protected Headers $headers;
 
     /**
      * Body object
      *
      * @var StreamInterface
      */
-    protected $body;
+    protected StreamInterface $body;
 
     /**
      * A map of valid protocol versions
      * @var array
      */
-    protected static $validProtocolVersions = [
+    protected static array $validProtocolVersions = [
         '1.0' => true,
         '1.1' => true,
         '2.0' => true,
@@ -55,17 +55,19 @@ trait MessageTrait
 
     /**
      * BaseMessage constructor.
+     *
      * @param string                          $protocol
      * @param string                          $protocolVersion
-     * @param array|Headers                   $headers
-     * @param string|resource|StreamInterface $body
+     * @param array|Headers|null $headers
+     * @param string|StreamInterface $body
+     *
      * @throws \InvalidArgumentException
      */
     public function initialize(
         string $protocol = 'http',
         string $protocolVersion = '1.1',
-        $headers = null,
-        $body = 'php://memory'
+        array|Headers $headers = null,
+        StreamInterface|string $body = 'php://memory'
     ): void {
         $this->protocol        = $protocol ?: 'http';
         $this->protocolVersion = $protocolVersion ?: '1.1';
@@ -128,7 +130,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): static
     {
         if (!isset(self::$validProtocolVersions[$version])) {
             throw new \InvalidArgumentException(
@@ -259,12 +261,13 @@ trait MessageTrait
      ******************************************************************************/
 
     /**
-     * @param string|resource|StreamInterface|bool $body
+     * @param bool|string|StreamInterface $body
      * @param string                               $mode
+     *
      * @return StreamInterface
      * @throws \InvalidArgumentException
      */
-    protected function createBodyStream($body, string $mode = 'rb'): StreamInterface
+    protected function createBodyStream(StreamInterface|bool|string $body, string $mode = 'rb'): StreamInterface
     {
         if ($body instanceof StreamInterface) {
             return $body;
@@ -318,7 +321,7 @@ trait MessageTrait
      * @param StreamInterface $body
      * @return $this|MessageInterface|ResponseInterface
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface|ResponseInterface|static
     {
         // TODO: Test for invalid body?
         $clone       = clone $this;

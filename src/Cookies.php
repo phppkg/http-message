@@ -28,7 +28,7 @@ class Cookies extends Collection
      * Default cookie properties
      * @var array
      */
-    protected $defaults = [
+    protected array $defaults = [
         'value'    => '',
         'domain'   => null,
         'hostOnly' => null,
@@ -67,9 +67,10 @@ class Cookies extends Collection
     /**
      * @param string $name
      * @param mixed  $value
+     *
      * @return self
      */
-    public function add($name, $value): self
+    public function add(string $name, mixed $value): self
     {
         if (!\is_array($value)) {
             $value = ['value' => (string)$value];
@@ -154,11 +155,13 @@ class Cookies extends Collection
     /**
      * Parse HTTP request `Cookie:` header and extract
      * into a PHP associative array.
-     * @param  string|array $cookieText The raw HTTP request `Cookie:` header
+     *
+     * @param array|string $cookieText The raw HTTP request `Cookie:` header
+     *
      * @return array Associative array of cookie names and values
      * @throws \InvalidArgumentException if the cookie data cannot be parsed
      */
-    public static function parseFromRawHeader($cookieText): array
+    public static function parseFromRawHeader(array|string $cookieText): array
     {
         $cookies = [];
 

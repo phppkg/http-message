@@ -20,7 +20,7 @@ trait CookiesTrait
     /**
      * @var Cookies
      */
-    private $cookies;
+    private Cookies $cookies;
 
     /*******************************************************************************
      * Cookies
@@ -39,7 +39,7 @@ trait CookiesTrait
      * @param null   $default
      * @return mixed
      */
-    public function getCookieParam(string $key, $default = null)
+    public function getCookieParam(string $key, $default = null): mixed
     {
         return $this->cookies->get($key, $default);
     }
@@ -58,10 +58,11 @@ trait CookiesTrait
 
     /**
      * @param string       $name
-     * @param string|array $value
+     * @param array|string $value
+     *
      * @return $this
      */
-    public function setCookie(string $name, $value): self
+    public function setCookie(string $name, array|string $value): self
     {
         $this->cookies->set($name, $value);
 
@@ -77,10 +78,11 @@ trait CookiesTrait
     }
 
     /**
-     * @param Cookies|array $cookies
+     * @param array|Cookies $cookies
+     *
      * @return $this
      */
-    public function setCookies($cookies): self
+    public function setCookies(array|Cookies $cookies): self
     {
         if (is_array($cookies)) {
             return $this->setCookiesFromArray($cookies);

@@ -52,11 +52,12 @@ class TextResponse extends Response
      * Create the message body.
      *
      * @param string|StreamInterface $text
+     *
      * @return StreamInterface
      * @throws \RuntimeException
      * @throws \InvalidArgumentException if $html is neither a string or stream.
      */
-    private function createBody($text): StreamInterface
+    private function createBody(StreamInterface|string $text): StreamInterface
     {
         if ($text instanceof StreamInterface) {
             return $text;

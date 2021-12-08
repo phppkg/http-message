@@ -58,15 +58,15 @@ use function trim;
  * @method array getUploadedFiles()
  * @method array getQueryParams()
  * @method array getParams()
- * @method mixed getParam($key, $default = null)
+ * @method mixed getParam(string $key, string $default = null)
  */
 trait ExtendedRequestTrait
 {
     /** @var string */
-    private static $rawFilter = 'raw';
+    private static string $rawFilter = 'raw';
 
     /** @var array */
-    private static $phpTypes = [
+    private static array $phpTypes = [
         'int',
         'integer',
         'float',
@@ -83,7 +83,7 @@ trait ExtendedRequestTrait
     /**
      * @var array
      */
-    protected static $filters = [
+    protected static array $filters = [
         // return raw
         'raw'     => '',
 
@@ -141,17 +141,19 @@ trait ExtendedRequestTrait
 
     /**
      * Get Multi - 获取多个, 可以设置过滤
+     *
      * @param array $needKeys
      * $needKeys = [
      *     'name',
      *     'password',
      *     'status' => 'int'
      * ]
-     * @param bool  $onlyValue
+     * @param bool $onlyValue
+     *
      * @return array
      * @throws InvalidArgumentException
      */
-    public function getMulti(array $needKeys = [], $onlyValue = false): array
+    public function getMulti(array $needKeys = [], bool $onlyValue): array
     {
         $needed = [];
 
@@ -215,12 +217,13 @@ trait ExtendedRequestTrait
     /**
      * @param string $name
      * @param array  $arguments
+     *
      * @return mixed
      * @throws BadMethodCallException
      */
-    public function __call($name, array $arguments)
+    public function __call(string $name, array $arguments)
     {
-        if ($arguments && 0 === strpos($name, 'get')) {
+        if ($arguments && str_starts_with($name, 'get')) {
             $filter  = substr($name, 3);
             $default = $arguments[1] ?? null;
 
@@ -232,11 +235,12 @@ trait ExtendedRequestTrait
 
     /**
      * @param mixed           $value
-     * @param string|callable $filter
+     * @param callable|string|null $filter
+     *
      * @return mixed|null
      * @throws InvalidArgumentException
      */
-    public function filtering($value, $filter = null)
+    public function filtering(mixed $value, callable|string $filter = null): mixed
     {
         if (!$filter || $filter === self::$rawFilter) {
             return $value;
@@ -306,12 +310,13 @@ trait ExtendedRequestTrait
     /**
      * @param mixed  $value
      * @param string $filter
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function callFilterChain($value, $filter)
+    protected function callFilterChain(mixed $value, string $filter): mixed
     {
-        if (strpos($filter, '|') === false) {
+        if (!str_contains($filter, '|')) {
             return $filter($value);
         }
 
