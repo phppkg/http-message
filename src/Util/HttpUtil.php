@@ -3,8 +3,15 @@
 namespace PhpPkg\Http\Message\Util;
 
 use Psr\Http\Message\ResponseInterface;
+use function array_merge;
 use function connection_status;
+use function header;
+use function headers_sent;
+use function in_array;
+use function method_exists;
 use function min;
+use function sprintf;
+use function strlen;
 use const CONNECTION_NORMAL;
 
 /**
@@ -20,19 +27,18 @@ class HttpUtil
      * Send the response the client
      * @param ResponseInterface|Response $response
      * @param array             $options
-     * @throws \RuntimeException
      */
     public static function respond(ResponseInterface $response, array $options = []): void
     {
-        $options = \array_merge([
+        $options = array_merge([
             'chunkSize'              => 4096,
             'addContentLengthHeader' => false,
         ], $options);
 
         // Send response
-        if (!\headers_sent()) {
+        if (!headers_sent()) {
             // Status
-            \header(\sprintf(
+            header(sprintf(
                 'HTTP/%s %s %s',
                 $response->getProtocolVersion(),
                 $response->getStatusCode(),
@@ -43,7 +49,7 @@ class HttpUtil
             foreach ($response->getHeaders() as $name => $values) {
                 /** @var array $values */
                 foreach ($values as $value) {
-                    \header(\sprintf('%s: %s', $name, $value), false);
+                    header(sprintf('%s: %s', $name, $value), false);
                 }
             }
         }
@@ -68,7 +74,7 @@ class HttpUtil
                 while ($amountToRead > 0 && !$body->eof()) {
                     $data = $body->read(min($chunkSize, $amountToRead));
                     echo $data;
-                    $amountToRead -= \strlen($data);
+                    $amountToRead -= strlen($data);
 
                     if (connection_status() !== CONNECTION_NORMAL) {
                         break;
@@ -95,10 +101,10 @@ class HttpUtil
      */
     public static function isEmptyResponse(ResponseInterface $response): bool
     {
-        if (\method_exists($response, 'isEmpty')) {
+        if (method_exists($response, 'isEmpty')) {
             return $response->isEmpty();
         }
 
-        return \in_array($response->getStatusCode(), [204, 205, 304], true);
+        return in_array($response->getStatusCode(), [204, 205, 304], true);
     }
 }
