@@ -51,7 +51,7 @@ class ExtendedRequest extends ServerRequest
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @param mixed  $default
      * @param string|null $filter
      *
@@ -72,7 +72,6 @@ class ExtendedRequest extends ServerRequest
      * @param string|null $filter
      *
      * @return mixed
-     * @throws \RuntimeException
      */
     public function json(string $name = null, mixed $default = null, string $filter = null): mixed
     {

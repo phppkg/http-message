@@ -9,14 +9,19 @@
 
 namespace PhpPkg\Http\Message;
 
+use InvalidArgumentException;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use function in_array;
+use function is_string;
+use function json_encode;
 
 /**
  * Class Response
  * response for handshake
+ *
  * @package PhpPkg\Http\Message
  * @property int    $status
  * @property string $statusMsg
@@ -35,15 +40,17 @@ class Response implements ResponseInterface
 
     /**
      * eg: 404
+     *
      * @var int
      */
     private int $status;
 
     /**
      * eg: 'OK'
+     *
      * @var string
      */
-    private string $reasonPhrase;
+    private string $reasonPhrase = '';
 
     /**
      * Status codes and reason phrases
@@ -129,7 +136,6 @@ class Response implements ResponseInterface
      * @param string               $protocol
      * @param string               $protocolVersion
      * @return Response
-     * @throws \InvalidArgumentException
      */
     public static function make(
         int $status = 200,
@@ -152,7 +158,7 @@ class Response implements ResponseInterface
      * @param string          $protocol
      * @param string          $protocolVersion
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         int $status = 200,
@@ -223,21 +229,15 @@ class Response implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      * This method prepares the response object to return an HTTP Json response to the client.
      * @param  mixed $data The data
-     * @param  int   $status The HTTP status code.
+     * @param  int|null   $status The HTTP status code.
      * @param  int   $encodingOptions Json encoding options
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     * @return self|mixed
+     * @throws InvalidArgumentException
+     * @return static
      */
-    public function json(mixed $data, int $status = null, int $encodingOptions = 0): self
+    public function json(mixed $data, int $status = null, int $encodingOptions = 0): static
     {
         $this->setBody(new Body());
-        $this->write($json = \json_encode($data, $encodingOptions));
-
-        // Ensure that the json encoding passed successfully
-        if ($json === false) {
-            throw new \RuntimeException(\json_last_error_msg(), \json_last_error());
-        }
+        $this->write(json_encode($data, JSON_THROW_ON_ERROR | $encodingOptions));
 
         /** @var self $response */
         $response = $this->withHeader('Content-Type', 'application/json;charset=UTF-8');
@@ -253,13 +253,13 @@ class Response implements ResponseInterface
      * @param string $url
      * @param int $status
      *
-     * @return $this|mixed
-     * @throws \InvalidArgumentException
+     * @return static
+     * @throws InvalidArgumentException
      */
-    public function redirect(string $url, int $status = 302): self
+    public function redirect(string $url, int $status = 302): static
     {
         return $this
-            ->withStatus((int)$status)
+            ->withStatus($status)
             ->withHeader('Location', $url);
     }
 
@@ -282,14 +282,14 @@ class Response implements ResponseInterface
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
      * @return static
-     * @throws \InvalidArgumentException For invalid status code arguments.
+     * @throws InvalidArgumentException For invalid status code arguments.
      */
     public function withStatus($code, $reasonPhrase = ''): Response|static
     {
         $code = $this->filterStatus($code);
 
-        if (!\is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
-            throw new \InvalidArgumentException('ReasonPhrase must be a string');
+        if (!is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
+            throw new InvalidArgumentException('ReasonPhrase must be a string');
         }
 
         $clone         = clone $this;
@@ -300,7 +300,7 @@ class Response implements ResponseInterface
         }
 
         if ($reasonPhrase === '') {
-            throw new \InvalidArgumentException('ReasonPhrase must be supplied for this code');
+            throw new InvalidArgumentException('ReasonPhrase must be supplied for this code');
         }
 
         $clone->reasonPhrase = $reasonPhrase;
@@ -312,7 +312,7 @@ class Response implements ResponseInterface
      * @param int    $code
      * @param string $reasonPhrase
      * @return Response
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setStatus(int $code, string $reasonPhrase = ''): Response
     {
@@ -324,7 +324,7 @@ class Response implements ResponseInterface
         }
 
         if ($reasonPhrase === '') {
-            throw new \InvalidArgumentException('ReasonPhrase must be supplied for this code');
+            throw new InvalidArgumentException('ReasonPhrase must be supplied for this code');
         }
 
         $this->reasonPhrase = $reasonPhrase;
@@ -336,12 +336,12 @@ class Response implements ResponseInterface
      * Filter HTTP status code.
      * @param  int $status HTTP status code.
      * @return int
-     * @throws \InvalidArgumentException If an invalid HTTP status code is provided.
+     * @throws InvalidArgumentException If an invalid HTTP status code is provided.
      */
     protected function filterStatus(int $status): int
     {
         if ($status < 100 || $status > 599) {
-            throw new \InvalidArgumentException('Invalid HTTP status code');
+            throw new InvalidArgumentException('Invalid HTTP status code');
         }
 
         return $status;
@@ -368,7 +368,7 @@ class Response implements ResponseInterface
      */
     public function getReasonPhrase(): string
     {
-        if ($this->reasonPhrase === null && ($code = $this->status)) {
+        if ($this->reasonPhrase === '' && ($code = $this->status)) {
             $this->reasonPhrase = self::$messages[$code] ?? '';
         }
 
@@ -394,12 +394,13 @@ class Response implements ResponseInterface
      */
     public function isEmpty(): bool
     {
-        return \in_array($this->getStatusCode(), [204, 205, 304], true);
+        return in_array($this->getStatusCode(), [204, 205, 304], true);
     }
 
     /**
      * Is this response informational?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isInformational(): bool
@@ -434,7 +435,7 @@ class Response implements ResponseInterface
      */
     public function isRedirect(): bool
     {
-        return \in_array($this->getStatusCode(), [301, 302, 303, 307], true);
+        return in_array($this->getStatusCode(), [301, 302, 303, 307], true);
     }
 
     /**

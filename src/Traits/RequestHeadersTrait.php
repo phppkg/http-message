@@ -8,11 +8,18 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
+use PhpPkg\Http\Message\Headers;
+use function count;
+use function explode;
+use function preg_split;
+use function strtolower;
+
 /**
  * Trait RequestHeadersTrait
+ *
  * @package PhpPkg\Http\Message\Traits
  *
- * @property \PhpPkg\Http\Message\Headers $headers
+ * @property Headers $headers
  */
 trait RequestHeadersTrait
 {
@@ -23,7 +30,7 @@ trait RequestHeadersTrait
     {
         $val = $this->getHeaderLine('upgrade');
 
-        return \strtolower($val) === 'websocket';
+        return strtolower($val) === 'websocket';
     }
 
     /**
@@ -56,7 +63,7 @@ trait RequestHeadersTrait
     /**
      * Get request content type.
      * Note: This method is not part of the PSR-7 standard.
-     * @return string|null The request content type, if known
+     * @return string The request content type, if known
      */
     public function getContentType(): string
     {
@@ -68,6 +75,7 @@ trait RequestHeadersTrait
     /**
      * Get request media type, if known.
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return string The request media type, minus content-type params
      */
     public function getMediaType(): string
@@ -90,16 +98,17 @@ trait RequestHeadersTrait
      */
     public function getMediaTypeParams(): array
     {
-        $contentType       = $this->getContentType();
         $contentTypeParams = [];
 
+        $contentType = $this->getContentType();
         if ($contentType) {
-            $contentTypeParts       = \preg_split('/\s*[;,]\s*/', $contentType);
-            $contentTypePartsLength = \count($contentTypeParts);
+            $contentTypeParts       = preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypePartsLength = count($contentTypeParts);
 
             for ($i = 1; $i < $contentTypePartsLength; $i++) {
-                $paramParts                                     = \explode('=', $contentTypeParts[$i]);
-                $contentTypeParams[\strtolower($paramParts[0])] = $paramParts[1];
+                $paramParts = explode('=', $contentTypeParts[$i]);
+
+                $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
             }
         }
 
@@ -109,6 +118,7 @@ trait RequestHeadersTrait
     /**
      * Get request content character set, if known.
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return string
      */
     public function getContentCharset(): string
@@ -121,6 +131,7 @@ trait RequestHeadersTrait
     /**
      * Get request content length, if known.
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return int
      */
     public function getContentLength(): int

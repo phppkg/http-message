@@ -13,14 +13,15 @@ use function is_array;
 
 /**
  * Trait CookiesTrait
+ *
  * @package PhpPkg\Http\Message\Traits
  */
 trait CookiesTrait
 {
     /**
-     * @var Cookies
+     * @var Cookies|null
      */
-    private Cookies $cookies;
+    private ?Cookies $cookies = null;
 
     /*******************************************************************************
      * Cookies
@@ -46,11 +47,12 @@ trait CookiesTrait
 
     /**
      * @param array $cookies
-     * @return self
+     * @return static
      */
-    public function withCookieParams(array $cookies): self
+    public function withCookieParams(array $cookies): static
     {
-        $clone          = clone $this;
+        $clone = clone $this;
+
         $clone->cookies = new Cookies($cookies);
 
         return $clone;
@@ -60,12 +62,11 @@ trait CookiesTrait
      * @param string       $name
      * @param array|string $value
      *
-     * @return $this
+     * @return static
      */
-    public function setCookie(string $name, array|string $value): self
+    public function setCookie(string $name, array|string $value): static
     {
         $this->cookies->set($name, $value);
-
         return $this;
     }
 
@@ -80,24 +81,23 @@ trait CookiesTrait
     /**
      * @param array|Cookies $cookies
      *
-     * @return $this
+     * @return static
      */
-    public function setCookies(array|Cookies $cookies): self
+    public function setCookies(array|Cookies $cookies): static
     {
         if (is_array($cookies)) {
             return $this->setCookiesFromArray($cookies);
         }
 
         $this->cookies = $cookies;
-
         return $this;
     }
 
     /**
      * @param array $cookies
-     * @return $this
+     * @return static
      */
-    public function setCookiesFromArray(array $cookies): self
+    public function setCookiesFromArray(array $cookies): static
     {
         if (!$this->cookies) {
             $this->cookies = new Cookies($cookies);

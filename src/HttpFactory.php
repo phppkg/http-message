@@ -9,7 +9,7 @@
 namespace PhpPkg\Http\Message;
 
 use InvalidArgumentException;
-use PhpPkg\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Util\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

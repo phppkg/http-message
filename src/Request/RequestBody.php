@@ -9,6 +9,9 @@
 namespace PhpPkg\Http\Message\Request;
 
 use PhpPkg\Http\Message\Stream;
+use function fopen;
+use function rewind;
+use function stream_copy_to_stream;
 
 /**
  * Class RequestBody
@@ -19,15 +22,14 @@ class RequestBody extends Stream
 {
     /**
      * Create a new RequestBody.
-     * @param string $content
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     *
+     * @param string|null $content
      */
     public function __construct(string $content = null)
     {
-        $stream = \fopen('php://temp', 'wb+');
-        \stream_copy_to_stream(\fopen('php://input', 'rb'), $stream);
-        \rewind($stream);
+        $stream = fopen('php://temp', 'wb+');
+        stream_copy_to_stream(fopen('php://input', 'rb'), $stream);
+        rewind($stream);
 
         parent::__construct($stream);
 

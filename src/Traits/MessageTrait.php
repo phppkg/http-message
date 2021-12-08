@@ -8,11 +8,15 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
+use InvalidArgumentException;
 use PhpPkg\Http\Message\Headers;
 use PhpPkg\Http\Message\Stream;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use function fopen;
+use function is_resource;
+use function is_string;
+use function restore_error_handler;
+use function set_error_handler;
 
 /**
  * Trait MessageTrait
@@ -22,19 +26,20 @@ trait MessageTrait
 {
     /**
      * protocol/schema
+     *
      * @var string
      */
-    protected string $protocol;
+    protected string $protocol = '';
 
     /**
      * @var string
      */
-    protected string $protocolVersion;
+    protected string $protocolVersion = '1.1';
 
     /**
-     * @var Headers
+     * @var Headers|null
      */
-    protected Headers $headers;
+    protected ?Headers $headers = null;
 
     /**
      * Body object
@@ -61,7 +66,7 @@ trait MessageTrait
      * @param array|Headers|null $headers
      * @param string|StreamInterface $body
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function initialize(
         string $protocol = 'http',
@@ -128,12 +133,12 @@ trait MessageTrait
     /**
      * @param $version
      * @return static
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function withProtocolVersion($version): static
     {
         if (!isset(self::$validProtocolVersions[$version])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Invalid HTTP version. Must be one of: '
                 . implode(', ', array_keys(self::$validProtocolVersions))
             );
@@ -160,7 +165,7 @@ trait MessageTrait
 
     /**
      * @param string $name
-     * @return \string[]
+     * @return string[]
      */
     public function getHeader($name): array
     {
@@ -178,12 +183,12 @@ trait MessageTrait
 
     /**
      * @param string $name
-     * @param        $value
-     * @return $this
+     * @param mixed $value
+     * @return static
      */
-    public function setHeader(string $name, $value): self
+    public function setHeader(string $name, mixed $value): static
     {
-        $this->headers->set($name, $value);
+        $this->headers->set($name, (string)$value);
 
         return $this;
     }
@@ -204,10 +209,11 @@ trait MessageTrait
 
     /**
      * PSR 7 method
+     *
      * @param string $name
-     * @return self
+     * @return static
      */
-    public function withoutHeader($name): self
+    public function withoutHeader($name): static
     {
         $clone = clone $this;
         $clone->headers->remove($name);
@@ -218,10 +224,10 @@ trait MessageTrait
     /**
      * PSR 7 method
      * @param string $name
-     * @param        $value
-     * @return self
+     * @param mixed $value
+     * @return static
      */
-    public function withAddedHeader($name, $value): self
+    public function withAddedHeader($name, $value): static
     {
         $clone = clone $this;
         $clone->headers->add($name, $value);
@@ -247,9 +253,9 @@ trait MessageTrait
 
     /**
      * @param array $headers
-     * @return $this
+     * @return static
      */
-    public function setHeaders(array $headers): self
+    public function setHeaders(array $headers): static
     {
         $this->headers->sets($headers);
 
@@ -261,37 +267,36 @@ trait MessageTrait
      ******************************************************************************/
 
     /**
-     * @param bool|string|StreamInterface $body
+     * @param resource|string|StreamInterface $body
      * @param string                               $mode
      *
      * @return StreamInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    protected function createBodyStream(StreamInterface|bool|string $body, string $mode = 'rb'): StreamInterface
+    protected function createBodyStream(mixed $body, string $mode = 'rb'): StreamInterface
     {
         if ($body instanceof StreamInterface) {
             return $body;
         }
 
-        if (!\is_string($body) && !\is_resource($body)) {
-            throw new \InvalidArgumentException(
+        if (!is_string($body) && !is_resource($body)) {
+            throw new InvalidArgumentException(
                 'Stream must be a string stream resource identifier, '
                 . 'an actual stream resource, '
                 . 'or a Psr\Http\Message\StreamInterface implementation'
             );
         }
 
-        if (\is_string($body)) {
+        if (is_string($body)) {
             $error = null;
-
-            \set_error_handler(function ($e) use (&$error) {
+            set_error_handler(static function ($e) use (&$error) {
                 $error = $e;
             }, E_WARNING);
-            $body = \fopen($body, $mode);
-            \restore_error_handler();
+            $body = fopen($body, $mode);
+            restore_error_handler();
 
             if ($error) {
-                throw new \InvalidArgumentException('Invalid stream reference provided');
+                throw new InvalidArgumentException('Invalid stream reference provided');
             }
         }
 
@@ -308,9 +313,9 @@ trait MessageTrait
 
     /**
      * @param StreamInterface $body
-     * @return $this
+     * @return static
      */
-    public function setBody(StreamInterface $body): self
+    public function setBody(StreamInterface $body): static
     {
         $this->body = $body;
 
@@ -319,9 +324,9 @@ trait MessageTrait
 
     /**
      * @param StreamInterface $body
-     * @return $this|MessageInterface|ResponseInterface
+     * @return static
      */
-    public function withBody(StreamInterface $body): MessageInterface|ResponseInterface|static
+    public function withBody(StreamInterface $body): static
     {
         // TODO: Test for invalid body?
         $clone       = clone $this;
@@ -332,10 +337,9 @@ trait MessageTrait
 
     /**
      * @param string $content
-     * @return $this
-     * @throws \RuntimeException
+     * @return static
      */
-    public function addContent(string $content): self
+    public function addContent(string $content): static
     {
         $this->body->write($content);
         return $this;
@@ -343,10 +347,9 @@ trait MessageTrait
 
     /**
      * @param string $content
-     * @return $this
-     * @throws \RuntimeException
+     * @return static
      */
-    public function write(string $content): self
+    public function write(string $content): static
     {
         $this->body->write($content);
         return $this;

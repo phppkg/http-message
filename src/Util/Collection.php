@@ -6,14 +6,14 @@
  * Time: 下午2:04
  */
 
-namespace PhpPkg\Http\Message\Component;
+namespace PhpPkg\Http\Message\Util;
 
 use ArrayObject;
 
 /**
  * Class Collection
  *
- * @package PhpPkg\Http\Message\Component
+ * @package PhpPkg\Http\Message\Util
  */
 class Collection extends ArrayObject
 {
@@ -29,6 +29,7 @@ class Collection extends ArrayObject
 
     /**
      * Create new collection
+     *
      * @param array $items Pre-populate collection with this key-value array
      */
     public function __construct(array $items = [])

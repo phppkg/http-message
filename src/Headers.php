@@ -8,7 +8,7 @@
 
 namespace PhpPkg\Http\Message;
 
-use PhpPkg\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Util\Collection;
 
 /**
  * Class Headers

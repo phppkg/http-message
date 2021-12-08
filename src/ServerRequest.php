@@ -11,7 +11,7 @@ namespace PhpPkg\Http\Message;
 
 use Closure;
 use InvalidArgumentException;
-use PhpPkg\Http\Message\Component\Collection;
+use PhpPkg\Http\Message\Util\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\RequestHeadersTrait;
@@ -294,17 +294,17 @@ class ServerRequest implements ServerRequestInterface
      * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
      *
      * @param string|null $name the parameter name
-     * @param mixed|null  $defaultValue the default parameter value if the parameter does not exist.
+     * @param mixed|null  $default the default parameter value if the parameter does not exist.
      *
-     * @return array|mixed
+     * @return mixed
      */
-    public function get(string $name = null, mixed $defaultValue = null): mixed
+    public function get(string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return $this->getQueryParams();
         }
 
-        return $this->getQueryParam($name, $defaultValue);
+        return $this->getQueryParam($name, $default);
     }
 
     /**

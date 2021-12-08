@@ -4,10 +4,9 @@
  * User: Inhere
  * Date: 2015/2/27
  * Use : ...
- * File: Environment.php
  */
 
-namespace PhpPkg\Http\Message\Component;
+namespace PhpPkg\Http\Message\Util;
 
 use function array_merge;
 use function microtime;
@@ -17,7 +16,7 @@ use function time;
  * mock 环境信息
  * Class Environment
  *
- * @package PhpPkg\Http\Message\Component
+ * @package PhpPkg\Http\Message\Util
  */
 class Environment extends Collection
 {

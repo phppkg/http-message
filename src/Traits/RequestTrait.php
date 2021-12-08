@@ -11,6 +11,7 @@ namespace PhpPkg\Http\Message\Traits;
 use InvalidArgumentException;
 use PhpPkg\Http\Message\Uri;
 use Psr\Http\Message\UriInterface;
+use RuntimeException;
 use function get_debug_type;
 use function is_string;
 use function strtoupper;
@@ -26,17 +27,17 @@ trait RequestTrait
     /**
      * @var string
      */
-    private string $method;
+    private string $method = '';
 
     /**
      * The original request method (ignoring override)
      * @var string
      */
-    private string $originalMethod;
+    private string $originalMethod = '';
 
 
-    /** @var  string */
-    private string $requestTarget;
+    /** @var string */
+    private string $requestTarget = '';
 
     /**
      * The request URI object
@@ -81,7 +82,7 @@ trait RequestTrait
 
     /**
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @throws InvalidArgumentException
      */
     protected function buildFirstLine(): string
@@ -174,7 +175,7 @@ trait RequestTrait
      * @param string $method HTTP method
      *
      * @return bool
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @throws InvalidArgumentException
      */
     public function isMethod(string $method): bool
