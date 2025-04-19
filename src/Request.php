@@ -45,7 +45,7 @@ class Request implements RequestInterface
     public function __construct(
         string $method = 'GET',
         ?UriInterface $uri = null,
-        array|Headers $headers = null,
+        array|Headers|null $headers = null,
         ?StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'

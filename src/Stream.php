@@ -65,21 +65,21 @@ class Stream implements StreamInterface
      *
      * @var bool
      */
-    protected bool $readable;
+    protected ?bool $readable;
 
     /**
      * Is this stream writable?
      *
      * @var bool
      */
-    protected bool $writable;
+    protected ?bool $writable;
 
     /**
      * Is this stream seekable?
      *
      * @var bool
      */
-    protected bool $seekable;
+    protected ?bool $seekable;
 
     /**
      * The size of the stream if known
@@ -93,7 +93,7 @@ class Stream implements StreamInterface
      *
      * @var bool
      */
-    protected bool $isPipe;
+    protected ?bool $isPipe;
 
     /**
      * Create a new Stream.
@@ -115,13 +115,13 @@ class Stream implements StreamInterface
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
      *
-     * @param string $key Specific metadata to retrieve.
+     * @param string|null $key Specific metadata to retrieve.
      *
      * @return array|mixed|null Returns an associative array if no key is
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null): mixed
+    public function getMetadata(?string $key = null): mixed
     {
         $this->meta = \stream_get_meta_data($this->stream);
         if (null === $key) {
@@ -176,7 +176,7 @@ class Stream implements StreamInterface
     {
         $oldResource    = $this->stream;
         $this->stream   = null;
-        $this->meta     = null;
+        $this->meta     = [];
         $this->readable = null;
         $this->writable = null;
         $this->seekable = null;
@@ -356,7 +356,7 @@ class Stream implements StreamInterface
      *
      * @throws RuntimeException on failure.
      */
-    public function seek($offset, $whence = \SEEK_SET)
+    public function seek(int $offset, $whence = \SEEK_SET)
     {
         // Note that fseek returns 0 on success!
         if (!$this->isSeekable() || fseek($this->stream, $offset, $whence) === -1) {
@@ -395,7 +395,7 @@ class Stream implements StreamInterface
      *
      * @throws RuntimeException if an error occurs.
      */
-    public function read($length): string
+    public function read(int $length): string
     {
         if (!$this->isReadable() || ($data = fread($this->stream, $length)) === false) {
             throw new RuntimeException('Could not read from stream');
@@ -407,15 +407,15 @@ class Stream implements StreamInterface
     /**
      * Write data to the stream.
      *
-     * @param string $string The string that is to be written.
+     * @param string $str The string that is to be written.
      *
      * @return int Returns the number of bytes written to the stream.
      *
      * @throws RuntimeException on failure.
      */
-    public function write($string): int
+    public function write(string $str): int
     {
-        if (!$this->isWritable() || ($written = fwrite($this->stream, $string)) === false) {
+        if (!$this->isWritable() || ($written = fwrite($this->stream, $str)) === false) {
             throw new RuntimeException('Could not write to stream');
         }
 

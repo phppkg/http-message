@@ -68,7 +68,7 @@ trait RequestTrait
      *
      * @throws InvalidArgumentException
      */
-    protected function initializeRequest(UriInterface|string $uri = null, ?string $method = null): void
+    protected function initializeRequest(UriInterface|string|null $uri = null, ?string $method = null): void
     {
         try {
             $this->originalMethod = $this->filterMethod($method);
@@ -87,11 +87,16 @@ trait RequestTrait
      */
     protected function buildFirstLine(): string
     {
+        $pathWithQuery = $this->uri->getPath();
+        if ($queryStr = $this->uri->getQuery()) {
+            $pathWithQuery .= '?' . $queryStr;
+        }
+
         // `GET /path HTTP/1.1`
         return sprintf(
             '%s %s %s/%s',
             $this->getMethod(),
-            $this->uri->getPathAndQuery(),
+            $pathWithQuery,
             $this->getProtocol(),
             $this->getProtocolVersion()
         );
