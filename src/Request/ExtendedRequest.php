@@ -27,7 +27,7 @@ class ExtendedRequest extends ServerRequest
      *
      * @return mixed
      */
-    public function getQuery(string $name, mixed $default = null, string $filter = null): mixed
+    public function getQuery(string $name, mixed $default = null, ?string $filter = null): mixed
     {
         $value = $this->getQueryParam($name, $default);
 
@@ -41,7 +41,7 @@ class ExtendedRequest extends ServerRequest
      *
      * @return mixed
      */
-    public function get(string $name = null, mixed $default = null, string $filter = null): mixed
+    public function get(?string $name = null, mixed $default = null, ?string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getQueryParams();
@@ -57,7 +57,7 @@ class ExtendedRequest extends ServerRequest
      *
      * @return mixed
      */
-    public function post(string $name = null, mixed $default = null, string $filter = null): mixed
+    public function post(?string $name = null, mixed $default = null, ?string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -73,7 +73,7 @@ class ExtendedRequest extends ServerRequest
      *
      * @return mixed
      */
-    public function json(string $name = null, mixed $default = null, string $filter = null): mixed
+    public function json(?string $name = null, mixed $default = null, ?string $filter = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -89,7 +89,7 @@ class ExtendedRequest extends ServerRequest
      *
      * @return mixed
      */
-    public function put(string $name = null, mixed $default = null, string $filter = null): mixed
+    public function put(?string $name = null, mixed $default = null, ?string $filter = null): mixed
     {
         return $this->post($name, $default, $filter);
     }

@@ -68,7 +68,7 @@ trait RequestTrait
      *
      * @throws InvalidArgumentException
      */
-    protected function initializeRequest(UriInterface|string $uri = null, string $method = null): void
+    protected function initializeRequest(UriInterface|string $uri = null, ?string $method = null): void
     {
         try {
             $this->originalMethod = $this->filterMethod($method);

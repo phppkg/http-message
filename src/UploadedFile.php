@@ -137,9 +137,9 @@ class UploadedFile implements UploadedFileInterface
      */
     public function __construct(
         string $file,
-        string $name = null,
-        string $type = null,
-        int $size = null,
+        ?string $name = null,
+        ?string $type = null,
+        ?int $size = null,
         int $error = \UPLOAD_ERR_OK,
         bool $sapi
     ) {

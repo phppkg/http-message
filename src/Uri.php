@@ -86,7 +86,7 @@ class Uri implements UriInterface
     public function __construct(
         string $scheme = '',
         string $host = '',
-        int $port = null,
+        ?int $port = null,
         string $path = '/',
         string $query = '',
         string $fragment = '',

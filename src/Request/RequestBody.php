@@ -25,7 +25,7 @@ class RequestBody extends Stream
      *
      * @param string|null $content
      */
-    public function __construct(string $content = null)
+    public function __construct(?string $content = null)
     {
         $stream = fopen('php://temp', 'wb+');
         stream_copy_to_stream(fopen('php://input', 'rb'), $stream);

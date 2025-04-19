@@ -95,11 +95,11 @@ class ServerRequest implements ServerRequestInterface
      */
     public function __construct(
         string $method = 'GET',
-        UriInterface $uri = null,
+        ?UriInterface $uri = null,
         array|Headers $headers = null,
         array $cookies = [],
         array $serverParams = [],
-        StreamInterface $body = null,
+        ?StreamInterface $body = null,
         array $uploadedFiles = [],
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
@@ -298,7 +298,7 @@ class ServerRequest implements ServerRequestInterface
      *
      * @return mixed
      */
-    public function get(string $name = null, mixed $default = null): mixed
+    public function get(?string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return $this->getQueryParams();
@@ -308,11 +308,11 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param      $name
-     * @param null $defaultValue
+     * @param string $name
+     * @param mixed $defaultValue
      * @return mixed|null
      */
-    public function getQueryParam($name, $defaultValue = null): mixed
+    public function getQueryParam(string $name, mixed $defaultValue = null): mixed
     {
         $params = $this->getQueryParams();
 
@@ -464,7 +464,7 @@ class ServerRequest implements ServerRequestInterface
      * @param mixed $default
      * @return mixed
      */
-    public function post(string $name = null, mixed $default = null): mixed
+    public function post(?string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return $this->getParsedBody();
@@ -505,7 +505,7 @@ class ServerRequest implements ServerRequestInterface
      * @return mixed The parameter value.
      * @throws RuntimeException
      */
-    public function getParam(string $key, string $default = null): mixed
+    public function getParam(string $key, ?string $default = null): mixed
     {
         $result     = $default;
         $getParams  = $this->getQueryParams();

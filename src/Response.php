@@ -141,7 +141,7 @@ class Response implements ResponseInterface
         int $status = 200,
         $headers = null,
         array $cookies = [],
-        StreamInterface $body = null,
+        ?StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
     ): Response {
@@ -164,7 +164,7 @@ class Response implements ResponseInterface
         int $status = 200,
         array|Headers $headers = null,
         array $cookies = [],
-        StreamInterface $body = null,
+        ?StreamInterface $body = null,
         string $protocol = 'HTTP',
         string $protocolVersion = '1.1'
     ) {
@@ -234,7 +234,7 @@ class Response implements ResponseInterface
      * @throws InvalidArgumentException
      * @return static
      */
-    public function json(mixed $data, int $status = null, int $encodingOptions = 0): static
+    public function json(mixed $data, ?int $status = null, int $encodingOptions = 0): static
     {
         $this->setBody(new Body());
         $this->write(json_encode($data, JSON_THROW_ON_ERROR | $encodingOptions));

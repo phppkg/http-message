@@ -22,7 +22,7 @@ class Collection extends ArrayObject
      *
      * @return static
      */
-    public static function make(array $items = null): static
+    public static function make(?array $items = null): static
     {
         return new static((array)$items);
     }

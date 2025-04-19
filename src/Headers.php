@@ -88,11 +88,11 @@ class Headers extends Collection
     }
 
     /**
-     * @param      $name
-     * @param null $default
+     * @param string $name
+     * @param mixed $default
      * @return null|string
      */
-    public function getLine($name, $default = null): ?string
+    public function getLine(string $name, mixed $default = null): ?string
     {
         if ($val = $this->get($name)) {
             return \implode(',', $val);

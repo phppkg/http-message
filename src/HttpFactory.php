@@ -124,7 +124,7 @@ class HttpFactory
      * @throws InvalidArgumentException
      *  If no valid method or URI can be determined.
      */
-    public static function createServerRequestFromArray(mixed $server, string $class = null): ServerRequestInterface
+    public static function createServerRequestFromArray(mixed $server, ?string $class = null): ServerRequestInterface
     {
         $env = self::ensureIsCollection($server);
         $uri = static::createUriFromArray($env);
@@ -286,10 +286,10 @@ class HttpFactory
      */
     public static function createUploadedFile(
         string $file,
-        int $size = null,
+        ?int $size = null,
         int $error = \UPLOAD_ERR_OK,
-        string $clientFilename = null,
-        string $clientMediaType = null
+        ?string $clientFilename = null,
+        ?string $clientMediaType = null
     ): UploadedFileInterface {
         return new UploadedFile($file, $clientFilename, $clientMediaType, $size, $error);
     }

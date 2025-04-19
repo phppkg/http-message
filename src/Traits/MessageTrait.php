@@ -71,7 +71,7 @@ trait MessageTrait
     public function initialize(
         string $protocol = 'http',
         string $protocolVersion = '1.1',
-        array|Headers $headers = null,
+        array|Headers|null $headers = null,
         StreamInterface|string $body = 'php://memory'
     ): void {
         $this->protocol        = $protocol ?: 'http';
@@ -135,7 +135,7 @@ trait MessageTrait
      * @return static
      * @throws InvalidArgumentException
      */
-    public function withProtocolVersion($version): static
+    public function withProtocolVersion(string $version): static
     {
         if (!isset(self::$validProtocolVersions[$version])) {
             throw new InvalidArgumentException(
@@ -158,7 +158,7 @@ trait MessageTrait
      * @param string $name
      * @return bool
      */
-    public function hasHeader($name): bool
+    public function hasHeader(string $name): bool
     {
         return $this->headers->has($name);
     }
@@ -167,7 +167,7 @@ trait MessageTrait
      * @param string $name
      * @return string[]
      */
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         return $this->headers->get($name, []);
     }
@@ -176,7 +176,7 @@ trait MessageTrait
      * @param string $name
      * @return string
      */
-    public function getHeaderLine($name): string
+    public function getHeaderLine(string $name): string
     {
         return implode(',', $this->headers->get($name, []));
     }
@@ -196,10 +196,10 @@ trait MessageTrait
     /**
      * PSR 7 method
      * @param string $name
-     * @param        $value
+     * @param string $value
      * @return self
      */
-    public function withHeader($name, $value): self
+    public function withHeader(string $name, string $value): self
     {
         $clone = clone $this;
         $clone->headers->set($name, $value);
@@ -213,7 +213,7 @@ trait MessageTrait
      * @param string $name
      * @return static
      */
-    public function withoutHeader($name): static
+    public function withoutHeader(string $name): static
     {
         $clone = clone $this;
         $clone->headers->remove($name);
@@ -227,7 +227,7 @@ trait MessageTrait
      * @param mixed $value
      * @return static
      */
-    public function withAddedHeader($name, $value): static
+    public function withAddedHeader(string $name, string $value): static
     {
         $clone = clone $this;
         $clone->headers->add($name, $value);

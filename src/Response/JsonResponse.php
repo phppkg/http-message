@@ -177,9 +177,9 @@ class JsonResponse extends Response
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      */
-    private function setPayload($data): void
+    private function setPayload(mixed $data): void
     {
         if (\is_object($data)) {
             $data = clone $data;

@@ -44,7 +44,7 @@ trait ExtendedResponseTrait
      * @return ResponseInterface
      * @throws InvalidArgumentException
      */
-    public function withRedirect(string $url, int $status = null): ResponseInterface
+    public function withRedirect(string $url, ?int $status = null): ResponseInterface
     {
         /** @var ResponseInterface $responseWithRedirect */
         $responseWithRedirect = $this->withHeader('Location', (string)$url);
@@ -72,7 +72,7 @@ trait ExtendedResponseTrait
      * @throws RuntimeException
      * @return ResponseInterface
      */
-    public function withJson(mixed $data, int $status = null, int $encodingOptions = 0): ResponseInterface
+    public function withJson(mixed $data, ?int $status = null, int $encodingOptions = 0): ResponseInterface
     {
         /** @var ResponseInterface $response */
         $response = $this->withBody(new Body());
